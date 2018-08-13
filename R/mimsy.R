@@ -1,17 +1,3 @@
-# import data from formatted csv
-#       add suggested csv format to github readme
-
-# background_correction     default F
-#       if false, bkg_corr <- 0 (or very small number)
-#       if any value, bkg_corr <- input value
-#
-#       mass = intial mass - bkg_corr
-
-# import data
-
-
-
-
 #' \code{mimsy} functionshortdescription
 #'
 #' function long description
@@ -49,11 +35,11 @@
 #'
 #' @export
 
-filename <- "MIMS_KAWN24HR_25Mar18_8thSt.csv"
-bgcorr <- FALSE
-barpress_units <- "hPa"
-std.temp <- c(9.81, 12.05)
-salinity <- 0
+#filename <- "MIMS_KAWN24HR_25Mar18_8thSt.csv"
+#bgcorr <- FALSE
+#barpress_units <- "hPa"
+#std.temp <- c(9.81, 12.05)
+#salinity <- 0
 
 mimsy <- function(filename, bgcorr = FALSE, barpress_units, salinity = 0,
                   twoPoint = TRUE, std.temp){

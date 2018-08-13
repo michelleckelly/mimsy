@@ -11,5 +11,6 @@ Description: The unofficial R package for crunching raw MIMS (Membrane Inlet Mas
 	gas concentration in units of microM or mg. See Github documentation for import .csv format guidelines 
 	and additional details.
 License: What license is it under?
-Encoding: MIT + file LICENSE
+Encoding:
 LazyData: true
+RoxygenNote: 6.0.1
