@@ -3,7 +3,7 @@
 
 ### Description
 `mimsy` is the unofficial R package for crunching raw MIMS (Membrane Inlet Mass Spectrometer, 
-Bay Instruments) day. Use the `mimsy` function to calculate dissolved gas concentrations and 
+Bay Instruments) data. Use the `mimsy` function to calculate dissolved gas concentrations and 
 ratios (N2, O2, Ar) based on standard gas solubility at specific temperature, pressure, and salinity. 
 Supports dual-temperature standard calibration, for setups with two water baths, and outputs dissolved 
 gas concentration in units of microM or mg.
@@ -15,6 +15,7 @@ install_github("michelleckelly/mimsy")
 ```
 
 ### Example
+TBA...
 
 ### Working task list
 - [x] saturation calculations for O2, N2, Ar scripted and references cited
