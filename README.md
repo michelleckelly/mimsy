@@ -7,7 +7,7 @@
 ```R
 # Pull package from github using devtools
 library(devtools)
-devtools::install_github("michelleckelly/mimsy")
+install_github("michelleckelly/mimsy")
 #
 # Load package into your R environment
 library(mimsy)
