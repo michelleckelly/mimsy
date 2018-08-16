@@ -1,6 +1,6 @@
 Package: mimsy
 Type: Package
-Title: The unofficial MIMS data cruncher
+Title: mimsy: the unofficial MIMS data cruncher
 Version: 0.1.0
 Author: Michelle Catherine Kelly
 Maintainer: Michelle Catherine Kelly <michellecatherinekelly@gmail.com>

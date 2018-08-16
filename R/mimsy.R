@@ -4,10 +4,10 @@
 #'
 #' @param filename the name of the .csv file containing raw MIMS data. See github readme for .csv formatting guide
 #' @param bgcorr a logical value indicating whether a background correction should be performed. Defaults to FALSE. If TRUE, user must specify values to use for the background correction.
-#' @param barpress_units units of measured atmospheric pressure. function recognizes "atm", "hPa", (more units coming with update...)
+#' @param barpress the barometric pressure of the room while samples were run on the MIMS. User may input a vector, script will take mean value.
+#' @param barpress_units units of barometric pressure. Must be one of atm, hPa, psi, bar, or Torr
 #' @param salinity salinity of standards, in units of per mille. defaults to 0.
-#' @param twoPoint a logical value indicating whether a two point temperature calibration was used (TRUE) or a single point temperature calibration was used (FALSE). Defaults to TRUE.
-#' @param std.temp a numberic vector (maximum length 2) of the water temperatures used for the standard calibration.
+#' @param std.temp a numberic vector (maximum length 2) of the water temperatures (degC) of the standard baths.
 #'
 #' @return dataframe of corrected sample readings in units of microM or mg
 #'
@@ -35,32 +35,53 @@
 #'
 #' @export
 
-#filename <- "MIMS_KAWN24HR_25Mar18_8thSt.csv"
-#bgcorr <- FALSE
-#barpress_units <- "hPa"
-#std.temp <- c(9.81, 12.05)
-#salinity <- 0
 
-mimsy <- function(filename, bgcorr = FALSE, barpress_units, salinity = 0,
-                  twoPoint = TRUE, std.temp){
+library(dplyr)
+
+filename <- "MIMS_KAWN24HR_25Mar18_8thSt.csv"
+bgcorr <- FALSE
+barpress <- 980.35
+barpress_units <- "hPa"
+std.temp <- c(9.81, 12.05)
+salinity <- 0
+
+mimsy <- function(filename, bgcorr = FALSE, barpress, barpress_units, salinity = 0,
+                  std.temp){
   #
   #### Raw data import #################################################################
-  data <- read.csv(filename, header = TRUE) # import csv file
+  data <- read.csv(filename, header = TRUE, stringsAsFactors = FALSE) # import csv file
   #
   # UPDATEFLAG: check csv is correct format
-  # UPDATEFLAG: check that run date is the same, csv only contains one run date of data
+  #
+  #### Background corrections ###############################################################
+  #
+  if (bgcorr == FALSE) {
+    bgcorr <- 0 # set background correction value to zero
+  }
+  if (bgcorr != FALSE){ # UPDATEFLAG
+    message("Background correction not yet supported. In meantime, please set bgcorr to FALSE")
+  }
   #
   #### Barometric pressure #############################################################
   #
-  # UPDATEFLAG: add more unit conversions. check with weather stations on their units
   if (barpress_units == "atm"){
-    Barpress.atm <- mean(data$Barpress)
+    Barpress.atm <- mean(barpress)
   }
   if (barpress_units == "hPa"){
-    Barpress.atm <- mean(data$Barpress)*0.00098692316931427 # conversion from hPa to atm
+    Barpress.atm <- mean(barpress)*0.00098692316931427 # conversion from hPa to atm
   }
-  #
-  #
+  if (barpress_units == "Torr"){
+    Barpress.atm <- mean(barpress)*760
+  }
+  if (barpress_units == "psi"){
+    Barpress.atm <- mean(barpress)*14.6959487755142
+  }
+  if (barpress_units == "bar"){
+    Barpress.atm <- mean(barpress)*1.01325
+  }
+  if (barpress_units %in% c("atm", "hPa", "Torr")){
+    stop("Please report barometric pressure in units of `atm`, `hPa`, `psi`, `bar`, or `Torr`.")
+  }
   #
   #### Calculation of dissolved gasses at saturation ###################################
   #
@@ -68,7 +89,7 @@ mimsy <- function(filename, bgcorr = FALSE, barpress_units, salinity = 0,
   sat.conc <- data.frame(O2.conc = numeric(length = 2), N2.conc = numeric(length = 2),
                          Ar.conc = numeric(length = 2), row.names = std.temp)
   #
-  # O2 saturation calculation ##########################################################
+  # O2 saturation calculation
   for (i in seq_along(std.temp)) {
     t <- std.temp[i]
     #### Vapor pressure correction ####
@@ -112,7 +133,7 @@ mimsy <- function(filename, bgcorr = FALSE, barpress_units, salinity = 0,
     sat.conc$O2.conc[i] <- O2.sat * press.corr
   }
   #
-  # N2 saturation calculation ##############################################################
+  # N2 saturation calculation
   for (i in seq_along(std.temp)) {
     t <- std.temp[i]
     #### Vapor pressure correction ####
@@ -150,7 +171,7 @@ mimsy <- function(filename, bgcorr = FALSE, barpress_units, salinity = 0,
     sat.conc$N2.conc[i] <- N2.sat * press.corr
   }
   #
-  # Ar saturation calculation ##############################################################
+  # Ar saturation calculation
   for (i in seq_along(std.temp)) {
     t <- std.temp[i]
     #### Vapor pressure correction ####
@@ -188,18 +209,66 @@ mimsy <- function(filename, bgcorr = FALSE, barpress_units, salinity = 0,
     sat.conc$Ar.conc[i] <- Ar.sat * press.corr
   }
   #
+  #### Calibration factors ################################################################
   #
-  #### Background corrections ###############################################################
+  # Group data by Type (`Standard` or `Sample`) and Group (numeric, 1:n)
+  data.byTypeGroup <- dplyr::group_by(data, Type, Group)
   #
-  if (bgcorr == FALSE) {
-    bgcorr <- 0 # set background correction value to zero
+  if (data.byTypeGroup[1:6,1]=="Standard"){ # two-point calibration has 6 standard readings
+    message("Calculating dissolved concentrations based on a two-point temperature standard.")
+    #
+    # assemble empty data frame for calibration factors
+    calfactor <-
+    data.frame(calfactor_28 = numeric(length = max(data.byTypeGroup$Group)*2),
+               calfactor_32 = numeric(length = max(data.byTypeGroup$Group)*2),
+               calfactor_40 = numeric(length = max(data.byTypeGroup$Group)*2),
+               row.names = paste0("STD", rep(1:max(data.byTypeGroup$Group), each = 2), "_",
+                                  std.temp))
+    #
+    for (groupNo in 1:max(data.byTypeGroup$Group)){
+      # individually extract each group of standards
+      cal.block <-
+        data.byTypeGroup %>%
+        filter(Type == "Standard" && Group == groupNo)
+      #
+      # calfactor = sat.concStd1 / avg(dataStd1_A)
+      #[groupNo] won't index correctly, [2] will not correspond to group 2
+      # Mass28 (N2)
+      calfactor$calfactor_28[groupNo] <- sat.conc$N2.conc[1] / mean(cal.block$X28[1:3])
+      calfactor$calfactor_28[groupNo+1] <- sat.conc$N2.conc[2] / mean(cal.block$X28[4:6])
+      # Mass32 (O2)
+      calfactor$calfactor_32[groupNo] <- sat.conc$O2.conc[1] / mean(cal.block$X32[1:3])
+      calfactor$calfactor_32[groupNo+1] <- sat.conc$O2.conc[2] / mean(cal.block$X32[4:6])
+      # Mass40 (Ar)
+      calfactor$calfactor_40[groupNo] <- sat.conc$Ar.conc[1] / mean(cal.block$X40[1:3])
+      calfactor$calfactor_40[groupNo+1] <- sat.conc$Ar.conc[2] / mean(cal.block$X40[4:6])
+      # move on to next block of standards
+      # end loop returns filled data frame
+    }
+    #
+    # account for drift by taking the slope: dcalfactor / dtime (will have to posixct convert time column)
+    #
+    # drift corrected cal factor: calibration factor + (slope * (standard start time - time[i]))
+    #
+    # get a concentration value in microM = raw MIMS reading * drift corr cal
   }
-  if (bgcorr != FALSE){ # UPDATEFLAG
-    message("Background correction not yet supported. In meantime, please set bgcorr to FALSE")
-  }
   #
-  #### Calibration factors
-  dplyr::group_by
+  # single point calibration #############################################################
+  if (data.byTypeGroup[1:6,1]!="Standard"){ # two-point calibration has 6 standard readings
+    # add in error message for now
+    stop("Single-point temperature calibration not yet supported")
+    #
+    message("Calculating dissolved concentrations based on a one point temperature standard.
+            \nIf this is an error, check if standard readings have been properly designated `Standard` in the `Type` column.")
+    #
+    calfactor <-
+    data.frame(calfactor_28 = numeric(length = max(data.byTypeGroup$Group)),
+               calfactor_32 = numeric(length = max(data.byTypeGroup$Group)),
+               calfactor_40 = numeric(length = max(data.byTypeGroup$Group)),
+               row.names = paste0("STD", 1:max(data.byTypeGroup$Group))
+    )
+
+  }
 }
 
 
