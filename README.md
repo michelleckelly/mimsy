@@ -19,9 +19,7 @@ library(mimsy)
 
 ### Working task list  
 
-- [x] saturation calculations for O2, N2, Ar scripted and references cited
-- [ ] settle on indexing choice and script calcibration factors and slope corrections
-- [ ] add additional unit conversion options for barometric pressure
+- [x] add additional unit conversion options for barometric pressure
 - [ ] add support for background corrections
 - [ ] add support for CH4
 - [ ] write input .csv formatting guidelines
