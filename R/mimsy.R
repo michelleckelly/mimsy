@@ -53,6 +53,17 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, barpress_units, salinity =
   #
   # UPDATEFLAG: check csv is correct format
   #
+  #### Format time column ################################################################
+  # as.POSIXct will automatically add in a date to the time that's passed to it, generally this won't be an issue but if samples were analyzed spanning two days (e.g. start at 8pm, end at 1am) this will cause an issue. probably a good idea to come up with a solution. insert check to see if end time > start time, and return warning, for now
+  # easiest fix may be dateRun column and paste
+  data$Time <- as.POSIXct(data$Time, format = "%I:%M:%S %p")
+  #
+  if (data$Time[1] > tail(data$Time, n=1)){
+    stop("Did you run your samples overnight (e.g. start at 8:00:00 PM, end at 1:00:00 AM the next
+day?) Currently mimsy isn't set up to handle this.
+\nPlease let me know that this is an issue for you and I'll look into a bug patch asap!")
+  }
+  #
   #### Background corrections ###############################################################
   #
   if (bgcorr == FALSE) {
@@ -79,14 +90,14 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, barpress_units, salinity =
   if (barpress_units == "bar"){
     Barpress.atm <- mean(barpress)*1.01325
   }
-  if (barpress_units %in% c("atm", "hPa", "Torr")){
+  if (!(barpress_units %in% c("atm", "hPa", "Torr", "psi", "bar"))){
     stop("Please report barometric pressure in units of `atm`, `hPa`, `psi`, `bar`, or `Torr`.")
   }
   #
   #### Calculation of dissolved gasses at saturation ###################################
   #
   # initialize vector to store saturation values
-  sat.conc <- data.frame(O2.conc = numeric(length = 2), N2.conc = numeric(length = 2),
+  solubility.conc <- data.frame(O2.conc = numeric(length = 2), N2.conc = numeric(length = 2),
                          Ar.conc = numeric(length = 2), row.names = std.temp)
   #
   # O2 saturation calculation
@@ -129,8 +140,8 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, barpress_units, salinity =
       S*(B0 + B1*TS + B2*TS^2 + B3*TS^3) +
       C0*S^2
     O2.sat <- exp(lnO2.sat)
-    # Correct O2 saturation with pressure correction, sat.conc units [umol/kg]
-    sat.conc$O2.conc[i] <- O2.sat * press.corr
+    # Correct O2 saturation with pressure correction, solubility.conc units [umol/kg]
+    solubility.conc$O2.conc[i] <- O2.sat * press.corr
   }
   #
   # N2 saturation calculation
@@ -167,8 +178,8 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, barpress_units, salinity =
     lnN2.sat <- A0 + A1*TS + A2*TS^2 + A3*TS^3 +
       S*(B0 + B1*TS + B2*TS^2 + B3*TS^3)
     N2.sat <- exp(lnN2.sat)
-    # Correct saturation with pressure correction, sat.conc units are [umol/kg]
-    sat.conc$N2.conc[i] <- N2.sat * press.corr
+    # Correct saturation with pressure correction, solubility.conc units are [umol/kg]
+    solubility.conc$N2.conc[i] <- N2.sat * press.corr
   }
   #
   # Ar saturation calculation
@@ -205,8 +216,8 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, barpress_units, salinity =
     lnAr.sat <- A0 + A1*TS + A2*TS^2 + A3*TS^3 +
       S*(B0 + B1*TS + B2*TS^2 + B3*TS^3)
     Ar.sat <- exp(lnAr.sat)
-    # Correct saturation with pressure correction, sat.conc units are [umol/kg]
-    sat.conc$Ar.conc[i] <- Ar.sat * press.corr
+    # Correct saturation with pressure correction, solubility.conc units are [umol/kg]
+    solubility.conc$Ar.conc[i] <- Ar.sat * press.corr
   }
   #
   #### Calibration factors ################################################################
@@ -214,7 +225,9 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, barpress_units, salinity =
   # Group data by Type (`Standard` or `Sample`) and Group (numeric, 1:n)
   data.byTypeGroup <- dplyr::group_by(data, Type, Group)
   #
-  if (data.byTypeGroup[1:6,1]=="Standard"){ # two-point calibration has 6 standard readings
+  # two-point calibration has 6 standard readings
+  if (all(data.byTypeGroup[1:6,1] ==
+      c("Standard","Standard","Standard","Standard","Standard","Standard"))){
     message("Calculating dissolved concentrations based on a two-point temperature standard.")
     #
     # assemble empty data frame for calibration factors
@@ -231,30 +244,122 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, barpress_units, salinity =
         data.byTypeGroup %>%
         filter(Type == "Standard" && Group == groupNo)
       #
-      # calfactor = sat.concStd1 / avg(dataStd1_A)
-      #[groupNo] won't index correctly, [2] will not correspond to group 2
+      # calfactor = solubility.concStd1 / avg(dataStd1_A)
       # Mass28 (N2)
-      calfactor$calfactor_28[groupNo] <- sat.conc$N2.conc[1] / mean(cal.block$X28[1:3])
-      calfactor$calfactor_28[groupNo+1] <- sat.conc$N2.conc[2] / mean(cal.block$X28[4:6])
+      calfactor$calfactor_28[2*groupNo-1] <- solubility.conc$N2.conc[1] / mean(cal.block$X28[1:3])
+      calfactor$calfactor_28[2*groupNo] <- solubility.conc$N2.conc[2] / mean(cal.block$X28[4:6])
       # Mass32 (O2)
-      calfactor$calfactor_32[groupNo] <- sat.conc$O2.conc[1] / mean(cal.block$X32[1:3])
-      calfactor$calfactor_32[groupNo+1] <- sat.conc$O2.conc[2] / mean(cal.block$X32[4:6])
+      calfactor$calfactor_32[2*groupNo-1] <- solubility.conc$O2.conc[1] / mean(cal.block$X32[1:3])
+      calfactor$calfactor_32[2*groupNo] <- solubility.conc$O2.conc[2] / mean(cal.block$X32[4:6])
       # Mass40 (Ar)
-      calfactor$calfactor_40[groupNo] <- sat.conc$Ar.conc[1] / mean(cal.block$X40[1:3])
-      calfactor$calfactor_40[groupNo+1] <- sat.conc$Ar.conc[2] / mean(cal.block$X40[4:6])
-      # move on to next block of standards
-      # end loop returns filled data frame
+      calfactor$calfactor_40[2*groupNo-1] <- solubility.conc$Ar.conc[1] / mean(cal.block$X40[1:3])
+      calfactor$calfactor_40[2*groupNo] <- solubility.conc$Ar.conc[2] / mean(cal.block$X40[4:6])
     }
     #
-    # account for drift by taking the slope: dcalfactor / dtime (will have to posixct convert time column)
+    # calculate drift slope
+    # add drift slope column to calfactor
+    calfactor$driftslope_28 <- NA
+    calfactor$driftslope_32 <- NA
+    calfactor$driftslope_40 <- NA
+    # subset dataframe of just the standard readings
+    data.standards <-
+      data.byTypeGroup %>%
+      filter(Type == "Standard")
+    #
+    # perform drift slope calculations
+    for (groupNo in 1:max(data.byTypeGroup$Group)){
+      #
+      # set up a vector for the time indexes, temp1
+      time.indexer <- numeric(length = max(data.byTypeGroup$Group))
+      time.indexer[1] <- 7
+      for(i in 2:length(time.indexer)){
+        time.indexer[i] <- time.indexer[i-1] + 6
+      }
+      # corrections for temp 1
+      # Mass28
+      calfactor$driftslope_28[2*groupNo-1] <-
+        (calfactor$calfactor_28[2*groupNo+1] - calfactor$calfactor_28[2*groupNo-1]) /
+        as.numeric(difftime(data.standards$Time[time.indexer[groupNo]],
+                            data.standards$Time[2*groupNo-1], units = "mins"))
+      # Mass32
+      calfactor$driftslope_32[2*groupNo-1] <-
+        (calfactor$calfactor_32[2*groupNo+1] - calfactor$calfactor_32[2*groupNo-1]) /
+        as.numeric(difftime(data.standards$Time[time.indexer[groupNo]],
+                            data.standards$Time[2*groupNo-1], units = "mins"))
+      # Mass40
+      calfactor$driftslope_40[2*groupNo-1] <-
+        (calfactor$calfactor_40[2*groupNo+1] - calfactor$calfactor_40[2*groupNo-1]) /
+        as.numeric(difftime(data.standards$Time[time.indexer[groupNo]],
+                            data.standards$Time[2*groupNo-1], units = "mins"))
+      #
+      # set up a vector for the time indicies, temp2
+      time.indexer[1] <- 10
+      for(i in 2:length(time.indexer)){
+        time.indexer[i] <- time.indexer[i-1] + 6
+      }
+      #
+      # corrections for temp 2
+      # Mass28
+      calfactor$driftslope_28[2*groupNo] <-
+        (calfactor$calfactor_28[2*groupNo+2] - calfactor$calfactor_28[2*groupNo]) /
+        as.numeric(difftime(data.standards$Time[time.indexer[groupNo]],
+                            data.standards$Time[2*groupNo+2], units = "mins"))
+      # Mass32
+      calfactor$driftslope_32[2*groupNo] <-
+        (calfactor$calfactor_32[2*groupNo+2] - calfactor$calfactor_32[2*groupNo]) /
+        as.numeric(difftime(data.standards$Time[time.indexer[groupNo]],
+                            data.standards$Time[2*groupNo+2], units = "mins"))
+      # Mass40
+      calfactor$driftslope_40[2*groupNo] <-
+        (calfactor$calfactor_40[2*groupNo+2] - calfactor$calfactor_40[2*groupNo]) /
+        as.numeric(difftime(data.standards$Time[time.indexer[groupNo]],
+                          data.standards$Time[2*groupNo+2], units = "mins"))
+    }
     #
     # drift corrected cal factor: calibration factor + (slope * (standard start time - time[i]))
     #
+    # add columns to data.byTypeGroup
+    data.byTypeGroup$CalFactor_28 <- numeric(length = nrow(data.byTypeGroup))
+    data.byTypeGroup$CalFactor_32 <- numeric(length = nrow(data.byTypeGroup))
+    data.byTypeGroup$CalFactor_40 <- numeric(length = nrow(data.byTypeGroup))
+    #
+    #
+    for(groupNo in 1:max(data.byTypeGroup$Group)){
+      # want to deal with one sampling group at a time
+      sampleGroup <-
+      data.byTypeGroup %>%
+        filter(Group == groupNo)
+      #
+      for(row in 1:length(sampleGroup)){
+        # calculate calibration factor for each sample reading, the calibration factor is calculated based only on the initial temperature standard (as suggested in MIMS documentation)
+        # UPDATEFLAG: check this ^^^
+        # temp 1
+        # Mass28
+        data.byTypeGroup$CalFactor_28[row] <- # change this indexing, row will only go 1-12
+        calfactor$calfactor_28[2*groupNo-1] +
+          (calfactor$driftslope_28[2*groupNo-1] *
+             (as.numeric(difftime(sampleGroup$Time[row], sampleGroup$Time[1], units = "mins"))))
+        # Mass32
+        data.byTypeGroup$CalFactor_32[row] <-
+          calfactor$calfactor_32[2*groupNo-1] +
+          (calfactor$driftslope_32[2*groupNo-1] *
+             (as.numeric(difftime(sampleGroup$Time[row], sampleGroup$Time[1], units = "mins"))))
+        # Mass40
+        data.byTypeGroup$CalFactor_28[row] <-
+          calfactor$calfactor_28[2*groupNo-1] +
+          (calfactor$driftslope_28[2*groupNo-1] *
+             (as.numeric(difftime(sampleGroup$Time[row], sampleGroup$Time[1], units = "mins"))))
+      }
+    }
     # get a concentration value in microM = raw MIMS reading * drift corr cal
+    #
+    # return list solubility.conc, calfactors, longformdata (data), shortformdata (just relavant units)
   }
   #
+  #
   # single point calibration #############################################################
-  if (data.byTypeGroup[1:6,1]!="Standard"){ # two-point calibration has 6 standard readings
+  if (all(data.byTypeGroup[1:6,1] ==
+      c("Standard","Standard","Standard","Sample","Sample","Sample"))){
     # add in error message for now
     stop("Single-point temperature calibration not yet supported")
     #
@@ -267,8 +372,7 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, barpress_units, salinity =
                calfactor_40 = numeric(length = max(data.byTypeGroup$Group)),
                row.names = paste0("STD", 1:max(data.byTypeGroup$Group))
     )
-
-  }
+    }
 }
 
 
