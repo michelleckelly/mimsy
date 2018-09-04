@@ -7,7 +7,7 @@
 #' @param barpress the barometric pressure of the room while samples were run on the MIMS. User may input a vector, script will take mean value.
 #' @param barpress_units units of barometric pressure. Must be one of atm, hPa, psi, bar, or Torr
 #' @param salinity salinity of standards, in units of per mille. defaults to 0.
-#' @param std.temp a numberic vector (maximum length 2) of the water temperatures (degC) of the standard baths.
+#' @param std.tempss a numberic vector (maximum length 2) of the water temperatures (degC) of the standard baths.
 #'
 #' @return dataframe of corrected sample readings in units of microM or mg
 #'
@@ -31,19 +31,28 @@
 #' in distilled water and seawater}, Deep-Sea Research I, 51(11), 1517-1528.
 #'
 #' @examples
-#' mydata <- mimsy(filename = "./RawData/MIMS_data.csv", bgcorr = FALSE, std.temp = c(12.5, 13.2))
+#' mydata <- mimsy(filename = "./RawData/MIMS_data.csv", bgcorr = FALSE, std.temps = c(12.5, 13.2))
 #'
 #' @export
+#'
+
+library(magrittr)
+library(dplyr)
+
+filename <- "MIMS_KAWN24HR_25Mar18_8thSt_mimsyformat.csv"
+barpress <- c(981.2, 979.5)
+barpress_units <- "hPa"
+std.tempss <- c(9.81, 12.05)
 
 mimsy <- function(filename, bgcorr = FALSE, barpress,
-                  barpress_units, salinity = 0, std.temp){
+                  barpress_units, salinity = 0, std.tempsss){
 
-  # Raw data import ----------------------------------------------------------------
+  # 1. Raw data import ---------------------------------------------
   data <- read.csv(filename, header = TRUE, stringsAsFactors = FALSE)
 
   # UPDATEFLAG: check csv is correct format
 
-  # Format time column -------------------------------------------------------------
+  # Format time column ----------------------------------------------
 
   # as.POSIXct will automatically add in a date to the time that's passed to it, generally this won't be an issue but if samples were analyzed spanning two days (e.g. start at 8pm, end at 1am) this will cause an issue. probably a good idea to come up with a solution. insert check to see if end time > start time, and return warning, for now
   # easiest fix may be dateRun column and paste
@@ -55,7 +64,7 @@ day?) Currently mimsy isn't set up to handle this.
 \nPlease let me know that this is an issue for you and I'll look into a bug patch asap!")
   }
 
-  # Background corrections -----------------------------------------------------------
+  # 2. Background corrections -----------------------------------------------
 
   if (bgcorr == FALSE) {
     bgcorr <- 0 # set background correction value to zero
@@ -65,7 +74,7 @@ day?) Currently mimsy isn't set up to handle this.
             In meantime, please set bgcorr to FALSE")
   }
 
-  # Barometric pressure conversion ---------------------------------------------------
+  # Barometric pressure conversion ------------------------------------------
 
   if (barpress_units == "atm"){
     Barpress.atm <- mean(barpress)
@@ -91,17 +100,17 @@ day?) Currently mimsy isn't set up to handle this.
     stop("Please report barometric pressure in units of `atm`, `hPa`, `psi`, `bar`, or `Torr`.")
   }
 
-  # Dissolved gas concentrations at saturation ----------------------------------
+  # 3. Calculate solubilites of dissolved gas ---------------------------
 
   # initialize vector to store concentration values
   solubility.conc <- data.frame(O2.conc = numeric(length = 2),
                                 N2.conc = numeric(length = 2),
-                                Ar.conc = numeric(length = 2), row.names = std.temp)
+                                Ar.conc = numeric(length = 2), row.names = std.temps)
 
   # O2 saturation calculation -----------------------------------------------------
-  for (i in seq_along(std.temp)) {
+  for (i in seq_along(std.temps)) {
 
-    t <- std.temp[i]
+    t <- std.temps[i]
 
     # Vapor pressure correction
     # use the Antoine equation to calculate vapor pressure of water [bar]
@@ -147,9 +156,9 @@ day?) Currently mimsy isn't set up to handle this.
     }
 
   # N2 saturation calculation -------------------------------------------------------
-  for (i in seq_along(std.temp)) {
+  for (i in seq_along(std.temps)) {
 
-    t <- std.temp[i]
+    t <- std.temps[i]
 
     # Vapor pressure correction
     # use the Antoine equation to calculate vapor pressure of water [bar]
@@ -190,9 +199,9 @@ day?) Currently mimsy isn't set up to handle this.
   }
 
   # Ar saturation calculation --------------------------------------------------------
-  for (i in seq_along(std.temp)) {
+  for (i in seq_along(std.temps)) {
 
-    t <- std.temp[i]
+    t <- std.temps[i]
 
     # Vapor pressure correction
     # use the Antoine equation to calculate vapor pressure of water [bar]
@@ -230,7 +239,7 @@ day?) Currently mimsy isn't set up to handle this.
     solubility.conc$Ar.conc[i] <- Ar.sat * press.corr
   }
 
-  # Calibration factors -------------------------------------------------
+  # 4. Calculate calibration factors ----------------------------------
 
   # Group data by Type (`Standard` or `Sample`) and Group (numeric, 1:n)
   data <- dplyr::group_by(data, Type, Group)
@@ -247,8 +256,8 @@ day?) Currently mimsy isn't set up to handle this.
     data.frame(calfactor_28 = numeric(length = max(data$Group)*2),
                calfactor_32 = numeric(length = max(data$Group)*2),
                calfactor_40 = numeric(length = max(data$Group)*2),
-               row.names = paste0("STD", rep(1:max(data$Group), each = 2), "_",
-                                  std.temp))
+               row.names = paste0("Group", rep(1:max(data$Group), each = 2), "_",
+                                  std.temps))
 
     for (groupNo in 1:max(data$Group)){
       # individually extract each group of standards
@@ -256,130 +265,212 @@ day?) Currently mimsy isn't set up to handle this.
         data %>%
         filter(Type == "Standard" && Group == groupNo)
 
+      # calculate calibration factor
       # calfactor = solubility.concStd1 / avg(dataStd1_A)
+
       # Mass28 (N2)
       calfactor$calfactor_28[2*groupNo-1] <-
         solubility.conc$N2.conc[1] / mean(cal.block$X28[1:3])
-      #calfactor$calfactor_28[2*groupNo] <-
-        #solubility.conc$N2.conc[2] / mean(cal.block$X28[4:6])
+      calfactor$calfactor_28[2*groupNo] <-
+        solubility.conc$N2.conc[2] / mean(cal.block$X28[4:6])
       # Mass32 (O2)
       calfactor$calfactor_32[2*groupNo-1] <-
         solubility.conc$O2.conc[1] / mean(cal.block$X32[1:3])
-      #calfactor$calfactor_32[2*groupNo] <-
-        #solubility.conc$O2.conc[2] / mean(cal.block$X32[4:6])
+      calfactor$calfactor_32[2*groupNo] <-
+        solubility.conc$O2.conc[2] / mean(cal.block$X32[4:6])
       # Mass40 (Ar)
       calfactor$calfactor_40[2*groupNo-1] <-
         solubility.conc$Ar.conc[1] / mean(cal.block$X40[1:3])
-      #calfactor$calfactor_40[2*groupNo] <-
-        #solubility.conc$Ar.conc[2] / mean(cal.block$X40[4:6])
+      calfactor$calfactor_40[2*groupNo] <-
+        solubility.conc$Ar.conc[2] / mean(cal.block$X40[4:6])
     }
 
-    # Calculate drift slope
+    # 5. Calculate slope and intercepts of calibration curve -----------------
+    calslope <-
+      data.frame(calslope_28 = numeric(length = max(data$Group)),
+                 calintercept_28 = numeric(length = max(data$Group)),
+                 calslope_32 = numeric(length = max(data$Group)),
+                 calintercept_32 = numeric(length = max(data$Group)),
+                 calslope_40 = numeric(length = max(data$Group)),
+                 calintercept_40 = numeric(length = max(data$Group)),
+                 row.names = paste0("Group", 1:max(data$Group)))
 
-    # add drift slope column to calfactor
-    calfactor$slopecorr_28 <- NA
-    calfactor$slopecorr_32 <- NA
-    calfactor$slopecorr_40 <- NA
-
-    # subset dataframe of just the standard readings
-    data.standards <-
-      data %>%
-      filter(Type == "Standard")
-
-    # perform drift slope corrections based on the primary standard
     for (groupNo in 1:max(data$Group)){
 
+      # using a linear model to find slope and intercept
+      # of calibration line
+      # linear model: y ~ x
+
       # Mass28
-      calfactor$slopecorr_28[2*groupNo-1] <-
-        (calfactor$calfactor_28[2*groupNo+1] - calfactor$calfactor_28[2*groupNo-1]) /
-        as.numeric(difftime(data.standards$Time[data.standards$Group == (groupNo+1)][1],
-                            data.standards$Time[2*groupNo-1], units = "mins"))
+      lm <- lm( c(calfactor$calfactor_28[2*groupNo-1],
+                  calfactor$calfactor_28[2*groupNo]) ~ std.temps)
+      calslope$calslope_28[groupNo] <- lm$coefficients[2] # slope
+      calslope$calintercept_28[groupNo] <- lm$coefficients[1] #intercept
+
       # Mass32
-      calfactor$slopecorr_32[2*groupNo-1] <-
-        (calfactor$calfactor_32[2*groupNo+1] - calfactor$calfactor_32[2*groupNo-1]) /
-        as.numeric(difftime(data.standards$Time[data.standards$Group == (groupNo+1)][1],
-                            data.standards$Time[2*groupNo-1], units = "mins"))
+      lm <- lm( c(calfactor$calfactor_32[2*groupNo-1],
+                  calfactor$calfactor_32[2*groupNo]) ~ std.temps)
+      calslope$calslope_32[groupNo] <- lm$coefficients[2] # slope
+      calslope$calintercept_32[groupNo] <- lm$coefficients[1] #intercept
+
       # Mass40
-      calfactor$slopecorr_40[2*groupNo-1] <-
-        (calfactor$calfactor_40[2*groupNo+1] - calfactor$calfactor_40[2*groupNo-1]) /
-        as.numeric(difftime(data.standards$Time[data.standards$Group == (groupNo+1)][1],
-                            data.standards$Time[2*groupNo-1], units = "mins"))
+      lm <- lm( c(calfactor$calfactor_40[2*groupNo-1],
+                  calfactor$calfactor_40[2*groupNo]) ~ std.temps)
+      calslope$calslope_40[groupNo] <- lm$coefficients[2] # slope
+      calslope$calintercept_40[groupNo] <- lm$coefficients[1] #intercept
     }
 
-    # Correct the calibration factor for instrument drift
-    # calibration factor + (slope * (standard start time - time[i]))
+    # 6. Perform drift correction for calibration slope and intercept --------
+
+    # add columns to calslope
+    calslope$DRIFT.calslope_28 <- NA
+    calslope$DRIFT.calintercept_28 <- NA
+    calslope$DRIFT.calslope_32 <- NA
+    calslope$DRIFT.calintercept_32 <- NA
+    calslope$DRIFT.calslope_40 <- NA
+    calslope$DRIFT.calintercept_40 <- NA
+
+    for (groupNo in 1:max(data$Group)){
+      # individually extract each group
+      group.block <-
+        data %>%
+        filter(Group == groupNo)
+
+      # using a linear model to find drift slope and intercept
+
+      # Drift corrected Mass28
+      lm <- lm(calslope$calslope_28[groupNo:(groupNo+1)] ~
+                 c(group.block$Time[1], tail(group.block$Time, n = 1)))
+      calslope$DRIFT.calslope_28[groupNo] <- lm$coefficients[2] # slope
+      calslope$DRIFT.calintercept_28[groupNo] <- lm$coefficients[1] # intercept
+
+      # Drift corrected Mass32
+      lm <- lm(calslope$calslope_32[groupNo:(groupNo+1)] ~
+                 c(group.block$Time[1], tail(group.block$Time, n = 1)))
+      calslope$DRIFT.calslope_32[groupNo] <- lm$coefficients[2] # slope
+      calslope$DRIFT.calintercept_32[groupNo] <- lm$coefficients[1] # intercept
+
+      # Drift corrected Mass40
+      lm <- lm(calslope$calslope_40[groupNo:(groupNo+1)] ~
+                 c(group.block$Time[1], tail(group.block$Time, n = 1)))
+      calslope$DRIFT.calslope_40[groupNo] <- lm$coefficients[2] # slope
+      calslope$DRIFT.calintercept_40[groupNo] <- lm$coefficients[1] # intercept
+
+    }
+
+    # 7. Interpolate calibration slopes ----------------------------
 
     # add columns to data
-    data$CalFactor_28 <- numeric(length = nrow(data))
-    data$CalFactor_32 <- numeric(length = nrow(data))
-    data$CalFactor_40 <- numeric(length = nrow(data))
+    data$INTERPOLATED.calslope_28 <- NA
+    data$INTERPOLATED.calintercept_28 <- NA
+    data$INTERPOLATED.calslope_32 <- NA
+    data$INTERPOLATED.calintercept_32 <- NA
+    data$INTERPOLATED.calslope_40 <- NA
+    data$INTERPOLATED.calintercept_40 <- NA
 
-    # rownumb and samplerow perform similar indexing function, but rownumb (1:maxdatalength) is retained outside of samplegroup (1:maxsamplegrouplength)
+    # create list to fill with interpolated values
+    datalist = list()
 
-    # start rowNumb at 1
-    rownumb <- 1
+    # interpolate values based on
+    # calibration slope + (drift calslope *(start sample group time - sample time))
+    for (groupNo in 1:max(data$Group)){
 
-    while (rownumb < nrow(data)){
-      for(groupNo in 1:max(data$Group)){
+      # cut data into groups of samples
+      sample.block <-
+        data %>%
+        filter(Type == "Sample" && Group == groupNo)
 
-        # parse each group into its own dataframe
-        sampleGroup <-
-          data %>%
-          filter(Group == groupNo)
+      for (i in 1:nrow(sample.block)){
+        # Mass28
+        sample.block$INTERPOLATED.calslope_28[i] <-
+          calslope$calslope_28[groupNo] +
+          (calslope$DRIFT.calslope_28[groupNo] *
+              as.numeric(difftime(sample.block$Time[i],
+                                  sample.block$Time[1], units = "secs")))
 
-        for(samplerow in 1:nrow(sampleGroup)){
-          # calculate calibration factor for each sample reading
+        sample.block$INTERPOLATED.calintercept_28[i] <-
+          calslope$calintercept_28[groupNo] +
+          (calslope$DRIFT.calintercept_28[groupNo] *
+             as.numeric(difftime(sample.block$Time[i],
+                                 sample.block$Time[1], units = "secs")))
+        # Mass32
+        sample.block$INTERPOLATED.calslope_32[i] <-
+          calslope$calslope_32[groupNo] +
+          (calslope$DRIFT.calslope_32[groupNo] *
+             as.numeric(difftime(sample.block$Time[i],
+                                 sample.block$Time[1], units = "secs")))
 
-          if (is.na(calfactor$slopecorr_28[2*groupNo-1])){
-            # if there's no slopecorr value (usually last group in series won't have one)
-            # use values of calcfactor and slopecorr from preious group
-            groupNo <- groupNo - 1
-          }
+        sample.block$INTERPOLATED.calintercept_32[i] <-
+          calslope$calintercept_32[groupNo] +
+          (calslope$DRIFT.calintercept_32[groupNo] *
+             as.numeric(difftime(sample.block$Time[i],
+                                 sample.block$Time[1], units = "secs")))
 
-          # Mass28
-          data$CalFactor_28[rownumb] <-
-            calfactor$calfactor_28[2*groupNo-1] +
-            (calfactor$slopecorr_28[2*groupNo-1] *
-               (as.numeric(difftime(sampleGroup$Time[samplerow],
-                                    sampleGroup$Time[1], units = "mins"))))
-          # Mass32
-          data$CalFactor_32[rownumb] <-
-            calfactor$calfactor_32[2*groupNo-1] +
-            (calfactor$slopecorr_32[2*groupNo-1] *
-               (as.numeric(difftime(sampleGroup$Time[samplerow],
-                                    sampleGroup$Time[1], units = "mins"))))
-          # Mass40
-          data$CalFactor_40[rownumb] <-
-            calfactor$calfactor_40[2*groupNo-1] +
-            (calfactor$slopecorr_40[2*groupNo-1] *
-               (as.numeric(difftime(sampleGroup$Time[samplerow],
-                                    sampleGroup$Time[1], units = "mins"))))
-          rownumb <- rownumb + 1
-        }
-        # groupNo <- groupNo + 1
+        # Mass40
+        sample.block$INTERPOLATED.calslope_40[i] <-
+          calslope$calslope_40[groupNo] +
+          (calslope$DRIFT.calslope_40[groupNo] *
+             as.numeric(difftime(sample.block$Time[i],
+                                 sample.block$Time[1], units = "secs")))
+
+        sample.block$INTERPOLATED.calintercept_40[i] <-
+          calslope$calintercept_40[groupNo] +
+          (calslope$DRIFT.calintercept_40[groupNo] *
+             as.numeric(difftime(sample.block$Time[i],
+                                 sample.block$Time[1], units = "secs")))
       }
-      # exit loop when all rows are filled
+
+      # create list of sample blocks
+      datalist[[groupNo]] <- sample.block
     }
 
-    # Concentration values
+    # convert datalist from list to dataframe
+    # this dataframe will become the "detailed" data output to the user
+    sampledata <- dplyr::bind_rows(datalist)
 
-    # Initialize rows
-    data$N2_microM <- numeric(length = nrow(data))
-    data$O2_microM <- numeric(length = nrow(data))
-    data$Ar_microM <- numeric(length = nrow(data))
+    # 8. Calculate drift and temperature corrected calibration factors -------
 
-    data$Ratio_N2.Ar <- numeric(length = nrow(data))
-    data$Ratio_O2.Ar <- numeric(length = nrow(data))
+    # add columns for interpolated calfactors
+    sampledata$INTERPOLATED.calfactor_28 <- NA
+    sampledata$INTERPOLATED.calfactor_32 <- NA
+    sampledata$INTERPOLATED.calfactor_40 <- NA
 
-    data$N2_mg <- numeric(length = nrow(data))
-    data$O2_mg <- numeric(length = nrow(data))
-    data$Ar_mg <- numeric(length = nrow(data))
+    # (interpolated calslope * temperature at collection) + interpolated calintercept
+    # Mass 28
+    sampledata$INTERPOLATED.calfactor_28 <-
+      (sampledata$INTERPOLATED.calslope_28 * sampledata$CollectionTemp) +
+      sampledata$INTERPOLATED.calintercept_28
 
-    # Concentration [microM] = raw MIMS reading * drift corr cal
-    data$N2_microM <- data$X28 * data$CalFactor_28
-    data$O2_microM <- data$X32 * data$CalFactor_32
-    data$Ar_microM <- data$X40 * data$CalFactor_40
+    # Mass 32
+    sampledata$INTERPOLATED.calfactor_32 <-
+      (sampledata$INTERPOLATED.calslope_32 * sampledata$CollectionTemp) +
+      sampledata$INTERPOLATED.calintercept_32
 
+    # Mass 40
+    sampledata$INTERPOLATED.calfactor_40 <-
+      (sampledata$INTERPOLATED.calslope_40 * sampledata$CollectionTemp) +
+      sampledata$INTERPOLATED.calintercept_40
+
+    # 9. Calculate final concentrations -------------------------------------
+
+    # add columns for final concentrations
+    sampledata$N2conc_uM <- NA
+    sampledata$O2conc_uM <- NA
+    sampledata$Arconc_uM <- NA
+
+    #BG corrected reading * interpolated calfactor
+    sampledata$N2conc_uM <- sampledata$X28 * sampledata$INTERPOLATED.calfactor_28
+    sampledata$O2conc_uM <- sampledata$X32 * sampledata$INTERPOLATED.calfactor_32
+    sampledata$Arconc_uM <- sampledata$X40 * sampledata$INTERPOLATED.calfactor_40
+
+
+
+
+
+
+
+
+    #################################################
     # Calculate concentration ratios using microM data
     data$Ratio_N2.Ar <- data$N2_microM / data$Ar_microM
     data$Ratio_O2.Ar <- data$O2_microM / data$Ar_microM
@@ -401,7 +492,8 @@ day?) Currently mimsy isn't set up to handle this.
     output <- list(calculations = calculations,
                    # parameters = dataframe of solubility conc and cal factors
                    solubilityConcentrations = solubility.conc,
-                   calibrationFactors = calfactor,
+                   calibrationFactors_uM.signal = calfactor,
+                   calibrationSlope = calslope,
                    all.data = data)
 
     return(output)
