@@ -3,13 +3,14 @@
 
 # Ignore session data files
 .RData
-
 # Ignore Rmd default cache directory
 /cache/
-
 # Ignore any temp files that are created by Rmd
 *.utf9.md
 *.knit.md
-
 # Ignore temporary Rproject files
 .Rproj.user
+inst/doc
+
+# Ignore .csv files being used for testing
+.csv

@@ -1,0 +1,56 @@
+---
+title: "Vignette: `mimsy`"
+author: "Michelle Catherine Kelly"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette: `mimsy`}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Installation
+
+```{r install}
+# install mimsy
+library(devtools)
+devtools::install_github("michelleckelly/mimsy")
+
+# load mimsy
+library(mimsy)
+```
+
+## Prep for mimsy
+
+
+## Use mimsy
+
+```{r execute}
+mimsy::mimsy(filename = "MIMS_KAWN24HR_9Apr18_8thSt_mimsy.csv", barpress = c(981.2, 979.5),
+      barpress_units = "hPa", std.temps =  c(9.81, 12.05))
+```
+
+
+## References
+
+Garcia, H., and L. Gordon (1992), \emph{Oxygen solubility in seawater: Better fitting
+equations}, Limnology and Oceanography, 37(6).
+
+Benson, B. B. & Krause, D. (1984). \emph{The concentration and isotopic
+fractionation of oxygen dissolved in freshwater and seawater in equilibrium
+with the atmosphere.} Limnology and Oceanography, 29(3), 620-632.
+doi:10.4319/lo.1984.29.3.0620
+
+Stull, D. R. (1947). \emph{Vapor Pressure of Pure Substances. Organic and
+Inorganic Compounds.} Industrial & Engineering Chemistry, 39(4), 517-540.
+doi: 10.1021/ie50448a022
+
+Hamme, R. C. & Emerson, S. R. (2004). \emph{The solubility of neon, nitrogen and argon
+in distilled water and seawater}, Deep-Sea Research I, 51(11), 1517-1528.
