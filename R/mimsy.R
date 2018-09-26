@@ -32,6 +32,10 @@
 #' @examples
 #' mydata <- mimsy(filename = './RawData/MIMS_data.csv', barpress = 981.2, barpress_units = 'hPa', std.temps = c(12.5, 15.2))
 #'
+#' @import lubridate
+#' @import dplyr
+#' @importFrom magrittr "%>%"
+#'
 #' @export
 
 mimsy <- function(filename, bgcorr = FALSE, barpress, tz = Sys.timezone(), barpress_units, salinity = 0,
