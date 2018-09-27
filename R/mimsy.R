@@ -226,7 +226,7 @@ mimsy <- function(file, bg.correct = FALSE, baromet.press, tz = Sys.timezone(), 
     # 4. Calculate calibration factors ----------------------------------------------------------------
 
     # Group data by Type (`Standard` or `Sample`) and Group (numeric, 1:n)
-    data <- dplyr::group_by(data, Type, Group)
+    data <- dplyr::group_by(data, data$Type, data$Group)
 
     # two-point calibration has 6 standard readings
     if (all(data[1:6, 1] == c("Standard", "Standard", "Standard", "Standard", "Standard", "Standard"))) {
@@ -240,7 +240,7 @@ mimsy <- function(file, bg.correct = FALSE, baromet.press, tz = Sys.timezone(), 
 
         for (groupNo in 1:max(data$Group)) {
             # individually extract each group of standards
-            cal.block <- data %>% filter(Type == "Standard" && Group == groupNo)
+            cal.block <- data %>% filter(data$Type == "Standard" && Group == groupNo)
 
             # calculate calibration factor calfactor = solubility concentration at std temp / avg(MIMS readings at
             # std temp)
