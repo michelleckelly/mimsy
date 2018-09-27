@@ -8,7 +8,9 @@
 #' @return Excel workbook to the user's working directory
 #'
 #' @examples
+#' \dontrun{
 #' mimsy.save(dat, file = "mimsyCalculations.xlsx")
+#' }
 #'
 #' @importFrom openxlsx "write.xlsx"
 #'

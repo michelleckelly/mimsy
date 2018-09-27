@@ -16,13 +16,14 @@ Description: The unofficial R package for crunching raw MIMS (Membrane Inlet Mas
 	more information, documentation, and examples.
 License: MIT
 URL: https://github.com/michelleckelly/mimsy
-Encoding: 
 LazyData: true
 RoxygenNote: 6.0.1
 Imports: dplyr,
     magrittr,
     lubridate,
-	openxlsx
+	openxlsx,
+	stats,
+	utils
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr

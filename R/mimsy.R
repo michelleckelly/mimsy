@@ -30,8 +30,9 @@
 #' in distilled water and seawater}, Deep-Sea Research I, 51(11), 1517-1528.
 #'
 #' @examples
-#' dat <- mimsy(file = 'MIMS_data.csv', baromet.press = 981.2,
-#'              units = 'hPa', std.temps = c(12.5, 15.2))
+#' \dontrun{
+#' dat <- mimsy(file = 'MIMS_data.csv', baromet.press = 981.2, units = 'hPa', std.temps = c(12.5, 15.2))
+#' }
 #'
 #' @importFrom lubridate "mdy_hms"
 #' @importFrom dplyr "group_by"
