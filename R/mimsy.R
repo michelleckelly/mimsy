@@ -30,7 +30,8 @@
 #' in distilled water and seawater}, Deep-Sea Research I, 51(11), 1517-1528.
 #'
 #' @examples
-#' dat <- mimsy(filename = 'MIMS_data.csv', barpress = 981.2, barpress_units = 'hPa', std.temps = c(12.5, 15.2))
+#' dat <- mimsy(filename = 'MIMS_data.csv', barpress = 981.2,
+#' barpress_units = 'hPa', std.temps = c(12.5, 15.2))
 #'
 #' @importFrom lubridate "mdy_hms"
 #' @importFrom dplyr "group_by"

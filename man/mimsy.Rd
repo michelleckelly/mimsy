@@ -29,7 +29,8 @@ list, $results containing the calculated dissolved gas concentrations in units o
 Returns a list containing a user-friendly dataframe of dissolved gas concentrations (uM and mg) of samples, a dataframe of the calculated gas solubility concentrations at standard temperatures, a dataframe of the calibration factors, a dataframe of the drift correction factors used, and a dataframe of the full results, including interpolated calibration slopes and calculated concentrations of standards.
 }
 \examples{
-dat <- mimsy(filename = 'MIMS_data.csv', barpress = 981.2, barpress_units = 'hPa', std.temps = c(12.5, 15.2))
+dat <- mimsy(filename = 'MIMS_data.csv', barpress = 981.2,
+barpress_units = 'hPa', std.temps = c(12.5, 15.2))
 
 }
 \references{
