@@ -32,8 +32,9 @@
 #' @examples
 #' mydata <- mimsy(filename = './RawData/MIMS_data.csv', barpress = 981.2, barpress_units = 'hPa', std.temps = c(12.5, 15.2))
 #'
-#' @import lubridate
-#' @import dplyr
+#' @importFrom lubridate "mdy_hms"
+#' @importFrom dplyr "group_by"
+#' @importFrom dplyr "bind_rows"
 #' @importFrom magrittr "%>%"
 #'
 #' @export

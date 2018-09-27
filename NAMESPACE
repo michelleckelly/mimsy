@@ -2,7 +2,8 @@
 
 export(mimsy)
 export(mimsy.save)
-import(dplyr)
-import(lubridate)
-import(xlsx)
+importFrom(dplyr,"bind_rows")
+importFrom(dplyr,"group_by")
+importFrom(lubridate,"mdy_hms")
 importFrom(magrittr,"%>%")
+importFrom(xlsx,"write.xlsx")

@@ -10,7 +10,7 @@
 #' @examples
 #' mimsy.save(myData, file = "mimsyCalculations.xlsx")
 #'
-#' @import xlsx
+#' @importFrom xlsx "write.xlsx"
 #'
 #' @export
 
