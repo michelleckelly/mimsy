@@ -37,8 +37,8 @@
 #' @importFrom lubridate "mdy_hms"
 #' @importFrom dplyr "group_by"
 #' @importFrom dplyr "bind_rows"
+#' @importFrom dplyr "filter"
 #' @importFrom magrittr "%>%"
-#' @importFrom stats "filter"
 #' @importFrom utils "read.csv"
 #'
 #' @export
@@ -242,7 +242,7 @@ mimsy <- function(file, bg.correct = FALSE, baromet.press, tz = Sys.timezone(), 
 
         for (groupNo in 1:max(data$Group)) {
             # individually extract each group of standards
-            cal.block <- data %>% filter(data$Type == "Standard" && data$Group == groupNo)
+            cal.block <- data %>% filter(data$Type == "Standard" && Group == groupNo)
 
             # calculate calibration factor calfactor = solubility concentration at std temp / avg(MIMS readings at
             # std temp)

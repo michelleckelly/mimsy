@@ -22,7 +22,6 @@ Imports: dplyr,
     magrittr,
     lubridate,
 	openxlsx,
-	stats,
 	utils
 Suggests: knitr,
     rmarkdown
