@@ -234,13 +234,15 @@ mimsy <- function(file, bg.correct = FALSE, baromet.press, tz = Sys.timezone(), 
         message("Calculating dissolved concentrations based on a two-point temperature standard.")
 
         # assemble empty data frame for calibration factors
-        calfactor <- data.frame(calfactor_28 = numeric(length = max(data$Group) * 2), calfactor_32 = numeric(length = max(data$Group) *
-            2), calfactor_40 = numeric(length = max(data$Group) * 2), row.names = paste0(std.temps, "degC_",
-            "Group_", rep(1:max(data$Group), each = 2)))
+        calfactor <- data.frame(calfactor_28 = numeric(length = max(data$Group) * 2),
+                                calfactor_32 = numeric(length = max(data$Group) *2),
+                                calfactor_40 = numeric(length = max(data$Group) * 2),
+                                row.names = paste0(std.temps, "degC_",
+                                                   "Group_", rep(1:max(data$Group), each = 2)))
 
         for (groupNo in 1:max(data$Group)) {
             # individually extract each group of standards
-            cal.block <- data %>% filter(data$Type == "Standard" && Group == groupNo)
+            cal.block <- data %>% filter(data$Type == "Standard" && data$Group == groupNo)
 
             # calculate calibration factor calfactor = solubility concentration at std temp / avg(MIMS readings at
             # std temp)
@@ -363,7 +365,7 @@ mimsy <- function(file, bg.correct = FALSE, baromet.press, tz = Sys.timezone(), 
         for (groupNo in 1:max(data$Group)) {
 
             # cut data into groups of samples
-            group.block <- data %>% filter(Group == groupNo)
+            group.block <- data %>% filter(data$Group == groupNo)
 
             for (i in 1:nrow(group.block)) {
                 # Mass28
