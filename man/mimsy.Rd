@@ -2,35 +2,35 @@
 % Please edit documentation in R/mimsy.R
 \name{mimsy}
 \alias{mimsy}
-\title{\code{mimsy} Calculate dissolved gas concentration from raw MIMS signal data}
+\title{\code{mimsy} Calculate dissolved gas concentrations}
 \usage{
-mimsy(filename, bgcorr = FALSE, barpress, tz = Sys.timezone(),
-  barpress_units, salinity = 0, std.temps)
+mimsy(file, bg.correct = FALSE, baromet.press, tz = Sys.timezone(), units,
+  salinity = 0, std.temps)
 }
 \arguments{
-\item{filename}{the name of the .csv file containing raw MIMS data. See github readme for .csv formatting guide}
+\item{file}{the name of the file which the data are to be read from. File must have 'comma seperated value' ('.csv) format and follow the formatting guidelines on the Github page. If the file does not contain an absolute path, the file name is relative to the working directory.}
 
-\item{bgcorr}{a logical value indicating whether a background correction should be performed. Defaults to FALSE. If TRUE, user must specify values to use for the background correction.}
+\item{bg.correct}{If `FALSE` (default), no background correction is applied. If `TRUE`, background correction is applied.}
 
-\item{barpress}{numeric, the barometric pressure of the room while samples were run on the MIMS. User may input a vector, script will take mean value.}
+\item{baromet.press}{the ambient barometric pressure while samples processed on the MIMS. Can be a vector, if more than one reading was taken.}
 
-\item{tz}{a character string that specifies which time zone to parse the date with. Defaults to the user's system time zone setting. The string must be a time zone that is recognized by the user's OS. See lubridate::ymd_hms for more information.}
+\item{tz}{a character string that specifies which time zone to parse the date with. Defaults to the user's current time zone setting. The string must be a time zone that is recognized by the user's OS.}
 
-\item{barpress_units}{character string indicating the units of barometric pressure. Must be one of "atm", "hPa", "psi", "bar", or "Torr"}
+\item{units}{the units of barometric pressure. Must be one of "atm", "hPa", "psi", "bar", or "Torr".}
 
-\item{salinity}{numeric, the salinity of standards, in units of per mille. Defaults to 0.}
+\item{salinity}{the salinity of standards, in units of per mille. Defaults to 0.}
 
 \item{std.temps}{a numeric vector (maximum length 2) of the water temperatures (degC) of the standard baths.}
 }
 \value{
-list, $results containing the calculated dissolved gas concentrations in units of microM and mg of samples, $solubility.Concentrations containing the caluated solubility of gas at standard temperatures, $calibration.Factors containing the calibration factors for each standard group at each standard temperature, $calibration.DriftCorrection containing the drift corrected slope and intercept values for each gas, and $results.full containing all provided and calculated data, for both standards and samples
+a list, containing dataframes of calculated gas concentrations, solubility concentrations, and calibration factors.
 }
 \description{
-Returns a list containing a user-friendly dataframe of dissolved gas concentrations (uM and mg) of samples, a dataframe of the calculated gas solubility concentrations at standard temperatures, a dataframe of the calibration factors, a dataframe of the drift correction factors used, and a dataframe of the full results, including interpolated calibration slopes and calculated concentrations of standards.
+Return dissolved gas concentrations in units of micromole and milligram from membrane inlet mass spectrometer (MIMS) signal data
 }
 \examples{
-dat <- mimsy(filename = 'MIMS_data.csv', barpress = 981.2,
-barpress_units = 'hPa', std.temps = c(12.5, 15.2))
+dat <- mimsy(file = 'MIMS_data.csv', baromet.press = 981.2,
+             units = 'hPa', std.temps = c(12.5, 15.2))
 
 }
 \references{

@@ -1,16 +1,16 @@
-#' \code{mimsy} Calculate dissolved gas concentration from raw MIMS signal data
+#' \code{mimsy} Calculate dissolved gas concentrations
 #'
-#' Returns a list containing a user-friendly dataframe of dissolved gas concentrations (uM and mg) of samples, a dataframe of the calculated gas solubility concentrations at standard temperatures, a dataframe of the calibration factors, a dataframe of the drift correction factors used, and a dataframe of the full results, including interpolated calibration slopes and calculated concentrations of standards.
+#' Return dissolved gas concentrations in units of micromole and milligram from membrane inlet mass spectrometer (MIMS) signal data
 #'
-#' @param filename the name of the .csv file containing raw MIMS data. See github readme for .csv formatting guide
-#' @param bgcorr a logical value indicating whether a background correction should be performed. Defaults to FALSE. If TRUE, user must specify values to use for the background correction.
-#' @param barpress numeric, the barometric pressure of the room while samples were run on the MIMS. User may input a vector, script will take mean value.
-#' @param barpress_units character string indicating the units of barometric pressure. Must be one of "atm", "hPa", "psi", "bar", or "Torr"
-#' @param salinity numeric, the salinity of standards, in units of per mille. Defaults to 0.
+#' @param file the name of the file which the data are to be read from. File must have 'comma seperated value' ('.csv) format and follow the formatting guidelines on the Github page. If the file does not contain an absolute path, the file name is relative to the working directory.
+#' @param baromet.press the ambient barometric pressure while samples processed on the MIMS. Can be a vector, if more than one reading was taken.
+#' @param units the units of barometric pressure. Must be one of "atm", "hPa", "psi", "bar", or "Torr".
 #' @param std.temps a numeric vector (maximum length 2) of the water temperatures (degC) of the standard baths.
-#' @param tz a character string that specifies which time zone to parse the date with. Defaults to the user's system time zone setting. The string must be a time zone that is recognized by the user's OS. See lubridate::ymd_hms for more information.
+#' @param bg.correct If `FALSE` (default), no background correction is applied. If `TRUE`, background correction is applied.
+#' @param salinity the salinity of standards, in units of per mille. Defaults to 0.
+#' @param tz a character string that specifies which time zone to parse the date with. Defaults to the user's current time zone setting. The string must be a time zone that is recognized by the user's OS.
 #'
-#' @return list, $results containing the calculated dissolved gas concentrations in units of microM and mg of samples, $solubility.Concentrations containing the caluated solubility of gas at standard temperatures, $calibration.Factors containing the calibration factors for each standard group at each standard temperature, $calibration.DriftCorrection containing the drift corrected slope and intercept values for each gas, and $results.full containing all provided and calculated data, for both standards and samples
+#' @return a list, containing dataframes of calculated gas concentrations, solubility concentrations, and calibration factors.
 #'
 #' @references
 #'
@@ -30,8 +30,8 @@
 #' in distilled water and seawater}, Deep-Sea Research I, 51(11), 1517-1528.
 #'
 #' @examples
-#' dat <- mimsy(filename = 'MIMS_data.csv', barpress = 981.2,
-#' barpress_units = 'hPa', std.temps = c(12.5, 15.2))
+#' dat <- mimsy(file = 'MIMS_data.csv', baromet.press = 981.2,
+#'              units = 'hPa', std.temps = c(12.5, 15.2))
 #'
 #' @importFrom lubridate "mdy_hms"
 #' @importFrom dplyr "group_by"
@@ -42,13 +42,13 @@
 #'
 #' @export
 
-mimsy <- function(filename, bgcorr = FALSE, barpress, tz = Sys.timezone(), barpress_units, salinity = 0,
+mimsy <- function(file, bg.correct = FALSE, baromet.press, tz = Sys.timezone(), units, salinity = 0,
     std.temps) {
 
     # 1. Raw data import -------------------------------------------------------------------------------
-    data <- read.csv(filename, header = TRUE, stringsAsFactors = FALSE)
+    data <- read.csv(file, header = TRUE, stringsAsFactors = FALSE)
 
-    # checks check csv has correct column names check barpress has acceptable units check for consistent
+    # checks check csv has correct column names check baromet.press has acceptable units check for consistent
     # standard temperatures
 
     # Format time column -------------------------------------------------------------------------------
@@ -58,47 +58,49 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, tz = Sys.timezone(), barpr
 
     # 2. Background corrections ------------------------------------------------------------------------
 
-    if (bgcorr == FALSE) {
+    if (bg.correct == FALSE) {
         # set background correction value to zero
-        bgcorr <- 0
+        bg.correct <- 0
     }
-    if (bgcorr != FALSE) {
+    if (bg.correct != FALSE) {
         # UPDATEFLAG
         message("Background correction not yet supported.
-            In meantime, please set bgcorr to FALSE")
+            In meantime, please set bg.correct to FALSE")
     }
 
     # Barometric pressure conversion -------------------------------------------------------------------
 
-    if (barpress_units == "atm") {
-        Barpress.atm <- mean(barpress)
+    if (units == "atm") {
+        baromet.press.atm <- mean(baromet.press)
     }
     # hPa to atm
-    if (barpress_units == "hPa") {
-        Barpress.atm <- mean(barpress) * 0.00098692316931427
+    if (units == "hPa") {
+        baromet.press.atm <- mean(baromet.press) * 0.00098692316931427
     }
     # Torr to atm
-    if (barpress_units == "Torr") {
-        Barpress.atm <- mean(barpress) * 760
+    if (units == "Torr") {
+        baromet.press.atm <- mean(baromet.press) * 760
     }
     # psi to atm
-    if (barpress_units == "psi") {
-        Barpress.atm <- mean(barpress) * 14.6959487755142
+    if (units == "psi") {
+        baromet.press.atm <- mean(baromet.press) * 14.6959487755142
     }
     # bar to atm
-    if (barpress_units == "bar") {
-        Barpress.atm <- mean(barpress) * 1.01325
+    if (units == "bar") {
+        baromet.press.atm <- mean(baromet.press) * 1.01325
     }
     # stop message for non-sanctioned units
-    if (!(barpress_units %in% c("atm", "hPa", "Torr", "psi", "bar"))) {
+    if (!(units %in% c("atm", "hPa", "Torr", "psi", "bar"))) {
         stop("Please report barometric pressure in units of `atm`, `hPa`, `psi`, `bar`, or `Torr`.")
     }
 
     # 3. Calculate solubilites of dissolved gas --------------------------------------------------------
 
     # initialize vector to store concentration values
-    solubility.conc <- data.frame(O2.conc = numeric(length = 2), N2.conc = numeric(length = 2), Ar.conc = numeric(length = 2),
-        row.names = std.temps)
+    solubility.conc <- data.frame(O2.conc_uMol.kg = numeric(length = 2),
+                                  N2.conc_uMol.kg = numeric(length = 2),
+                                  Ar.conc_uMol.kg = numeric(length = 2),
+                                  row.names = std.temps)
 
     # O2 saturation calculation ------------------------------------------------------------------------
     for (i in seq_along(std.temps)) {
@@ -113,7 +115,7 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, tz = Sys.timezone(), barpr
 
         # pressure correction [atm] = (current pressure - vapor pressure) / (standard pressure [atm] - vapor
         # pressure)
-        press.corr <- (Barpress.atm - vapor.press)/(1 - vapor.press)
+        press.corr <- (baromet.press.atm - vapor.press)/(1 - vapor.press)
 
         # O2 saturation calculation Combined fit coefficients [umol/kg] (Garcia and Gordon 1992, Table 1)
         A0 <- 5.80818
@@ -138,7 +140,7 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, tz = Sys.timezone(), barpr
         O2.sat <- exp(lnO2.sat)
 
         # Correct O2 saturation with pressure correction, solubility.conc units [umol/kg]
-        solubility.conc$O2.conc[i] <- O2.sat * press.corr
+        solubility.conc$O2.conc_uMol.kg[i] <- O2.sat * press.corr
     }
 
     # N2 saturation calculation ------------------------------------------------------------------------
@@ -154,7 +156,7 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, tz = Sys.timezone(), barpr
 
         # pressure correction [atm] = (current pressure - vapor pressure) /
         # (standard pressure [atm] - vapor pressure)
-        press.corr <- (Barpress.atm - vapor.press)/(1 - vapor.press)
+        press.corr <- (baromet.press.atm - vapor.press)/(1 - vapor.press)
 
         # N2 saturation calculation Coefficients [umol/kg]
         # (Hamme and Emerson 2004, Table 4)
@@ -178,7 +180,7 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, tz = Sys.timezone(), barpr
         N2.sat <- exp(lnN2.sat)
 
         # Correct saturation with pressure correction, solubility.conc units are [umol/kg]
-        solubility.conc$N2.conc[i] <- N2.sat * press.corr
+        solubility.conc$N2.conc_uMol.kg[i] <- N2.sat * press.corr
     }
 
     # Ar saturation calculation ----------------------------------------------------------------------
@@ -194,7 +196,7 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, tz = Sys.timezone(), barpr
 
         # pressure correction [atm] = (current pressure - vapor pressure) /
         # (standard pressure [atm] - vapor pressure)
-        press.corr <- (Barpress.atm - vapor.press)/(1 - vapor.press)
+        press.corr <- (baromet.press.atm - vapor.press)/(1 - vapor.press)
 
         # Ar saturation calculation Coefficients [umol/kg]
         # (Hamme and Emerson 2004, Table 4)
@@ -217,7 +219,7 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, tz = Sys.timezone(), barpr
         lnAr.sat <- A0 + A1 * TS + A2 * TS^2 + A3 * TS^3 + S * (B0 + B1 * TS + B2 * TS^2 + B3 * TS^3)
         Ar.sat <- exp(lnAr.sat)
         # Correct saturation with pressure correction, solubility.conc units are [umol/kg]
-        solubility.conc$Ar.conc[i] <- Ar.sat * press.corr
+        solubility.conc$Ar.conc_uMol.kg[i] <- Ar.sat * press.corr
     }
 
     # 4. Calculate calibration factors ----------------------------------------------------------------
@@ -243,24 +245,33 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, tz = Sys.timezone(), barpr
             # std temp)
 
             # Mass28 (N2) Standard temp 1
-            calfactor$calfactor_28[2 * groupNo - 1] <- solubility.conc$N2.conc[1]/mean(cal.block$X28[1:3])
+            calfactor$calfactor_28[2 * groupNo - 1] <-
+              solubility.conc$N2.conc_uMol.kg[1]/mean(cal.block$X28[1:3])
             # standard temp 2
-            calfactor$calfactor_28[2 * groupNo] <- solubility.conc$N2.conc[2]/mean(cal.block$X28[4:6])
+            calfactor$calfactor_28[2 * groupNo] <-
+              solubility.conc$N2.conc_uMol.kg[2]/mean(cal.block$X28[4:6])
 
             # Mass32 (O2)
-            calfactor$calfactor_32[2 * groupNo - 1] <- solubility.conc$O2.conc[1]/mean(cal.block$X32[1:3])
-            calfactor$calfactor_32[2 * groupNo] <- solubility.conc$O2.conc[2]/mean(cal.block$X32[4:6])
+            calfactor$calfactor_32[2 * groupNo - 1] <-
+              solubility.conc$O2.conc_uMol.kg[1]/mean(cal.block$X32[1:3])
+            calfactor$calfactor_32[2 * groupNo] <-
+              solubility.conc$O2.conc_uMol.kg[2]/mean(cal.block$X32[4:6])
 
             # Mass40 (Ar)
-            calfactor$calfactor_40[2 * groupNo - 1] <- solubility.conc$Ar.conc[1]/mean(cal.block$X40[1:3])
-            calfactor$calfactor_40[2 * groupNo] <- solubility.conc$Ar.conc[2]/mean(cal.block$X40[4:6])
+            calfactor$calfactor_40[2 * groupNo - 1] <-
+              solubility.conc$Ar.conc_uMol.kg[1]/mean(cal.block$X40[1:3])
+            calfactor$calfactor_40[2 * groupNo] <-
+              solubility.conc$Ar.conc_uMol.kg[2]/mean(cal.block$X40[4:6])
         }
 
         # 5. Calculate slope and intercepts of calibration curve -----------------
-        calslope <- data.frame(calslope_28 = numeric(length = max(data$Group)), calintercept_28 = numeric(length = max(data$Group)),
-            calslope_32 = numeric(length = max(data$Group)), calintercept_32 = numeric(length = max(data$Group)),
-            calslope_40 = numeric(length = max(data$Group)), calintercept_40 = numeric(length = max(data$Group)),
-            row.names = paste0("Group", 1:max(data$Group)))
+        calslope <- data.frame(calslope_28 = numeric(length = max(data$Group)),
+                               calintercept_28 = numeric(length = max(data$Group)),
+                               calslope_32 = numeric(length = max(data$Group)),
+                               calintercept_32 = numeric(length = max(data$Group)),
+                               calslope_40 = numeric(length = max(data$Group)),
+                               calintercept_40 = numeric(length = max(data$Group)),
+                               row.names = paste0("Group", 1:max(data$Group)))
 
         for (groupNo in 1:max(data$Group)) {
             # using a linear model to find slope and intercept of calibration line linear model: y ~ x
@@ -398,14 +409,14 @@ mimsy <- function(filename, bgcorr = FALSE, barpress, tz = Sys.timezone(), barpr
         # 9. Calculate final concentrations -------------------------------------
 
         # BG corrected reading * interpolated calfactor
-        data$N2_uM <- data$X28 * data$INTERPOLATED.calfactor_28
-        data$O2_uM <- data$X32 * data$INTERPOLATED.calfactor_32
-        data$Ar_uM <- data$X40 * data$INTERPOLATED.calfactor_40
+        data$N2_uMol <- data$X28 * data$INTERPOLATED.calfactor_28
+        data$O2_uMol <- data$X32 * data$INTERPOLATED.calfactor_32
+        data$Ar_uMol <- data$X40 * data$INTERPOLATED.calfactor_40
 
         # convert from microM to mg
-        data$N2_mg <- data$N2_uM * 10^(-6) * 28 * 10^3
-        data$O2_mg <- data$O2_uM * 10^(-6) * 32 * 10^3
-        data$Ar_mg <- data$Ar_uM * 10^(-6) * 40 * 10^3
+        data$N2_mg <- data$N2_uMol * 10^(-6) * 28 * 10^3
+        data$O2_mg <- data$O2_uMol * 10^(-6) * 32 * 10^3
+        data$Ar_mg <- data$Ar_uMol * 10^(-6) * 40 * 10^3
 
         # 10. Output results to user -------------------------------------------
 
