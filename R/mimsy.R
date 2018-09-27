@@ -43,8 +43,8 @@
 #'
 #' @export
 
-mimsy <- function(file, bg.correct = FALSE, baromet.press, tz = Sys.timezone(), units, salinity = 0,
-    std.temps) {
+mimsy <- function(file, baromet.press, units, std.temps, bg.correct = FALSE,
+                  tz = Sys.timezone(), salinity = 0) {
 
     # 1. Raw data import -------------------------------------------------------------------------------
     data <- read.csv(file, header = TRUE, stringsAsFactors = FALSE)

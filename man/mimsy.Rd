@@ -4,23 +4,23 @@
 \alias{mimsy}
 \title{\code{mimsy} Calculate dissolved gas concentrations}
 \usage{
-mimsy(file, bg.correct = FALSE, baromet.press, tz = Sys.timezone(), units,
-  salinity = 0, std.temps)
+mimsy(file, baromet.press, units, std.temps, bg.correct = FALSE,
+  tz = Sys.timezone(), salinity = 0)
 }
 \arguments{
 \item{file}{the name of the file which the data are to be read from. File must have 'comma seperated value' ('.csv) format and follow the formatting guidelines on the Github page. If the file does not contain an absolute path, the file name is relative to the working directory.}
 
-\item{bg.correct}{If `FALSE` (default), no background correction is applied. If `TRUE`, background correction is applied.}
-
 \item{baromet.press}{the ambient barometric pressure while samples processed on the MIMS. Can be a vector, if more than one reading was taken.}
-
-\item{tz}{a character string that specifies which time zone to parse the date with. Defaults to the user's current time zone setting. The string must be a time zone that is recognized by the user's OS.}
 
 \item{units}{the units of barometric pressure. Must be one of "atm", "hPa", "psi", "bar", or "Torr".}
 
-\item{salinity}{the salinity of standards, in units of per mille. Defaults to 0.}
-
 \item{std.temps}{a numeric vector (maximum length 2) of the water temperatures (degC) of the standard baths.}
+
+\item{bg.correct}{If `FALSE` (default), no background correction is applied. If `TRUE`, background correction is applied.}
+
+\item{tz}{a character string that specifies which time zone to parse the date with. Defaults to the user's current time zone setting. The string must be a time zone that is recognized by the user's OS.}
+
+\item{salinity}{the salinity of standards, in units of per mille. Defaults to 0.}
 }
 \value{
 a list, containing dataframes of calculated gas concentrations, solubility concentrations, and calibration factors.

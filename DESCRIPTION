@@ -14,7 +14,7 @@ Description: The unofficial R package for crunching raw MIMS (Membrane Inlet Mas
 	of the full results, including interpolated calibration slopes and calculated 
 	concentrations of standards. See https://michelleckelly.github.io/mimsy/ for 
 	more information, documentation, and examples.
-License: MIT
+License: MIT + file LICENSE
 URL: https://github.com/michelleckelly/mimsy
 LazyData: true
 RoxygenNote: 6.0.1

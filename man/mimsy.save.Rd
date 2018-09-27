@@ -2,7 +2,7 @@
 % Please edit documentation in R/mimsy.save.R
 \name{mimsy.save}
 \alias{mimsy.save}
-\title{\code{mimsy.save} Save full output of `mimsy` to a multi-tabbed Excel workbook}
+\title{\code{mimsy.save} Save MIMS calculations to an Excel workbook}
 \usage{
 mimsy.save(x, file)
 }
@@ -12,7 +12,7 @@ mimsy.save(x, file)
 \item{file}{desired file name with .xlsx ending. Example: "mimsyCalculations.xlsx"}
 }
 \value{
-Excel workbook to the user's working directory
+Outputs an excel workbook to the user's working directory
 }
 \description{
 Easily save the full output of the `mimsy` calculation function to a nicely-formatted, multi-tab Excel .xlsx file.

@@ -1,11 +1,11 @@
-#' \code{mimsy.save} Save full output of `mimsy` to a multi-tabbed Excel workbook
+#' \code{mimsy.save} Save MIMS calculations to an Excel workbook
 #'
 #' Easily save the full output of the `mimsy` calculation function to a nicely-formatted, multi-tab Excel .xlsx file.
 #'
 #' @param x object to be written to file, the output of `mimsy` function
 #' @param file desired file name with .xlsx ending. Example: "mimsyCalculations.xlsx"
 #'
-#' @return Excel workbook to the user's working directory
+#' @return Outputs an excel workbook to the user's working directory
 #'
 #' @examples
 #' \dontrun{
