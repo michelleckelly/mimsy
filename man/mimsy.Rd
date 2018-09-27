@@ -14,7 +14,7 @@ mimsy(filename, bgcorr = FALSE, barpress, tz = Sys.timezone(),
 
 \item{barpress}{numeric, the barometric pressure of the room while samples were run on the MIMS. User may input a vector, script will take mean value.}
 
-\item{tz}{a character string that specifies which time zone to parse the date with. Defaults to the user's system time zone setting. The string must be a time zone that is recognized by the user's OS. See \code{\link[lubridate]{lubridate::ymd_hms}} for more information.}
+\item{tz}{a character string that specifies which time zone to parse the date with. Defaults to the user's system time zone setting. The string must be a time zone that is recognized by the user's OS. See lubridate::ymd_hms for more information.}
 
 \item{barpress_units}{character string indicating the units of barometric pressure. Must be one of "atm", "hPa", "psi", "bar", or "Torr"}
 
@@ -29,7 +29,7 @@ list, $results containing the calculated dissolved gas concentrations in units o
 Returns a list containing a user-friendly dataframe of dissolved gas concentrations (uM and mg) of samples, a dataframe of the calculated gas solubility concentrations at standard temperatures, a dataframe of the calibration factors, a dataframe of the drift correction factors used, and a dataframe of the full results, including interpolated calibration slopes and calculated concentrations of standards.
 }
 \examples{
-mydata <- mimsy(filename = './RawData/MIMS_data.csv', barpress = 981.2, barpress_units = 'hPa', std.temps = c(12.5, 15.2))
+dat <- mimsy(filename = 'MIMS_data.csv', barpress = 981.2, barpress_units = 'hPa', std.temps = c(12.5, 15.2))
 
 }
 \references{

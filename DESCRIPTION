@@ -22,7 +22,7 @@ RoxygenNote: 6.0.1
 Imports: dplyr,
     magrittr,
     lubridate,
-	xlsx
+	openxlsx
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr

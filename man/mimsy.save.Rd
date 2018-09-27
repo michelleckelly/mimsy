@@ -18,6 +18,6 @@ Excel workbook to the user's working directory
 Easily save the full output of the `mimsy` calculation function to a nicely-formatted, multi-tab Excel .xlsx file.
 }
 \examples{
-mimsy.save(myData, file = "mimsyCalculations.xlsx")
+mimsy.save(dat, file = "mimsyCalculations.xlsx")
 
 }

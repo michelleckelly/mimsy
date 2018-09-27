@@ -8,7 +8,7 @@
 #' @param barpress_units character string indicating the units of barometric pressure. Must be one of "atm", "hPa", "psi", "bar", or "Torr"
 #' @param salinity numeric, the salinity of standards, in units of per mille. Defaults to 0.
 #' @param std.temps a numeric vector (maximum length 2) of the water temperatures (degC) of the standard baths.
-#' @param tz a character string that specifies which time zone to parse the date with. Defaults to the user's system time zone setting. The string must be a time zone that is recognized by the user's OS. See \code{\link[lubridate]{lubridate::ymd_hms}} for more information.
+#' @param tz a character string that specifies which time zone to parse the date with. Defaults to the user's system time zone setting. The string must be a time zone that is recognized by the user's OS. See lubridate::ymd_hms for more information.
 #'
 #' @return list, $results containing the calculated dissolved gas concentrations in units of microM and mg of samples, $solubility.Concentrations containing the caluated solubility of gas at standard temperatures, $calibration.Factors containing the calibration factors for each standard group at each standard temperature, $calibration.DriftCorrection containing the drift corrected slope and intercept values for each gas, and $results.full containing all provided and calculated data, for both standards and samples
 #'
@@ -30,12 +30,14 @@
 #' in distilled water and seawater}, Deep-Sea Research I, 51(11), 1517-1528.
 #'
 #' @examples
-#' mydata <- mimsy(filename = './RawData/MIMS_data.csv', barpress = 981.2, barpress_units = 'hPa', std.temps = c(12.5, 15.2))
+#' dat <- mimsy(filename = 'MIMS_data.csv', barpress = 981.2, barpress_units = 'hPa', std.temps = c(12.5, 15.2))
 #'
 #' @importFrom lubridate "mdy_hms"
 #' @importFrom dplyr "group_by"
 #' @importFrom dplyr "bind_rows"
 #' @importFrom magrittr "%>%"
+#' @importFrom stats "filter"
+#' @importFrom utils "read.csv"
 #'
 #' @export
 
