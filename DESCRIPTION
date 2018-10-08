@@ -2,8 +2,10 @@ Package: mimsy
 Type: Package
 Title: Easily Transform MIMS Signal Data into Concentration Readings with the `mimsy()` Function
 Version: 0.1.0
-Authors@R: Michelle Kelly
-Maintainer: Michelle Kelly <michellecatherinekelly@gmail.com>
+Authors@R: c(
+	person("Michelle C.", "Kelly", , "michellekelly@ku.edu", role = c("aut", "cre"))
+	)
+Author: Michelle C. Kelly [aut, cre]
 Description: The unofficial R package for crunching raw MIMS (Membrane Inlet Mass 
     Spectrometer, Bay Instruments) signal data, based on gas solubility at 
 	saturation. It contains the single function `mimsy`, which will return 
