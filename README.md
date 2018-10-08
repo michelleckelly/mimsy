@@ -1,6 +1,9 @@
+[![PyPI status](https://img.shields.io/pypi/status/ansicolortags.svg)](https://GitHub.com/michelleckelly/mimsy/)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/michelleckelly/mimsy/graphs/commit-activity)
+
 ### Description  
 
-`mimsy` is the unofficial R package for transforming raw MIMS (Membrane Inlet Mass Spectrometer, Bay Instruments) data into dissolved gas concentration readings. The `mimsy` function calculates dissolved gas concentrations and ratios (N2, O2, Ar) based on gas solubility at specific temperature, pressure, and salinity. Oxygen solubility calculations based on Garcia and Gordon (1992); nitrogen and argon solubility calculations based on Hamme and Emerson (2004). See `mimsy` for full reference list. Supports dual-temperature standard calibration.
+Calculate dissolved gas concentrations from raw MIMS (Membrane Inlet Mass Spectrometer, Bay Instruments) signal data. Use the `mimsy` function on a formatted .csv file to return dissolved gas concentrations (mg and μMole) and ratios of N<sub>2</sub>, O<sub>2</sub>, Ar based on gas solubility at temperature, pressure, and salinity. Then, easily save the output of `mimsy` to a nicely-formatted multi-tab Excel workbook with the `mimsy.save` function. Supports dual-temperature standard calibration for dual-bath MIMS setups.
 
 ### Installation  
 
@@ -13,15 +16,18 @@ install_github("michelleckelly/mimsy")
 library(mimsy)
 ```
 
-### Example  
+### References
+Garcia, H., and L. Gordon (1992), _Oxygen solubility in seawater: Better fitting
+equations._ Limnology and Oceanography, 37(6).
 
-`mimsy` is currently in development. A simple vignette will be added here once the package is ready to rumble
+Benson, B. B. & Krause, D. (1984). _The concentration and isotopic
+fractionation of oxygen dissolved in freshwater and seawater in equilibrium
+with the atmosphere._ Limnology and Oceanography, 29(3), 620-632.
+doi:10.4319/lo.1984.29.3.0620
 
-### Working task list  
+Stull, D. R. (1947). _Vapor Pressure of Pure Substances. Organic and
+Inorganic Compounds._ Industrial & Engineering Chemistry, 39(4), 517-540.
+doi: 10.1021/ie50448a022
 
-- [x] add additional unit conversion options for barometric pressure
-- [ ] add support for background corrections
-- [ ] add support for CH4
-- [ ] write input .csv formatting guidelines
-- [ ] write short example for README
-- [ ] write full vignette
+Hamme, R. C. & Emerson, S. R. (2004). _The solubility of neon, nitrogen and argon
+in distilled water and seawater._, Deep-Sea Research I, 51(11), 1517-1528.
