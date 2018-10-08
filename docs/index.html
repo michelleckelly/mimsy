@@ -51,6 +51,9 @@
   </a>
 </li>
 <li>
+  <a href="articles/mimsy.html">Get started</a>
+</li>
+<li>
   <a href="reference/index.html">Reference</a>
 </li>
       </ul>
@@ -73,10 +76,11 @@
       </header><div class="row">
   <div class="contents col-md-9">
     
+
 <div id="description" class="section level3">
 <h3 class="hasAnchor">
 <a href="#description" class="anchor"></a>Description</h3>
-<p><code>mimsy</code> is the unofficial R package for transforming raw MIMS (Membrane Inlet Mass Spectrometer, Bay Instruments) data into dissolved gas concentration readings. The <code>mimsy</code> function calculates dissolved gas concentrations and ratios (N2, O2, Ar) based on gas solubility at specific temperature, pressure, and salinity. Oxygen solubility calculations based on Garcia and Gordon (1992); nitrogen and argon solubility calculations based on Hamme and Emerson (2004). See <code>mimsy</code> for full reference list. Supports dual-temperature standard calibration.</p>
+<p>Calculate dissolved gas concentrations from raw MIMS (Membrane Inlet Mass Spectrometer, Bay Instruments) signal data. Use the <code>mimsy</code> function on a formatted .csv file to return dissolved gas concentrations (mg and μMole) and ratios of N<sub>2</sub>, O<sub>2</sub>, Ar based on gas solubility at temperature, pressure, and salinity. Then, easily save the output of <code>mimsy</code> to a nicely-formatted multi-tab Excel workbook with the <code>mimsy.save</code> function. Supports dual-temperature standard calibration for dual-bath MIMS setups.</p>
 </div>
 <div id="installation" class="section level3">
 <h3 class="hasAnchor">
@@ -88,22 +92,13 @@
 <span class="co"># Load package into your R environment</span>
 <span class="kw">library</span>(mimsy)</code></pre></div>
 </div>
-<div id="example" class="section level3">
+<div id="references" class="section level3">
 <h3 class="hasAnchor">
-<a href="#example" class="anchor"></a>Example</h3>
-<p><code>mimsy</code> is currently in development. A simple vignette will be added here once the package is ready to rumble</p>
-</div>
-<div id="working-task-list" class="section level3">
-<h3 class="hasAnchor">
-<a href="#working-task-list" class="anchor"></a>Working task list</h3>
-<ul>
-<li>[x] add additional unit conversion options for barometric pressure</li>
-<li>[ ] add support for background corrections</li>
-<li>[ ] add support for CH4</li>
-<li>[ ] write input .csv formatting guidelines</li>
-<li>[ ] write short example for README</li>
-<li>[ ] write full vignette</li>
-</ul>
+<a href="#references" class="anchor"></a>References</h3>
+<p>Garcia, H., and L. Gordon (1992), <em>Oxygen solubility in seawater: Better fitting equations.</em> Limnology and Oceanography, 37(6).</p>
+<p>Benson, B. B. &amp; Krause, D. (1984). <em>The concentration and isotopic fractionation of oxygen dissolved in freshwater and seawater in equilibrium with the atmosphere.</em> Limnology and Oceanography, 29(3), 620-632. <a href="doi:10.4319/lo.1984.29.3.0620" class="uri">doi:10.4319/lo.1984.29.3.0620</a></p>
+<p>Stull, D. R. (1947). <em>Vapor Pressure of Pure Substances. Organic and Inorganic Compounds.</em> Industrial &amp; Engineering Chemistry, 39(4), 517-540. doi: 10.1021/ie50448a022</p>
+<p>Hamme, R. C. &amp; Emerson, S. R. (2004). <em>The solubility of neon, nitrogen and argon in distilled water and seawater.</em>, Deep-Sea Research I, 51(11), 1517-1528.</p>
 </div>
 
   </div>
@@ -133,7 +128,14 @@
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://GitHub.com/michelleckelly/mimsy/"><img src="https://img.shields.io/pypi/status/ansicolortags.svg" alt="PyPI status"></a></li>
+<li><a href="https://GitHub.com/michelleckelly/mimsy/graphs/commit-activity"><img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="Maintenance"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 
