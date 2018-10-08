@@ -1,0 +1,48 @@
+---
+title: "Get started"
+author: "Michelle C Kelly"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+This tutorial will show you how to use `mimsy` to calculate dissolved gas concentrations from your raw MIMS signal data. There are three steps to using the `mimsy` package:
+
+1. Correctly format your input data
+2. Run the `mimsy` function
+3. Save your output data using `mimsy.save`
+
+## Download the package
+
+Install the `mimsy` package and load it into your R environment
+
+```{r mimsyLoad, eval=FALSE}
+# Use the devtools package to download mimsy from Github
+install.packages("devtools")
+library(devtools)
+devtools::install_github("michelleckelly/mimsy")
+
+# Load mimsy into your R environment
+library(mimsy)
+```
+
+## Preparing the input data
+
+## Run the `mimsy` function
+
+## Inspect the output
+
+## Save your data
+

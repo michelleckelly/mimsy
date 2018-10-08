@@ -11,6 +11,5 @@
 # Ignore temporary Rproject files
 .Rproj.user
 inst/doc
-
 # Ignore .csv files being used for testing
 .csv
