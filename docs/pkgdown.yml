@@ -3,4 +3,7 @@ pkgdown: 1.1.0
 pkgdown_sha: ~
 articles:
   mimsy: mimsy.html
+urls:
+  reference: https://michelleckelly.github.io/mimsy//reference
+  article: https://michelleckelly.github.io/mimsy//articles
 

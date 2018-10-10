@@ -6,18 +6,16 @@ Authors@R: c(
 	person("Michelle C.", "Kelly", , "michellekelly@ku.edu", role = c("aut", "cre"))
 	)
 Author: Michelle C. Kelly [aut, cre]
-Description: The unofficial R package for crunching raw MIMS (Membrane Inlet Mass 
-    Spectrometer, Bay Instruments) signal data, based on gas solubility at 
-	saturation. It contains the single function `mimsy`, which will return 
-	a list containing a user-friendly dataframe of dissolved gas concentrations 
-	(uM and mg) of samples, a dataframe of the calculated gas solubility 
-	concentrations at standard temperatures, a dataframe of the calibration 
-	factors, a dataframe of the drift correction factors used, and a dataframe 
-	of the full results, including interpolated calibration slopes and calculated 
-	concentrations of standards. See https://michelleckelly.github.io/mimsy/ for 
-	more information, documentation, and examples.
+Description: Calculate dissolved gas concentrations from raw MIMS 
+	(Membrane Inlet Mass Spectrometer, Bay Instruments) signal data. 
+	Use the mimsy function on a formatted .csv file to return dissolved 
+	gas concentrations (mg and μMole) and ratios of N2, O2, Ar based on 
+	gas solubility at temperature, pressure, and salinity. Then, easily 
+	save the output of mimsy to a nicely-formatted multi-tab Excel 
+	workbook with the mimsy.save function. Supports dual-temperature 
+	standard calibration for dual-bath MIMS setups.
 License: MIT + file LICENSE
-URL: https://github.com/michelleckelly/mimsy
+URL: https://github.com/michelleckelly/mimsy, https://michelleckelly.github.io/mimsy/
 LazyData: true
 RoxygenNote: 6.0.1
 Imports: dplyr,

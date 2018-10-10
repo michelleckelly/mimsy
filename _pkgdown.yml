@@ -1,0 +1,6 @@
+development:
+    mode: release
+url: https://michelleckelly.github.io/mimsy/
+template:
+    params:
+        bootswatch: united
