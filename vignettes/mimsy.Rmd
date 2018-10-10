@@ -15,13 +15,49 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Introduction
+### Introduction
 
 This tutorial will show you how to use `mimsy` to calculate dissolved gas concentrations from your raw MIMS signal data. There are three steps to using the `mimsy` package:
 
 1. Correctly format your input data
 2. Run the `mimsy` function
 3. Save your output data using `mimsy.save`
+
+### Prepare your input data
+
+`mimsy` requires your input data to be in a .csv file, with data columns and column names that are exactly correct. In addition to the columns that are automatically returned by the Bay Instruments MIMS software, `mimsy` needs columns that define the type of sample ("Standard" or "Sample"), the run group (a set of standards followed by a set of samples defines one group), the collection temperature of the sample, and the date that samples were run.
+
+![Excel](C:/Users/Michelle/Documents/MS_ResearchProjects/R_packages/mimsy/vignettes/example.png)
+
+Required:  
+1. `Type` column  
+  - Denotes if `Standard` or `Sample`, more details below  
+2. `Group` column  
+  - Numeric identifier denoting which paired Standard+Sample group the row belongs to. Group 1 represents the first batch of standards (usually 3 replicates for single-temperature setups, and 6 for dual-temperature setups) and the following samples (any number is acceptable), before the next group of standards is run. More details below.  
+3. `CollectionTemp`  
+  - Temperature of the sample at the time of collection in degrees C
+4. `RunDate`
+  - Date that the samples were processed on the MIMS, in Month/Date/Year format.
+
+Optional:
+1. Any number of identification columns (such as `ProjectName`, `Label`, `CollectionDate`) to aid in the cataloging of samples
+2. `Notes` column for recording barometric pressure readings, observations of bubbling
+
+Minimum output from MIMS software:
+1. `Time`
+2. `28`
+3. `32`
+4. `40`
+
+```{r exampleLoad, echo=FALSE}
+data <- read.csv(file = "C://Users/Michelle/Documents/MS_ResearchProjects/R_packages/mimsy/vignettes/mimsy_exampledata.csv")
+head(data, n = 10L)
+```
+
+
+```{r mimsyTemplate}
+
+```
 
 ## Download the package
 
@@ -37,13 +73,7 @@ devtools::install_github("michelleckelly/mimsy")
 library(mimsy)
 ```
 
-## Prepare your input data
 
-`mimsy` requires your input data to be in a .csv file, with data columns and column names that are exactly correct. In addition to the columns that are automatically returned by the Bay Instruments MIMS software, `mimsy` needs columns that define the type of sample ("Standard" or "Sample"), the run group (a set of standards followed by a set of samples defines one group), the collection temperature of the sample, and the date that samples were run.
-
-```{r mimsyTemplate}
-
-```
 
 ### Type
 
