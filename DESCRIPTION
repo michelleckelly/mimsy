@@ -1,21 +1,23 @@
 Package: mimsy
 Type: Package
 Title: Easily Transform MIMS Signal Data into Concentration Readings with the `mimsy()` Function
-Version: 0.1.0
+Version: 1.0.0
+Date: 2018-10-10
 Authors@R: c(
-	person("Michelle C.", "Kelly", , "michellekelly@ku.edu", role = c("aut", "cre"))
+	person("Michelle C.", "Kelly", , "michellecatherinekelly@gmail.com", role = c("aut", "cre"))
 	)
 Author: Michelle C. Kelly [aut, cre]
 Description: Calculate dissolved gas concentrations from raw MIMS 
 	(Membrane Inlet Mass Spectrometer, Bay Instruments) signal data. 
 	Use the mimsy function on a formatted .csv file to return dissolved 
-	gas concentrations (mg and μMole) and ratios of N2, O2, Ar based on 
+	gas concentrations (mg and microMole) and ratios of N2, O2, Ar based on 
 	gas solubility at temperature, pressure, and salinity. Then, easily 
 	save the output of mimsy to a nicely-formatted multi-tab Excel 
 	workbook with the mimsy.save function. Supports dual-temperature 
 	standard calibration for dual-bath MIMS setups.
 License: MIT + file LICENSE
 URL: https://github.com/michelleckelly/mimsy, https://michelleckelly.github.io/mimsy/
+BugReports: https://github.com/michelleckelly/mimsy/issues
 LazyData: true
 RoxygenNote: 6.0.1
 Imports: dplyr,

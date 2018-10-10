@@ -1,9 +1,11 @@
 [![PyPI status](https://img.shields.io/pypi/status/ansicolortags.svg)](https://GitHub.com/michelleckelly/mimsy/)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/michelleckelly/mimsy/graphs/commit-activity)
 
-### Description  
+#### mimsy
+## calculate dissolved gas concentrations from MIMS signal data without getting a headache
 
-Calculate dissolved gas concentrations from raw MIMS (Membrane Inlet Mass Spectrometer, Bay Instruments) signal data. Use the `mimsy` function on a formatted .csv file to return dissolved gas concentrations (mg and μMole) and ratios of N<sub>2</sub>, O<sub>2</sub>, Ar based on gas solubility at temperature, pressure, and salinity. Then, easily save the output of `mimsy` to a nicely-formatted multi-tab Excel workbook with the `mimsy.save` function. Supports dual-temperature standard calibration for dual-bath MIMS setups.
+### Description  
+`mimsy` is an R package that calculates dissolved gas concentrations from raw MIMS (Membrane Inlet Mass Spectrometer, Bay Instruments) signal data based on dissolved gas solubilities. Use the `mimsy` function on a formatted .csv file to return dissolved gas concentrations (mg and μMole) of N<sub>2</sub>, O<sub>2</sub>, Ar based on gas solubility at temperature, pressure, and salinity. Then, easily save the output of `mimsy` to a multi-tab Excel workbook with the `mimsy.save` function. Supports dual-temperature standard calibration for dual-bath MIMS setups.
 
 ### Installation  
 
@@ -15,6 +17,15 @@ install_github("michelleckelly/mimsy")
 # Load package into your R environment
 library(mimsy)
 ```
+
+### Tutorial
+Please click the [Get started tab] above to learn how to use `mimsy` 
+
+### Citation
+Run `citation("mimsy")` in the R console to view the recommended citation for this package.
+
+### Disclaimer
+`mimsy` holds no official endorsement from the Bay Instruments company. This software is preliminary and subject to revision. By the use of this software, the user assumes their own responsibility for ensuring the accuracy of the program. 
 
 ### References
 Garcia, H., and L. Gordon (1992), _Oxygen solubility in seawater: Better fitting
