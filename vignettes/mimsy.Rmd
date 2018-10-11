@@ -13,57 +13,51 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+library(knitr)
+library(kableExtra)
 ```
 
-### Introduction
+## Introduction
 
-This tutorial will show you how to use `mimsy` to calculate dissolved gas concentrations from your raw MIMS signal data. There are three steps to using the `mimsy` package:
+This tutorial will show you how to use `mimsy` to calculate dissolved gas concentrations from raw MIMS signal data. There are three steps to using the `mimsy` package:
 
-1. Correctly format your input data
-2. Run the `mimsy` function
-3. Save your output data using `mimsy.save`
+1. Correctly format the input data
+2. Run the `mimsy()` function
+3. Save the output data using `mimsy.save()`
 
-### Prepare your input data
+## Format the input data
 
-`mimsy` requires your input data to be in a .csv file, with data columns and column names that are exactly correct. In addition to the columns that are automatically returned by the Bay Instruments MIMS software, `mimsy` needs columns that define the type of sample ("Standard" or "Sample"), the run group (a set of standards followed by a set of samples defines one group), the collection temperature of the sample, and the date that samples were run.
+For `mimsy` to interpret the input data correctly, the raw data file must conform to a specific format.  
 
-![Excel](C:/Users/Michelle/Documents/MS_ResearchProjects/R_packages/mimsy/vignettes/example.png)
+```{r exampleLoad.silent, echo=FALSE}
+# load in raw data
+raw <- read.csv(file = "C://Users/Michelle/Documents/MS_ResearchProjects/R_packages/mimsy/vignettes/mimsy_exampledata.csv")
 
-Required:  
-1. `Type` column  
-  - Denotes if `Standard` or `Sample`, more details below  
-2. `Group` column  
-  - Numeric identifier denoting which paired Standard+Sample group the row belongs to. Group 1 represents the first batch of standards (usually 3 replicates for single-temperature setups, and 6 for dual-temperature setups) and the following samples (any number is acceptable), before the next group of standards is run. More details below.  
-3. `CollectionTemp`  
-  - Temperature of the sample at the time of collection in degrees C
-4. `RunDate`
-  - Date that the samples were processed on the MIMS, in Month/Date/Year format.
+kable(raw, digits = 20, caption = "Table 1. Example of a correctly formatted raw data file for a dual-temperature MIMS setup.") %>%
+  kable_styling(bootstrap_options = "condensed", full_width = F) %>%
+  scroll_box(height = "300px")
 
-Optional:
-1. Any number of identification columns (such as `ProjectName`, `Label`, `CollectionDate`) to aid in the cataloging of samples
-2. `Notes` column for recording barometric pressure readings, observations of bubbling
-
-Minimum output from MIMS software:
-1. `Time`
-2. `28`
-3. `32`
-4. `40`
-
-```{r exampleLoad, echo=FALSE}
-data <- read.csv(file = "C://Users/Michelle/Documents/MS_ResearchProjects/R_packages/mimsy/vignettes/mimsy_exampledata.csv")
-head(data, n = 10L)
-```
+```  
 
 
-```{r mimsyTemplate}
+**`Type` column** denotes whether the row refers to a standard (`Standard`) or a sample (`Sample`). Please note that capitalization of the column name and cell values must be exactly correct.  
 
-```
+**`Group` column** denotes the "group" of the data, where a `Group` equal to 1 would denote the first block of calibration standards followed by the first block of samples. On the second block of calibration standards, `Group` is now equal to 2. This allows for flexible indexing, meaning that any number of `Sample` can be run after a `Standard` block. The capitalization of this column name must be exactly correct. See Table 1 for a visual.
 
-## Download the package
+**`CollectionTemp` column** the temperature of the samples (at the time of collection) in degrees Celsius. For standards, this column refers to the set temperature of the water baths. The capitalization of this column name must be exactly correct.  
 
-Install the `mimsy` package and load it into your R environment
+**`RunDate` column** the date that samples were processed on the MIMS. The format of these dates must be month/day/year, and the capitalization of this column must be exactly correct.
 
-```{r mimsyLoad, eval=FALSE}
+**Optional columns** we highly recommend adding any number of additional identification columns (such as `ProjectName`, `Label`, `CollectionDate`, etc.) to distinguish samples. We also recommend a `Notes` column to note barometric pressure readings or observed bubbling in Exetainer tubes. Any additional columns will be unharmed by `mimsy()` and preserved in the `$results` output.  
+
+**File format** file must be in CSV format. If users primarily collect MIMS data within Excel, we recommend preserving the original Excel copy and saving a separate, formatted CSV file for use with `mimsy`. This practice prevents any accidental data loss when adding or removing data columns. When exporting to CSV from Excel, choose the "CSV (Comma delimited) (*.csv)" file extension option. 
+
+## Run the function  
+
+### First, install the `mimsy` package and load it into your R environment:  
+
+```{r mimsyLoad.display, eval=FALSE}
 # Use the devtools package to download mimsy from Github
 install.packages("devtools")
 library(devtools)
@@ -73,40 +67,103 @@ devtools::install_github("michelleckelly/mimsy")
 library(mimsy)
 ```
 
+### Next, run the `mimsy()` function:  
 
-
-### Type
-
-### Group
-
-### CollectionTemp
-
-### RunDate
-
-## Calculate your dissolved gas concentrations
-
-Run the `mimsy` function on your correctly formatted .csv file. You will need to specify the barometric pressure (`baromet.press`) while samples were run on the MIMS, and specify the units (`units`). Units must be "atm" (atmospheres), "hPa" (hectopascal), "psi" (pounds per square inch), "bar", or "Torr". 
-
-By default, `mimsy` assumes the salinity of standards is zero, no background corrections are necessary, and the `Time` column (returned by the Bay Instruments MIMS software) is referenced to the user's local time zone setting. See ?mimsy for details on how to specify these arguments. 
-
-```{r mimsyRun, eval = FALSE}
-data <- mimsy(file = "example.csv", baromet.press = 981.8, units = "hPa",
-              std.temps = c(20.1, 25.3))
+```{r mimsyRun.display, eval=FALSE}
+# run the function
+data <- mimsy(file = "mimsy_exampledata.csv", baromet.press = 977.2, 
+              units = "hPa", std.temps = c(24.9, 26.3))
 ```
 
-## Inspect the output
+```{r mimsyRun.silent, echo=FALSE, warning=FALSE, message=FALSE}
+library(mimsy)
+data <- mimsy(file = "C://Users/Michelle/Documents/MS_ResearchProjects/R_packages/mimsy/vignettes/mimsy_exampledata.csv", baromet.press = 977.2, 
+              units = "hPa", std.temps = c(24.9, 26.3))
+```
 
-`mimsy` returns a list containing five dataframes:
+You'll see that `mimsy()` requires a few arguments:  
 
-### $results
+**`file`** path to the (correctly formatted) .csv file.  
 
-### $solubility.Concentrations
+**`baromet.press`** the ambient barometric pressure recorded while samples were run on the MIMS. If multiple readings were recorded (say, an initial reading, a reading at lunch time, and a reading taken at the end of the sample run) the user can input these as a numeric string (such as `baromet.press = c(977.2, 978.5, 977.9)`) and `mimsy` will use the average barometric pressure.  
 
-### $calibration.Factors
+**`units`** the units of the barometric pressure reading(s). `mimsy` currently recognizes `"atm"`, `"hPa"`, `"psi"`, `"bar"`, and `"Torr"`.  
 
-### $calibration.DriftCorrection
+**`std.temps`** the temperature of the MIMS standard bath(s) in degrees Celsius.
 
-### $results.full
+See the help file at `?mimsy` for more details and additional optional inputs, such as `salinity` for specifying the salinity of standards, `bg.correct` for applying a background correction, or `tz` for specifying a time zone, if the user's system time zone and the time zone where MIMS samples were run are different.  
 
-## Save your data
+### Then, inspect the output:  
 
+`mimsy()` returns a list containing five data frames:  
+
+1. `$results`
+2. `$solubility.Concentrations`
+3. `$calibration.Factors`
+4. `$calibration.DriftCorrection`
+5. `$results.full`  
+
+**`$results`** displays a summarized output, containing just identification columns (such as the user's input of `Label` or `Project`) and calculated concentration values (ex. `N2_uMol` and `N2_mg` for the concentration of dissolved dinitrogen gas, in microMoles and milligrams, respectively). `$results` only contains sample results, but see `$results.full` below for results from both samples and standards.  
+
+```{r mimsyResults.display, eval = FALSE}
+# results from the sample data
+data$results
+```
+```{r mimsyResults.silent, echo = FALSE}
+# output kable of results
+kable(data$results, digits = 20) %>%
+  kable_styling(bootstrap_options = "condensed", full_width = F) %>%
+  scroll_box(height = "300px")
+
+```  
+  
+
+**`$solubility.Concentrations`** displays the calculated concentrations [$\small\mu Mole\:kg^{-1}$] of oxygen, nitrogen, and argon gas in water at specific temperature, pressure, and salinity. Row names correspond to `std.temps`. See Garcia and Gordon (1992, Eqn. 8) for further information on oxygen saturation concentration calculations and the equations used herein. See Hamme and Emerson (2004, Table 4, and Eq. 1, 2) for the expansion of Garcia and Gordon's methods for use with calculating nitrogen and argon saturation concentrations.  
+
+```{r mimsysolubility}
+# display solubility concentrations
+data$solubility.Concentrations
+```
+
+**`$calibration.Factors`** are computed by taking the solubility concentrations at standard temperature divided by the average MIMS signal reading of each `Group` at said temperature. These values will then be used internally to calculate the calibration curve, and are made available to the user for transparency.  
+
+```{r mimsycalfac, echo=FALSE, eval=FALSE}
+# display calibration factors
+data$calibration.Factors
+```
+
+**`$calibration.DriftCorrection`** is a data frame containing the slopes and intercepts of the calibration curve for each dissolved gas (ex. `calslope_28` for the slope of the dinitrogen calibration curve), and the drift corrected slope and intercept values (ex. `DRIFT.calslope_28`) which take into account the machine drift due to time that occurs in-between standard readings. These drift values are computed by taking the slope between successive calibration (slope or intercept) values. These values are used internally, and are made available to the user for transparency.  
+
+```{r mimsydriftcorr, echo=FALSE, eval=FALSE}
+# display first four columns of drift correction values
+data$calibration.DriftCorrection[1:4]
+```
+
+**`$results.full`** is a data frame that contains the entire output from `mimsy()`, including results from both standards and samples, the initial MIMS signal data and signal ratios, the calibration curve correction factors for each reading (ex. `INTERPOLATED.calfactor_28`), and the final concentration values.  
+
+```{r mimsyFull.display, echo=FALSE, eval=FALSE}
+# full results from the sample data
+data$results.full
+```
+```{r mimsyFull.silent, echo = FALSE}
+# output kable of results
+kable(data$results.full, digits = 20) %>%
+  kable_styling(bootstrap_options = "condensed", full_width = F) %>%
+  scroll_box(height = "300px")
+```
+
+## Save the output data
+
+Export the entire output to an advisor-friendly ;) multi-tabbed Excel file using `mimsy.save()`.
+
+```{r mimsy.save, eval=FALSE}
+mimsy.save(x = data, file = "mimsy_exampleresults.xlsx")
+```
+
+**`x`** the `mimsy()`-processed data
+
+**`file`** desired file name with .xlsx extension. Saves to user's working directory, unless an alternative path is specified. 
+
+See the help file at `?mimsy.save` for more information.
+
+Alternatively, you can save individual pieces of the output (such as `$results`) using the `write.csv()` function. However, we reccomend saving the full output for the sake of both reproducability and your future self.

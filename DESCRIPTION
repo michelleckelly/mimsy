@@ -26,5 +26,6 @@ Imports: dplyr,
 	openxlsx,
 	utils
 Suggests: knitr,
-    rmarkdown
+    rmarkdown,
+	kableExtra
 VignetteBuilder: knitr
