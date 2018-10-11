@@ -111,11 +111,15 @@ data$results
 ```
 ```{r mimsyResults.silent, echo = FALSE}
 # output kable of results
-kable(data$results, digits = 20) %>%
+kable(data$results, digits = 20, 
+      col.names = c("Label", "CollectionTemp", "Notes", "Type",
+                    "Group", "N2_uMol", "O2_uMol", "Ar_uMol", 
+                    "N2_mg", "O2_mg", "Ar_mg")) %>%
   kable_styling(bootstrap_options = "condensed", full_width = F) %>%
   scroll_box(height = "300px")
 
 ```  
+  
   
 
 **`$solubility.Concentrations`** displays the calculated concentrations [$\small\mu Mole\:kg^{-1}$] of oxygen, nitrogen, and argon gas in water at specific temperature, pressure, and salinity. Row names correspond to `std.temps`. See Garcia and Gordon (1992, Eqn. 8) for further information on oxygen saturation concentration calculations and the equations used herein. See Hamme and Emerson (2004, Table 4, and Eq. 1, 2) for the expansion of Garcia and Gordon's methods for use with calculating nitrogen and argon saturation concentrations.  
