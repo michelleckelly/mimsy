@@ -1,4 +1,4 @@
-#' \code{mimsy.save} Save MIMS calculations to an Excel workbook
+#' \code{mimsy.save} Save output to an Excel workbook
 #'
 #' Easily save the full output of the `mimsy` calculation function to a nicely-formatted, multi-tab Excel .xlsx file.
 #'
