@@ -10,6 +10,10 @@ an output message to the user
 * `mimsy()` now checks that the length of std.temps vector
 is appropriate
 
+## Bug fixes
+* update `mimsy.save()` to rely on non-depreciated forms of 
+`openxlsx` functions
+
 # mimsy 0.2.1
 
 ## Minor changes
