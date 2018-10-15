@@ -2,7 +2,7 @@
 % Please edit documentation in R/mimsy.save.R
 \name{mimsy.save}
 \alias{mimsy.save}
-\title{\code{mimsy.save} Save MIMS calculations to an Excel workbook}
+\title{\code{mimsy.save} Save output to an Excel workbook}
 \usage{
 mimsy.save(x, file)
 }

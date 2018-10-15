@@ -43,14 +43,31 @@
 #'
 #' @export
 
-mimsy <- function(file, baromet.press, units, std.temps, bg.correct = FALSE,
+mimsy <- function(file, baromet.press, units, std.temps=NULL, bg.correct = FALSE,
                   tz = Sys.timezone(), salinity = 0) {
 
     # 1. Raw data import -------------------------------------------------------------------------------
     data <- read.csv(file, header = TRUE, stringsAsFactors = FALSE)
 
     # checks check csv has correct column names check baromet.press has acceptable units check for consistent
-    # standard temperatures
+
+    # Get standard temperatures --------------------------------------
+    #
+    # Two point temperature standard
+    if (all(data[1:6, 1] == c("Standard", "Standard", "Standard",
+                              "Standard", "Standard", "Standard"))) {
+      # Set std.temps equal to the unique temperatures in this column
+      std.temps <- unique(data$CollectionTemp[1:6])
+      # Check if there are more than two standard temperatures
+      if (length(std.temps > 2)){
+        stop("Detecting more than two unique temperature values in the first block of standards. \nPlease check that standard temperatures have been entered correctly.")
+      }
+    }
+    # Single point temperature standard
+    if (all(data[1:6,1] == c('Standard','Standard','Standard',
+                             'Sample','Sample','Sample'))) {
+      std.temps <- unique(data$CollectionTemp[1:3])
+    }
 
     # Format time column -------------------------------------------------------------------------------
 
@@ -231,7 +248,7 @@ mimsy <- function(file, baromet.press, units, std.temps, bg.correct = FALSE,
     # two-point calibration has 6 standard readings
     if (all(data[1:6, 1] == c("Standard", "Standard", "Standard", "Standard", "Standard", "Standard"))) {
 
-        message("Calculating dissolved concentrations based on a two-point temperature standard.")
+        message("Calculated dissolved concentrations based on a two-point temperature standard.")
 
         # assemble empty data frame for calibration factors
         calfactor <- data.frame(calfactor_28 = numeric(length = max(data$Group) * 2),

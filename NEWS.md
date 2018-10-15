@@ -1,6 +1,18 @@
-# mimsy 1.0.0
+# mimsy 0.2.1
 
-## New features
+## Major changes
+
+## Minor changes
+* `vignettes/mimsy.Rmd` now includes directions to save output
+as RData file
+
+## Bug fixes
+* `vignettes/mimsy.Rmd` and `README.md` install instructions
+updated to fix bug where depenencies weren't downloading properly.
+
+
+# mimsy 0.2.0
+
+## Major changes
 * Added `vignettes/mimsy.Rmd` quick start guide for package.
 * Added `NEWS.md` file to track changes to the package.
-* This is the first release of `mimsy`.
