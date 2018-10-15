@@ -5,7 +5,6 @@
 #' @param file the name of the file which the data are to be read from. File must have 'comma seperated value' ('.csv) format and follow the formatting guidelines on the Github page. If the file does not contain an absolute path, the file name is relative to the working directory.
 #' @param baromet.press the ambient barometric pressure while samples processed on the MIMS. Can be a vector, if more than one reading was taken.
 #' @param units the units of barometric pressure. Must be one of "atm", "hPa", "psi", "bar", or "Torr".
-#' @param std.temps a numeric vector (maximum length 2) of the water temperatures (degC) of the standard baths.
 #' @param bg.correct If `FALSE` (default), no background correction is applied. If `TRUE`, background correction is applied.
 #' @param salinity the salinity of standards, in units of per mille. Defaults to 0.
 #' @param tz a character string that specifies which time zone to parse the date with. Defaults to the user's current time zone setting. The string must be a time zone that is recognized by the user's OS.
@@ -31,7 +30,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' dat <- mimsy(file = 'MIMS_data.csv', baromet.press = 981.2, units = 'hPa', std.temps = c(12.5, 15.2))
+#' data <- mimsy(file = 'data.csv', baromet.press = 981.2, units = 'hPa')
 #' }
 #'
 #' @importFrom lubridate "mdy_hms"
@@ -43,7 +42,7 @@
 #'
 #' @export
 
-mimsy <- function(file, baromet.press, units, std.temps=NULL, bg.correct = FALSE,
+mimsy <- function(file, baromet.press, units, bg.correct = FALSE,
                   tz = Sys.timezone(), salinity = 0) {
 
     # 1. Raw data import -------------------------------------------------------------------------------
@@ -250,6 +249,7 @@ mimsy <- function(file, baromet.press, units, std.temps=NULL, bg.correct = FALSE
     if (all(data[1:6, 1] == c("Standard", "Standard", "Standard", "Standard", "Standard", "Standard"))) {
 
         message("Calculated dissolved concentrations based on a two-point temperature standard.")
+        message(paste0("Standard 1: ", std.temps[1], "deg;C, Standard 2:", std.temps[1], "deg;C"))
 
         # assemble empty data frame for calibration factors
         calfactor <- data.frame(calfactor_28 = numeric(length = max(data$Group) * 2),

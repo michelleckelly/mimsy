@@ -73,13 +73,13 @@ library(mimsy)
 ```{r mimsyRun.display, eval=FALSE}
 # run the function
 data <- mimsy(file = "data.csv", baromet.press = 977.2, 
-              units = "hPa", std.temps = c(24.9, 26.3))
+              units = "hPa")
 ```
 
 ```{r mimsyRun.silent, echo=FALSE, warning=FALSE, message=FALSE}
 library(mimsy)
 data <- mimsy(file = "C://Users/Michelle/Documents/MS_ResearchProjects/R_packages/mimsy/vignettes/data.csv", baromet.press = 977.2, 
-              units = "hPa", std.temps = c(24.9, 26.3))
+              units = "hPa")
 ```
 
 You'll see that `mimsy()` requires a few arguments:  
@@ -89,8 +89,6 @@ You'll see that `mimsy()` requires a few arguments:
 **`baromet.press`** the ambient barometric pressure recorded while samples were run on the MIMS. If multiple readings were recorded (say, an initial reading, a reading at lunch time, and a reading taken at the end of the sample run) the user can input these as a numeric string (such as `baromet.press = c(977.2, 978.5, 977.9)`) and `mimsy` will use the average barometric pressure.  
 
 **`units`** the units of the barometric pressure reading(s). `mimsy` currently recognizes `"atm"`, `"hPa"`, `"psi"`, `"bar"`, and `"Torr"`.  
-
-**`std.temps`** the temperature of the MIMS standard bath(s) in degrees Celsius.
 
 See the help file at `?mimsy` for more details and additional optional inputs, such as `salinity` for specifying the salinity of standards, `bg.correct` for applying a background correction, or `tz` for specifying a time zone, if the user's system time zone and the time zone where MIMS samples were run are different.  
 

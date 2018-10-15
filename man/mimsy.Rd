@@ -4,8 +4,8 @@
 \alias{mimsy}
 \title{\code{mimsy} Calculate dissolved gas concentrations}
 \usage{
-mimsy(file, baromet.press, units, std.temps, bg.correct = FALSE,
-  tz = Sys.timezone(), salinity = 0)
+mimsy(file, baromet.press, units, bg.correct = FALSE, tz = Sys.timezone(),
+  salinity = 0)
 }
 \arguments{
 \item{file}{the name of the file which the data are to be read from. File must have 'comma seperated value' ('.csv) format and follow the formatting guidelines on the Github page. If the file does not contain an absolute path, the file name is relative to the working directory.}
@@ -13,8 +13,6 @@ mimsy(file, baromet.press, units, std.temps, bg.correct = FALSE,
 \item{baromet.press}{the ambient barometric pressure while samples processed on the MIMS. Can be a vector, if more than one reading was taken.}
 
 \item{units}{the units of barometric pressure. Must be one of "atm", "hPa", "psi", "bar", or "Torr".}
-
-\item{std.temps}{a numeric vector (maximum length 2) of the water temperatures (degC) of the standard baths.}
 
 \item{bg.correct}{If `FALSE` (default), no background correction is applied. If `TRUE`, background correction is applied.}
 
@@ -30,7 +28,7 @@ Return dissolved gas concentrations in units of micromole and milligram from mem
 }
 \examples{
 \dontrun{
-dat <- mimsy(file = 'MIMS_data.csv', baromet.press = 981.2, units = 'hPa', std.temps = c(12.5, 15.2))
+data <- mimsy(file = 'data.csv', baromet.press = 981.2, units = 'hPa')
 }
 
 }
