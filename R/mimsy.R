@@ -58,8 +58,9 @@ mimsy <- function(file, baromet.press, units, std.temps=NULL, bg.correct = FALSE
                               "Standard", "Standard", "Standard"))) {
       # Set std.temps equal to the unique temperatures in this column
       std.temps <- unique(data$CollectionTemp[1:6])
+
       # Check if there are more than two standard temperatures
-      if (length(std.temps > 2)){
+      if (length(std.temps) > 2){
         stop("Detecting more than two unique temperature values in the first block of standards. \nPlease check that standard temperatures have been entered correctly.")
       }
     }
