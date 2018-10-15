@@ -249,7 +249,7 @@ mimsy <- function(file, baromet.press, units, bg.correct = FALSE,
     if (all(data[1:6, 1] == c("Standard", "Standard", "Standard", "Standard", "Standard", "Standard"))) {
 
         message("Calculated dissolved concentrations based on a two-point temperature standard.")
-        message(paste0("Standard 1: ", std.temps[1], "deg;C, Standard 2:", std.temps[1], "deg;C"))
+        message(paste0("Standard 1: ", std.temps[1], " C, Standard 2: ", std.temps[2], " C"))
 
         # assemble empty data frame for calibration factors
         calfactor <- data.frame(calfactor_28 = numeric(length = max(data$Group) * 2),
