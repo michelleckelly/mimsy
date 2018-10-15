@@ -19,7 +19,7 @@ Easily save the full output of the `mimsy` calculation function to a nicely-form
 }
 \examples{
 \dontrun{
-mimsy.save(dat, file = "mimsyCalculations.xlsx")
+mimsy.save(data, file = "results.xlsx")
 }
 
 }

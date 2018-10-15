@@ -9,32 +9,31 @@
 #'
 #' @examples
 #' \dontrun{
-#' mimsy.save(dat, file = "mimsyCalculations.xlsx")
+#' mimsy.save(data, file = "results.xlsx")
 #' }
 #'
 #' @importFrom openxlsx "write.xlsx"
 #'
 #' @export
-mimsy.save <- function(x, file){
-  # seperate list output into individual dataframes
-  results <- as.data.frame(x$results)
-  fullresults <- as.data.frame(x$results.full)
-  solcon <- as.data.frame(x$solubility.Concentrations)
-  calfac <- as.data.frame(x$calibration.Factors)
-  driftcalfac <- as.data.frame(x$calibration.DriftCorrection)
 
-  openxlsx::write.xlsx(results, file = file, sheetName = "Results summary",
-                       col.names = TRUE, row.names = FALSE, append = FALSE)
-  openxlsx::write.xlsx(fullresults, file = file,
-                       sheetName = "Full results", col.names = TRUE,
-                       row.names = FALSE, append = TRUE)
-  openxlsx::write.xlsx(solcon, file = file,
-                       sheetName = "Solubility concentrations", col.names = TRUE,
-                       row.names = TRUE, append = TRUE)
-  openxlsx::write.xlsx(calfac, file = file,
-                       sheetName = "Calibration factors", col.names = TRUE,
-                       row.names = TRUE, append = TRUE)
-  openxlsx::write.xlsx(driftcalfac, file = file,
-                       sheetName = "Drift corrected calibr factors", col.names = TRUE,
-                       row.names = TRUE, append = TRUE)
+mimsy.save <- function(x, file){
+  # create workbook
+  wb <- openxlsx::createWorkbook()
+
+  # add worksheets
+  openxlsx::addWorksheet(wb, sheetName = "Results summary")
+  openxlsx::addWorksheet(wb, sheetName = "Full results")
+  openxlsx::addWorksheet(wb, sheetName = "Solubility concentrations")
+  openxlsx::addWorksheet(wb, sheetName = "Calibration factors")
+  openxlsx::addWorksheet(wb, sheetName = "Drift corrected factors")
+
+  # write data
+  openxlsx::writeData(wb, sheet = "Results summary", x = x$results)
+  openxlsx::writeData(wb, sheet = "Full results", x = x$results.full)
+  openxlsx::writeData(wb, sheet = "Solubility concentrations", x = x$solubility.Concentrations)
+  openxlsx::writeData(wb, sheet = "Calibration factors", x = x$calibration.Factors)
+  openxlsx::writeData(wb, sheet = "Drift corrected factors", x = x$calibration.DriftCorrection)
+
+  # save workbook
+  openxlsx::saveWorkbook(wb, file = file)
 }
