@@ -12,7 +12,7 @@
 ```R
 # Pull package from github using devtools
 library(devtools)
-install_github("michelleckelly/mimsy")
+install_github("michelleckelly/mimsy", dependencies = "Depends")
 
 # Load package into your R environment
 library(mimsy)

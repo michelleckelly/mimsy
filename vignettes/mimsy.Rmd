@@ -32,7 +32,7 @@ For `mimsy` to interpret the input data correctly, the raw data file must confor
 
 ```{r exampleLoad.silent, echo=FALSE}
 # load in raw data
-raw <- read.csv(file = "C://Users/Michelle/Documents/MS_ResearchProjects/R_packages/mimsy/vignettes/mimsy_exampledata.csv")
+raw <- read.csv(file = "C://Users/Michelle/Documents/MS_ResearchProjects/R_packages/mimsy/vignettes/data.csv")
 
 kable(raw, digits = 20, caption = "Table 1. Example of a correctly formatted raw data file for a dual-temperature MIMS setup.") %>%
   kable_styling(bootstrap_options = "condensed", full_width = F) %>%
@@ -58,10 +58,11 @@ kable(raw, digits = 20, caption = "Table 1. Example of a correctly formatted raw
 ### First, install the `mimsy` package and load it into your R environment:  
 
 ```{r mimsyLoad.display, eval=FALSE}
-# Use the devtools package to download mimsy from Github
+# Use the devtools package to download mimsy (& dependencies) from Github
 install.packages("devtools")
 library(devtools)
-devtools::install_github("michelleckelly/mimsy")
+install_github("michelleckelly/mimsy", 
+               dependencies = "Depends")
 
 # Load mimsy into your R environment
 library(mimsy)
@@ -71,13 +72,13 @@ library(mimsy)
 
 ```{r mimsyRun.display, eval=FALSE}
 # run the function
-data <- mimsy(file = "mimsy_exampledata.csv", baromet.press = 977.2, 
+data <- mimsy(file = "data.csv", baromet.press = 977.2, 
               units = "hPa", std.temps = c(24.9, 26.3))
 ```
 
 ```{r mimsyRun.silent, echo=FALSE, warning=FALSE, message=FALSE}
 library(mimsy)
-data <- mimsy(file = "C://Users/Michelle/Documents/MS_ResearchProjects/R_packages/mimsy/vignettes/mimsy_exampledata.csv", baromet.press = 977.2, 
+data <- mimsy(file = "C://Users/Michelle/Documents/MS_ResearchProjects/R_packages/mimsy/vignettes/data.csv", baromet.press = 977.2, 
               units = "hPa", std.temps = c(24.9, 26.3))
 ```
 
@@ -158,16 +159,20 @@ kable(data$results.full, digits = 20) %>%
 
 ## Save the output data
 
-Export the entire output to an advisor-friendly ;) multi-tabbed Excel file using `mimsy.save()`.
+Save the entire output to a compact RData file for further R analysis, or use `mimsy.save()` to export to a multi-tabbed Excel file for analysis outside R.
 
 ```{r mimsy.save, eval=FALSE}
-mimsy.save(x = data, file = "mimsy_exampleresults.xlsx")
+# Save output to an RData file
+save(x = data, file = "results.RData")
+
+# Save output to an Excel workbook
+mimsy.save(x = data, file = "results.xlsx")
 ```
 
 **`x`** the `mimsy()`-processed data
 
-**`file`** desired file name with .xlsx extension. Saves to user's working directory, unless an alternative path is specified. 
+**`file`** desired file name with appropriate extension. Saves to user's working directory, unless an alternative path is specified. 
 
-See the help file at `?mimsy.save` for more information.
+See the help file at `?save` or `?mimsy.save` for more information.
 
 Alternatively, you can save individual pieces of the output (such as `$results`) using the `write.csv()` function. However, we reccomend saving the full output for the sake of both reproducability and your future self.
