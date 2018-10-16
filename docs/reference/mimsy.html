@@ -61,7 +61,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mimsy</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.0.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.1</span>
       </span>
     </div>
 
@@ -114,8 +114,8 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>mimsy</span>(<span class='no'>file</span>, <span class='no'>baromet.press</span>, <span class='no'>units</span>, <span class='no'>std.temps</span>, <span class='kw'>bg.correct</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>tz</span> <span class='kw'>=</span> <span class='fu'>Sys.timezone</span>(), <span class='kw'>salinity</span> <span class='kw'>=</span> <span class='fl'>0</span>)</pre>
+    <pre class="usage"><span class='fu'>mimsy</span>(<span class='no'>file</span>, <span class='no'>baromet.press</span>, <span class='no'>units</span>, <span class='kw'>bg.correct</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='fu'>Sys.timezone</span>(),
+  <span class='kw'>salinity</span> <span class='kw'>=</span> <span class='fl'>0</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -131,10 +131,6 @@
     <tr>
       <th>units</th>
       <td><p>the units of barometric pressure. Must be one of "atm", "hPa", "psi", "bar", or "Torr".</p></td>
-    </tr>
-    <tr>
-      <th>std.temps</th>
-      <td><p>a numeric vector (maximum length 2) of the water temperatures (degC) of the standard baths.</p></td>
     </tr>
     <tr>
       <th>bg.correct</th>
@@ -171,7 +167,7 @@ in distilled water and seawater</em>, Deep-Sea Research I, 51(11), 1517-1528.</p
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='no'>dat</span> <span class='kw'>&lt;-</span> <span class='fu'>mimsy</span>(<span class='kw'>file</span> <span class='kw'>=</span> <span class='st'>'MIMS_data.csv'</span>, <span class='kw'>baromet.press</span> <span class='kw'>=</span> <span class='fl'>981.2</span>, <span class='kw'>units</span> <span class='kw'>=</span> <span class='st'>'hPa'</span>, <span class='kw'>std.temps</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>12.5</span>, <span class='fl'>15.2</span>))
+<span class='no'>data</span> <span class='kw'>&lt;-</span> <span class='fu'>mimsy</span>(<span class='kw'>file</span> <span class='kw'>=</span> <span class='st'>'data.csv'</span>, <span class='kw'>baromet.press</span> <span class='kw'>=</span> <span class='fl'>981.2</span>, <span class='kw'>units</span> <span class='kw'>=</span> <span class='st'>'hPa'</span>)
 <span class='co'># }</span><div class='input'>
 </div></pre>
   </div>

@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mimsy</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.0.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.1</span>
       </span>
     </div>
 
@@ -72,7 +72,7 @@
     <div class="page-header toc-ignore">
       <h1>Get started</h1>
             
-            <h4 class="date">2018-10-11</h4>
+            <h4 class="date">2018-10-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/michelleckelly/mimsy/blob/master/vignettes/mimsy.Rmd"><code>vignettes/mimsy.Rmd</code></a></small>
       <div class="hidden name"><code>mimsy.Rmd</code></div>
@@ -1969,10 +1969,11 @@ NA
 <div id="first-install-the-mimsy-package-and-load-it-into-your-r-environment" class="section level3">
 <h3 class="hasAnchor">
 <a href="#first-install-the-mimsy-package-and-load-it-into-your-r-environment" class="anchor"></a>First, install the <code>mimsy</code> package and load it into your R environment:</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Use the devtools package to download mimsy from Github</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Use the devtools package to download mimsy (&amp; dependencies) from Github</span>
 <span class="kw">install.packages</span>(<span class="st">"devtools"</span>)
 <span class="kw">library</span>(devtools)
-devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"michelleckelly/mimsy"</span>)
+<span class="kw">install_github</span>(<span class="st">"michelleckelly/mimsy"</span>, 
+               <span class="dt">dependencies =</span> <span class="st">"Depends"</span>)
 
 <span class="co"># Load mimsy into your R environment</span>
 <span class="kw">library</span>(mimsy)</code></pre></div>
@@ -1981,13 +1982,12 @@ devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocument
 <h3 class="hasAnchor">
 <a href="#next-run-the-mimsy-function" class="anchor"></a>Next, run the <code><a href="../reference/mimsy.html">mimsy()</a></code> function:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># run the function</span>
-data &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mimsy.html">mimsy</a></span>(<span class="dt">file =</span> <span class="st">"mimsy_exampledata.csv"</span>, <span class="dt">baromet.press =</span> <span class="fl">977.2</span>, 
-              <span class="dt">units =</span> <span class="st">"hPa"</span>, <span class="dt">std.temps =</span> <span class="kw">c</span>(<span class="fl">24.9</span>, <span class="fl">26.3</span>))</code></pre></div>
+data &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mimsy.html">mimsy</a></span>(<span class="dt">file =</span> <span class="st">"data.csv"</span>, <span class="dt">baromet.press =</span> <span class="fl">977.2</span>, 
+              <span class="dt">units =</span> <span class="st">"hPa"</span>)</code></pre></div>
 <p>You’ll see that <code><a href="../reference/mimsy.html">mimsy()</a></code> requires a few arguments:</p>
 <p><strong><code>file</code></strong> path to the (correctly formatted) .csv file.</p>
 <p><strong><code>baromet.press</code></strong> the ambient barometric pressure recorded while samples were run on the MIMS. If multiple readings were recorded (say, an initial reading, a reading at lunch time, and a reading taken at the end of the sample run) the user can input these as a numeric string (such as <code>baromet.press = c(977.2, 978.5, 977.9)</code>) and <code>mimsy</code> will use the average barometric pressure.</p>
 <p><strong><code>units</code></strong> the units of the barometric pressure reading(s). <code>mimsy</code> currently recognizes <code>"atm"</code>, <code>"hPa"</code>, <code>"psi"</code>, <code>"bar"</code>, and <code>"Torr"</code>.</p>
-<p><strong><code>std.temps</code></strong> the temperature of the MIMS standard bath(s) in degrees Celsius.</p>
 <p>See the help file at <code><a href="../reference/mimsy.html">?mimsy</a></code> for more details and additional optional inputs, such as <code>salinity</code> for specifying the salinity of standards, <code>bg.correct</code> for applying a background correction, or <code>tz</code> for specifying a time zone, if the user’s system time zone and the time zone where MIMS samples were run are different.</p>
 </div>
 <div id="then-inspect-the-output" class="section level3">
@@ -6793,11 +6793,15 @@ Standard
 <div id="save-the-output-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#save-the-output-data" class="anchor"></a>Save the output data</h2>
-<p>Export the entire output to an advisor-friendly ;) multi-tabbed Excel file using <code><a href="../reference/mimsy.save.html">mimsy.save()</a></code>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/mimsy.save.html">mimsy.save</a></span>(<span class="dt">x =</span> data, <span class="dt">file =</span> <span class="st">"mimsy_exampleresults.xlsx"</span>)</code></pre></div>
+<p>Save the entire output to a compact RData file for further R analysis, or use <code><a href="../reference/mimsy.save.html">mimsy.save()</a></code> to export to a multi-tabbed Excel file for analysis outside R.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Save output to an RData file</span>
+<span class="kw">save</span>(<span class="dt">x =</span> data, <span class="dt">file =</span> <span class="st">"results.RData"</span>)
+
+<span class="co"># Save output to an Excel workbook</span>
+<span class="kw"><a href="../reference/mimsy.save.html">mimsy.save</a></span>(<span class="dt">x =</span> data, <span class="dt">file =</span> <span class="st">"results.xlsx"</span>)</code></pre></div>
 <p><strong><code>x</code></strong> the <code><a href="../reference/mimsy.html">mimsy()</a></code>-processed data</p>
-<p><strong><code>file</code></strong> desired file name with .xlsx extension. Saves to user’s working directory, unless an alternative path is specified.</p>
-<p>See the help file at <code><a href="../reference/mimsy.save.html">?mimsy.save</a></code> for more information.</p>
+<p><strong><code>file</code></strong> desired file name with appropriate extension. Saves to user’s working directory, unless an alternative path is specified.</p>
+<p>See the help file at <code>?save</code> or <code><a href="../reference/mimsy.save.html">?mimsy.save</a></code> for more information.</p>
 <p>Alternatively, you can save individual pieces of the output (such as <code>$results</code>) using the <code>write.csv()</code> function. However, we reccomend saving the full output for the sake of both reproducability and your future self.</p>
 </div>
   </div>
