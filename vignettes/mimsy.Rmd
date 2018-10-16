@@ -38,16 +38,17 @@ kable(raw, digits = 20, caption = "Table 1. Example of a correctly formatted raw
   kable_styling(bootstrap_options = "condensed", full_width = F) %>%
   scroll_box(height = "300px")
 
-```  
+```
 
 
-**`Type` column** denotes whether the row refers to a standard (`Standard`) or a sample (`Sample`). Please note that capitalization of the column name and cell values must be exactly correct.  
 
-**`Group` column** denotes the "group" of the data, where a `Group` equal to 1 would denote the first block of calibration standards followed by the first block of samples. On the second block of calibration standards, `Group` is now equal to 2. This allows for flexible indexing, meaning that any number of `Sample` can be run after a `Standard` block. The capitalization of this column name must be exactly correct. See Table 1 for a visual.
+**`Type`** denotes whether the row refers to a standard (`Standard`) or a sample (`Sample`). Please note that capitalization of the column name and cell values must be exactly correct, and this column must come first.  
 
-**`CollectionTemp` column** the temperature of the samples (at the time of collection) in degrees Celsius. For standards, this column refers to the set temperature of the water baths. The capitalization of this column name must be exactly correct.  
+**`Group`** denotes the "group" of the data, where a `Group` equal to 1 would denote the first block of calibration standards followed by the first block of samples. On the second block of calibration standards, `Group` is now equal to 2. This allows for flexible indexing, meaning that any number of `Sample` can be run after a `Standard` block. The capitalization of this column name must be exactly correct. See Table 1 for a visual.
 
-**`RunDate` column** the date that samples were processed on the MIMS. The format of these dates must be month/day/year, and the capitalization of this column must be exactly correct.
+**`CollectionTemp`** the temperature of the samples (at the time of collection) in degrees Celsius. For standards, this column refers to the set temperature of the water baths. The capitalization of this column name must be exactly correct.  
+
+**`RunDate`** the date that samples were processed on the MIMS. The format of these dates must be month/day/year, and the capitalization of this column must be exactly correct.
 
 **Optional columns** we highly recommend adding any number of additional identification columns (such as `ProjectName`, `Label`, `CollectionDate`, etc.) to distinguish samples. We also recommend a `Notes` column to note barometric pressure readings or observed bubbling in Exetainer tubes. Any additional columns will be unharmed by `mimsy()` and preserved in the `$results` output.  
 
@@ -71,7 +72,7 @@ library(mimsy)
 ### Next, run the `mimsy()` function:  
 
 ```{r mimsyRun.display, eval=FALSE}
-# run the function
+# Run the function
 data <- mimsy(file = "data.csv", baromet.press = 977.2, 
               units = "hPa")
 ```
@@ -82,7 +83,7 @@ data <- mimsy(file = "C://Users/Michelle/Documents/MS_ResearchProjects/R_package
               units = "hPa")
 ```
 
-You'll see that `mimsy()` requires a few arguments:  
+Required arguments:  
 
 **`file`** path to the (correctly formatted) .csv file.  
 
@@ -118,42 +119,16 @@ kable(data$results, digits = 20,
   scroll_box(height = "300px")
 
 ```  
-  
-  
+
+
 
 **`$solubility.Concentrations`** displays the calculated concentrations [$\small\mu Mole\:kg^{-1}$] of oxygen, nitrogen, and argon gas in water at specific temperature, pressure, and salinity. Row names correspond to `std.temps`. See Garcia and Gordon (1992, Eqn. 8) for further information on oxygen saturation concentration calculations and the equations used herein. See Hamme and Emerson (2004, Table 4, and Eq. 1, 2) for the expansion of Garcia and Gordon's methods for use with calculating nitrogen and argon saturation concentrations.  
 
-```{r mimsysolubility}
-# display solubility concentrations
-data$solubility.Concentrations
-```
-
 **`$calibration.Factors`** are computed by taking the solubility concentrations at standard temperature divided by the average MIMS signal reading of each `Group` at said temperature. These values will then be used internally to calculate the calibration curve, and are made available to the user for transparency.  
-
-```{r mimsycalfac, echo=FALSE, eval=FALSE}
-# display calibration factors
-data$calibration.Factors
-```
 
 **`$calibration.DriftCorrection`** is a data frame containing the slopes and intercepts of the calibration curve for each dissolved gas (ex. `calslope_28` for the slope of the dinitrogen calibration curve), and the drift corrected slope and intercept values (ex. `DRIFT.calslope_28`) which take into account the machine drift due to time that occurs in-between standard readings. These drift values are computed by taking the slope between successive calibration (slope or intercept) values. These values are used internally, and are made available to the user for transparency.  
 
-```{r mimsydriftcorr, echo=FALSE, eval=FALSE}
-# display first four columns of drift correction values
-data$calibration.DriftCorrection[1:4]
-```
-
 **`$results.full`** is a data frame that contains the entire output from `mimsy()`, including results from both standards and samples, the initial MIMS signal data and signal ratios, the calibration curve correction factors for each reading (ex. `INTERPOLATED.calfactor_28`), and the final concentration values.  
-
-```{r mimsyFull.display, echo=FALSE, eval=FALSE}
-# full results from the sample data
-data$results.full
-```
-```{r mimsyFull.silent, echo = FALSE}
-# output kable of results
-kable(data$results.full, digits = 20) %>%
-  kable_styling(bootstrap_options = "condensed", full_width = F) %>%
-  scroll_box(height = "300px")
-```
 
 ## Save the output data
 
@@ -167,10 +142,32 @@ save(x = data, file = "results.RData")
 mimsy.save(x = data, file = "results.xlsx")
 ```
 
-**`x`** the `mimsy()`-processed data
+**`x`** the processed data, returned by the `mimsy()` function  
 
-**`file`** desired file name with appropriate extension. Saves to user's working directory, unless an alternative path is specified. 
+**`file`** desired file name with appropriate extension. Saves to user's working directory, unless an alternative path is specified.  
 
-See the help file at `?save` or `?mimsy.save` for more information.
+See the help file at `?save` or `?mimsy.save` for more information.  
 
-Alternatively, you can save individual pieces of the output (such as `$results`) using the `write.csv()` function. However, we reccomend saving the full output for the sake of both reproducability and your future self.
+Alternatively, you can save individual pieces of the output (such as `data$results`) using the `write.csv()` function. However, we reccomend saving the full output for the sake of both reproducability and your future self.  
+
+## Put it all together
+
+```{r allTogether, eval=FALSE}
+# Use the devtools package to download mimsy (& dependencies) from Github
+library(devtools)
+install_github("michelleckelly/mimsy", 
+               dependencies = "Depends")
+
+# Load mimsy into your R environment
+library(mimsy)
+
+# Run the function
+data <- mimsy(file = "data.csv", baromet.press = c(977.2, 974.5), 
+              units = "hPa")
+
+# Save the results
+save(x = data, file = "results.RData") # To RData
+mimsy.save(x = data, file = "results.xlsx")# To Excel
+
+# Done!
+```
