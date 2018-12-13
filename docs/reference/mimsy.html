@@ -11,7 +11,7 @@
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/paper/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
@@ -61,7 +61,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mimsy</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.1</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.1</span>
       </span>
     </div>
 
@@ -148,7 +148,12 @@
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a list, containing dataframes of calculated gas concentrations, solubility concentrations, and calibration factors.</p>
+    <p>a list, containing 5 dataframes:</p>
+<p>`$results` displays a summarized output, containing just identification columns (such as the user's input of `Label` or `Project`) and calculated concentration values (ex. `N2_uMol` and `N2_mg` for the concentration of dissolved dinitrogen gas, in microMoles and milligrams, respectively). `$results` only contains sample results, but see `$results.full` below for results from both samples and standards.</p>
+<p>`$solubility.Concentrations` displays the calculated concentrations (microMole / kg) of oxygen, nitrogen, and argon gas in water at specific temperature, pressure, and salinity. Row names correspond to `std.temps`. See Garcia and Gordon (1992, Eqn. 8) for further information on oxygen saturation concentration calculations and the equations used herein. See Hamme and Emerson (2004, Table 4, and Eq. 1, 2) for the expansion of Garcia and Gordon's methods for use with calculating nitrogen and argon saturation concentrations.</p>
+<p>`$calibration.Factors` are computed by taking the solubility concentrations at standard temperature divided by the average MIMS signal reading of each `Group` at said temperature. These values will then be used internally to calculate the calibration curve, and are made available to the user for transparency.</p>
+<p>`$calibration.DriftCorrection` is a data frame containing the slopes and intercepts of the calibration curve for each dissolved gas (ex. `calslope_28` for the slope of the dinitrogen calibration curve), and the drift corrected slope and intercept values (ex. `DRIFT.calslope_28`) which take into account the machine drift due to time that occurs in-between standard readings. These drift values are computed by taking the slope between successive calibration (slope or intercept) values. These values are used internally, and are made available to the user for transparency.</p>
+<p>`$results.full` is a data frame that contains the entire output from `mimsy()`, including results from both standards and samples, the initial MIMS signal data and signal ratios, the calibration curve correction factors for each reading (ex. `INTERPOLATED.calfactor_28`), and the final concentration values.</p>
     
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 

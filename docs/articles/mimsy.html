@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Get started with mimsy • mimsy</title>
-<!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/paper/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Get started with mimsy">
@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mimsy</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.1</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.1</span>
       </span>
     </div>
 
@@ -120,9 +120,12 @@
 <h3 class="hasAnchor">
 <a href="#format-your-csv-file" class="anchor"></a>3.1. Format your CSV file</h3>
 <p>You’ll need to add some special columns to your data file before loading it into R. The easiest way to do this is to use a spreadsheet editor like Excel. We recommend saving a seperate copy of your raw data file for mimsy (add “_mimsy" to the file name) to prevent any accidents.</p>
+<div class="figure">
+<img src="excel.png" alt="Figure 1. An example of a correctly formatted raw data file."><p class="caption">Figure 1. An example of a correctly formatted raw data file.</p>
+</div>
 <p><strong>CSV file format:</strong></p>
 <ul>
-<li>You can save as CSV within Excel from the <em>File &gt; Save as</em> menu, choosing the <em>CSV (Comma delimited) (.csv)</em> file extension option.</li>
+<li>You can save as CSV within Excel from the <em>File &gt; Save as</em> menu, choosing the <em>CSV (Comma delimited) (.csv)</em> option.</li>
 </ul>
 <p><strong>Columns:</strong></p>
 <ul>
@@ -166,9 +169,6 @@
 </ul>
 </li>
 </ul>
-<div class="figure">
-<img src="excel.png" alt="Figure 1. An example of a correctly formatted raw data file."><p class="caption">Figure 1. An example of a correctly formatted raw data file.</p>
-</div>
 </div>
 <div id="load-your-csv-file-into-r-using-read-csv" class="section level3">
 <h3 class="hasAnchor">
@@ -199,57 +199,50 @@ data &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class=
 <h3 class="hasAnchor">
 <a href="#run-the-mimsy-function" class="anchor"></a>3.3. Run the <code><a href="../reference/mimsy.html">mimsy()</a></code> function</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Run the function</span>
-results &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mimsy.html">mimsy</a></span>(data, <span class="dt">baromet.press =</span> <span class="fl">977.2</span>, <span class="dt">units =</span> <span class="st">"hPa"</span>)</code></pre></div>
-<p>You must specify the barometric pressure (<code>baromet.press</code>) and it’s units in the function argument. Units must be one of <code>"atm"</code>, <code>"hPa"</code>, <code>"psi"</code>, <code>"bar"</code>, or <code>"Torr"</code>. All other inputs, such as background corrections or standard salinity, are optional. Check out <code><a href="../reference/mimsy.html">?mimsy</a></code> for more information.</p>
+results &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mimsy.html">mimsy</a></span>(data, <span class="dt">baromet.press =</span> <span class="fl">977.2</span>, <span class="dt">units =</span> <span class="st">"hPa"</span>)
+<span class="co">#&gt; Calculated dissolved concentrations based on a two-point temperature standard.</span>
+<span class="co">#&gt; Standard 1: 24.9 C, Standard 2: 26.3 C</span></code></pre></div>
+<p>You must specify the barometric pressure (<code>baromet.press</code>) and its units in the function argument. Units must be one of <code>"atm"</code>, <code>"hPa"</code>, <code>"psi"</code>, <code>"bar"</code>, or <code>"Torr"</code>. All other inputs, such as background corrections or standard salinity, are optional. Check out <code><a href="../reference/mimsy.html">?mimsy</a></code> for more information.</p>
 </div>
 <div id="explore-the-results" class="section level3">
 <h3 class="hasAnchor">
 <a href="#explore-the-results" class="anchor"></a>3.4. Explore the results</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Check out the structure of the output</span>
+<span class="kw">summary</span>(results)
+<span class="co">#&gt;                             Length Class      Mode</span>
+<span class="co">#&gt; results                     11     grouped_df list</span>
+<span class="co">#&gt; solubility.Concentrations    3     data.frame list</span>
+<span class="co">#&gt; calibration.Factors          3     data.frame list</span>
+<span class="co">#&gt; calibration.DriftCorrection 12     data.frame list</span>
+<span class="co">#&gt; results.full                30     grouped_df list</span>
+
+<span class="co"># See the summarized results dataframe</span>
+<span class="kw">str</span>(results<span class="op">$</span>results, <span class="dt">give.attr =</span> <span class="ot">FALSE</span>)
+<span class="co">#&gt; Classes 'grouped_df', 'tbl_df', 'tbl' and 'data.frame':  24 obs. of  11 variables:</span>
+<span class="co">#&gt;  $ CollectionTemp: num  25.1 25.1 25.1 26.1 26.1 26.1 25.3 25.3 25.3 24.9 ...</span>
+<span class="co">#&gt;  $ Label         : chr  "Sample1" "Sample2" "Sample3" "Sample4" ...</span>
+<span class="co">#&gt;  $ Notes         : chr  "" "" "" "" ...</span>
+<span class="co">#&gt;  $ data$Type     : chr  "Sample" "Sample" "Sample" "Sample" ...</span>
+<span class="co">#&gt;  $ data$Group    : int  1 1 1 1 1 1 1 1 1 1 ...</span>
+<span class="co">#&gt;  $ N2_uMol       : num  469 469 465 443 447 ...</span>
+<span class="co">#&gt;  $ O2_uMol       : num  301 301 300 290 293 ...</span>
+<span class="co">#&gt;  $ Ar_uMol       : num  12 12 11.9 11.6 11.6 ...</span>
+<span class="co">#&gt;  $ N2_mg         : num  13.1 13.1 13 12.4 12.5 ...</span>
+<span class="co">#&gt;  $ O2_mg         : num  9.63 9.62 9.61 9.29 9.37 ...</span>
+<span class="co">#&gt;  $ Ar_mg         : num  0.48 0.479 0.478 0.464 0.464 ...</span></code></pre></div>
+<p>You’ll see that <code><a href="../reference/mimsy.html">mimsy()</a></code> returns a list containing five seperate dataframes (<code>results</code>, <code>solubility.Concentrations</code>, <code>calibration.Factors</code>, <code>calibration.DriftCorrection</code>, and <code>results.full</code>). Check out ?mimsy() for more specific information on those outputs and how they were calculated.</p>
 </div>
 <div id="save-the-results" class="section level3">
 <h3 class="hasAnchor">
 <a href="#save-the-results" class="anchor"></a>3.5. Save the results</h3>
-</div>
-<div id="then-inspect-the-output" class="section level3">
-<h3 class="hasAnchor">
-<a href="#then-inspect-the-output" class="anchor"></a>Then, inspect the output:</h3>
-<p><code><a href="../reference/mimsy.html">mimsy()</a></code> returns a list containing five data frames:</p>
-<ol style="list-style-type: decimal">
-<li><code>$results</code></li>
-<li><code>$solubility.Concentrations</code></li>
-<li><code>$calibration.Factors</code></li>
-<li><code>$calibration.DriftCorrection</code></li>
-<li><code>$results.full</code></li>
-</ol>
-<p><strong><code>$results</code></strong> displays a summarized output, containing just identification columns (such as the user’s input of <code>Label</code> or <code>Project</code>) and calculated concentration values (ex. <code>N2_uMol</code> and <code>N2_mg</code> for the concentration of dissolved dinitrogen gas, in microMoles and milligrams, respectively). <code>$results</code> only contains sample results, but see <code>$results.full</code> below for results from both samples and standards.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># results from the sample data</span>
-data<span class="op">$</span>results</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># output kable of results</span>
-<span class="kw">kable</span>(data<span class="op">$</span>results, <span class="dt">digits =</span> <span class="dv">20</span>, 
-      <span class="dt">col.names =</span> <span class="kw">c</span>(<span class="st">"Label"</span>, <span class="st">"CollectionTemp"</span>, <span class="st">"Notes"</span>, <span class="st">"Type"</span>,
-                    <span class="st">"Group"</span>, <span class="st">"N2_uMol"</span>, <span class="st">"O2_uMol"</span>, <span class="st">"Ar_uMol"</span>, 
-                    <span class="st">"N2_mg"</span>, <span class="st">"O2_mg"</span>, <span class="st">"Ar_mg"</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">kable_styling</span>(<span class="dt">bootstrap_options =</span> <span class="st">"condensed"</span>, <span class="dt">full_width =</span> F) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">scroll_box</span>(<span class="dt">height =</span> <span class="st">"300px"</span>)</code></pre></div>
-<p><strong><code>$solubility.Concentrations</code></strong> displays the calculated concentrations [<span class="math inline">\(\small\mu Mole\:kg^{-1}\)</span>] of oxygen, nitrogen, and argon gas in water at specific temperature, pressure, and salinity. Row names correspond to <code>std.temps</code>. See Garcia and Gordon (1992, Eqn. 8) for further information on oxygen saturation concentration calculations and the equations used herein. See Hamme and Emerson (2004, Table 4, and Eq. 1, 2) for the expansion of Garcia and Gordon’s methods for use with calculating nitrogen and argon saturation concentrations.</p>
-<p><strong><code>$calibration.Factors</code></strong> are computed by taking the solubility concentrations at standard temperature divided by the average MIMS signal reading of each <code>Group</code> at said temperature. These values will then be used internally to calculate the calibration curve, and are made available to the user for transparency.</p>
-<p><strong><code>$calibration.DriftCorrection</code></strong> is a data frame containing the slopes and intercepts of the calibration curve for each dissolved gas (ex. <code>calslope_28</code> for the slope of the dinitrogen calibration curve), and the drift corrected slope and intercept values (ex. <code>DRIFT.calslope_28</code>) which take into account the machine drift due to time that occurs in-between standard readings. These drift values are computed by taking the slope between successive calibration (slope or intercept) values. These values are used internally, and are made available to the user for transparency.</p>
-<p><strong><code>$results.full</code></strong> is a data frame that contains the entire output from <code><a href="../reference/mimsy.html">mimsy()</a></code>, including results from both standards and samples, the initial MIMS signal data and signal ratios, the calibration curve correction factors for each reading (ex. <code>INTERPOLATED.calfactor_28</code>), and the final concentration values.</p>
-</div>
-</div>
-<div id="save-the-output-data" class="section level2">
-<h2 class="hasAnchor">
-<a href="#save-the-output-data" class="anchor"></a>Save the output data</h2>
-<p>Save the entire output to a compact RData file for further R analysis, or use <code><a href="../reference/mimsy.save.html">mimsy.save()</a></code> to export to a multi-tabbed Excel file for analysis outside R.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Save output to an RData file</span>
-<span class="kw">save</span>(<span class="dt">x =</span> data, <span class="dt">file =</span> <span class="st">"results.RData"</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Save output to an Excel workbook</span>
+<span class="kw"><a href="../reference/mimsy.save.html">mimsy.save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.xlsx"</span>)
 
-<span class="co"># Save output to an Excel workbook</span>
-<span class="kw"><a href="../reference/mimsy.save.html">mimsy.save</a></span>(<span class="dt">x =</span> data, <span class="dt">file =</span> <span class="st">"results.xlsx"</span>)</code></pre></div>
-<p><strong><code>x</code></strong> the processed data, returned by the <code><a href="../reference/mimsy.html">mimsy()</a></code> function</p>
-<p><strong><code>file</code></strong> desired file name with appropriate extension. Saves to user’s working directory, unless an alternative path is specified.</p>
-<p>See the help file at <code>?save</code> or <code><a href="../reference/mimsy.save.html">?mimsy.save</a></code> for more information.</p>
-<p>Alternatively, you can save individual pieces of the output (such as <code>data$results</code>) using the <code>write.csv()</code> function. However, we recommend saving the full output for the sake of both reproducability and your future self.</p>
+<span class="co"># Save output to an RData file</span>
+<span class="kw">save</span>(results, <span class="dt">file =</span> <span class="st">"results.RData"</span>)</code></pre></div>
+<p>We don’t reccomend saving results dataframes to CSV files (although you can), as you’ll need multiple CSV’s to preserve all of the outputs, and that gets kind of messy. A good alternative is to save both an Excel workbook copy and an RData copy, that way all of your output is preserved every time.</p>
+<p>You can load RData files back into R using <code>load("results.RData")</code>. Check out <code>?load()</code> for more info.</p>
+</div>
 </div>
 <div id="putting-it-all-together" class="section level2">
 <h2 class="hasAnchor">
@@ -271,10 +264,10 @@ data &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class=
 results &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mimsy.html">mimsy</a></span>(data, <span class="dt">baromet.press =</span> <span class="fl">977.2</span>, <span class="dt">units =</span> <span class="st">"hPa"</span>)
 
 <span class="co"># Save the results</span>
-<span class="kw"><a href="../reference/mimsy.save.html">mimsy.save</a></span>(<span class="dt">x =</span> data, <span class="dt">file =</span> <span class="st">"results.xlsx"</span>) <span class="co"># To Excel file</span>
-<span class="kw">save</span>(<span class="dt">x =</span> data, <span class="dt">file =</span> <span class="st">"results.RData"</span>) <span class="co"># To RData file</span>
+<span class="kw"><a href="../reference/mimsy.save.html">mimsy.save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.xlsx"</span>) <span class="co"># To Excel file</span>
+<span class="kw">save</span>(results, <span class="dt">file =</span> <span class="st">"results.RData"</span>) <span class="co"># To RData file</span>
 
-<span class="co"># Done!</span></code></pre></div>
+<span class="co"># Done! :)</span></code></pre></div>
 </div>
   </div>
 
@@ -286,7 +279,6 @@ results &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mim
 <li><a href="#introduction">1. Introduction</a></li>
       <li><a href="#installation">2. Installation</a></li>
       <li><a href="#running-mimsy">3. Running mimsy</a></li>
-      <li><a href="#save-the-output-data">Save the output data</a></li>
       <li><a href="#putting-it-all-together">4. Putting it all together</a></li>
       </ul>
 </div>

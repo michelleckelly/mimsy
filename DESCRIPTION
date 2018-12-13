@@ -1,7 +1,7 @@
 Package: mimsy
 Type: Package
 Title: Calculate Dissolved Gas Concentrations from MIMS Signal Data Without Getting a Headache
-Version: 0.3.1
+Version: 0.4.1
 Date: 2018-10-10
 Authors@R: c(
 	person("Michelle C.", "Kelly", , "michellecatherinekelly@gmail.com", role = c("aut", "cre"))

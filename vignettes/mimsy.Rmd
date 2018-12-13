@@ -65,7 +65,7 @@ You'll need to add some special columns to your data file before loading it into
 
 **CSV file format:**  
 
-* You can save as CSV within Excel from the *File > Save as* menu, choosing the *CSV (Comma delimited) (.csv)* file extension option.
+* You can save as CSV within Excel from the *File > Save as* menu, choosing the *CSV (Comma delimited) (.csv)* option.
 
 **Columns:**  
 
@@ -109,7 +109,7 @@ str(data, vec.len = 2)
 
 ### 3.3. Run the `mimsy()` function  
 
-```{r run, eval = TRUE}
+```{r run, eval = TRUE, warning=FALSE}
 # Run the function
 results <- mimsy(data, baromet.press = 977.2, units = "hPa")
 ```
@@ -117,76 +117,33 @@ results <- mimsy(data, baromet.press = 977.2, units = "hPa")
 results <- mimsy(data, baromet.press = 977.2, units = "hPa")
 ```
 
-You must specify the barometric pressure (`baromet.press`) and it's units in the function argument. Units must be one of `"atm"`, `"hPa"`, `"psi"`, `"bar"`, or `"Torr"`. All other inputs, such as background corrections or standard salinity, are optional. Check out `?mimsy` for more information.  
+You must specify the barometric pressure (`baromet.press`) and its units in the function argument. Units must be one of `"atm"`, `"hPa"`, `"psi"`, `"bar"`, or `"Torr"`. All other inputs, such as background corrections or standard salinity, are optional. Check out `?mimsy` for more information.  
 
 ### 3.4. Explore the results  
 
-```{r }
+```{r results}
+# Check out the structure of the output
+summary(results)
 
+# See the summarized results dataframe
+str(results$results, give.attr = FALSE)
 ```
 
+You'll see that `mimsy()` returns a list containing five seperate dataframes (`results`, `solubility.Concentrations`, `calibration.Factors`, `calibration.DriftCorrection`, and `results.full`). Check out ?mimsy() for more specific information on those outputs and how they were calculated.  
 
 ### 3.5. Save the results  
 
-
-
-
-### Then, inspect the output:  
-
-`mimsy()` returns a list containing five data frames:  
-
-1. `$results`
-2. `$solubility.Concentrations`
-3. `$calibration.Factors`
-4. `$calibration.DriftCorrection`
-5. `$results.full`  
-
-**`$results`** displays a summarized output, containing just identification columns (such as the user's input of `Label` or `Project`) and calculated concentration values (ex. `N2_uMol` and `N2_mg` for the concentration of dissolved dinitrogen gas, in microMoles and milligrams, respectively). `$results` only contains sample results, but see `$results.full` below for results from both samples and standards.  
-
-```{r mimsyResults.display, eval = FALSE}
-# results from the sample data
-data$results
-```
-```{r mimsyResults.silent, eval = FALSE}
-# output kable of results
-kable(data$results, digits = 20, 
-      col.names = c("Label", "CollectionTemp", "Notes", "Type",
-                    "Group", "N2_uMol", "O2_uMol", "Ar_uMol", 
-                    "N2_mg", "O2_mg", "Ar_mg")) %>%
-  kable_styling(bootstrap_options = "condensed", full_width = F) %>%
-  scroll_box(height = "300px")
-
-```  
-
-
-
-**`$solubility.Concentrations`** displays the calculated concentrations [$\small\mu Mole\:kg^{-1}$] of oxygen, nitrogen, and argon gas in water at specific temperature, pressure, and salinity. Row names correspond to `std.temps`. See Garcia and Gordon (1992, Eqn. 8) for further information on oxygen saturation concentration calculations and the equations used herein. See Hamme and Emerson (2004, Table 4, and Eq. 1, 2) for the expansion of Garcia and Gordon's methods for use with calculating nitrogen and argon saturation concentrations.  
-
-**`$calibration.Factors`** are computed by taking the solubility concentrations at standard temperature divided by the average MIMS signal reading of each `Group` at said temperature. These values will then be used internally to calculate the calibration curve, and are made available to the user for transparency.  
-
-**`$calibration.DriftCorrection`** is a data frame containing the slopes and intercepts of the calibration curve for each dissolved gas (ex. `calslope_28` for the slope of the dinitrogen calibration curve), and the drift corrected slope and intercept values (ex. `DRIFT.calslope_28`) which take into account the machine drift due to time that occurs in-between standard readings. These drift values are computed by taking the slope between successive calibration (slope or intercept) values. These values are used internally, and are made available to the user for transparency.  
-
-**`$results.full`** is a data frame that contains the entire output from `mimsy()`, including results from both standards and samples, the initial MIMS signal data and signal ratios, the calibration curve correction factors for each reading (ex. `INTERPOLATED.calfactor_28`), and the final concentration values.  
-
-## Save the output data
-
-Save the entire output to a compact RData file for further R analysis, or use `mimsy.save()` to export to a multi-tabbed Excel file for analysis outside R.
-
-```{r mimsy.save, eval=FALSE}
-# Save output to an RData file
-save(x = data, file = "results.RData")
-
+```{r save, eval = FALSE}
 # Save output to an Excel workbook
-mimsy.save(x = data, file = "results.xlsx")
+mimsy.save(results, file = "results.xlsx")
+
+# Save output to an RData file
+save(results, file = "results.RData")
 ```
 
-**`x`** the processed data, returned by the `mimsy()` function  
+We don't reccomend saving results dataframes to CSV files (although you can), as you'll need multiple CSV's to preserve all of the outputs, and that gets kind of messy. A good alternative is to save both an Excel workbook copy and an RData copy, that way all of your output is preserved every time.
 
-**`file`** desired file name with appropriate extension. Saves to user's working directory, unless an alternative path is specified.  
-
-See the help file at `?save` or `?mimsy.save` for more information.  
-
-Alternatively, you can save individual pieces of the output (such as `data$results`) using the `write.csv()` function. However, we recommend saving the full output for the sake of both reproducability and your future self.  
+You can load RData files back into R using `load("results.RData")`. Check out `?load()` for more info.
 
 ## 4. Putting it all together
 
@@ -208,8 +165,8 @@ data <- read.csv(file = "data.csv", header = TRUE, stringsAsFactors = FALSE)
 results <- mimsy(data, baromet.press = 977.2, units = "hPa")
 
 # Save the results
-mimsy.save(x = data, file = "results.xlsx") # To Excel file
-save(x = data, file = "results.RData") # To RData file
+mimsy.save(results, file = "results.xlsx") # To Excel file
+save(results, file = "results.RData") # To RData file
 
-# Done!
+# Done! :)
 ```
