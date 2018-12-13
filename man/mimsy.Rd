@@ -4,11 +4,11 @@
 \alias{mimsy}
 \title{\code{mimsy} Calculate dissolved gas concentrations}
 \usage{
-mimsy(file, baromet.press, units, bg.correct = FALSE, tz = Sys.timezone(),
+mimsy(data, baromet.press, units, bg.correct = FALSE, tz = Sys.timezone(),
   salinity = 0)
 }
 \arguments{
-\item{file}{the name of the file which the data are to be read from. File must have 'comma seperated value' ('.csv) format and follow the formatting guidelines on the Github page. If the file does not contain an absolute path, the file name is relative to the working directory.}
+\item{data}{the dataframe of MIMS data}
 
 \item{baromet.press}{the ambient barometric pressure while samples processed on the MIMS. Can be a vector, if more than one reading was taken.}
 

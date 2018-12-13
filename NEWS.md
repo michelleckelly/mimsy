@@ -1,3 +1,11 @@
+# mimsy 0.4.1
+
+## Major changes
+* `mimsy()` takes `data` input as a dataframe, no longer internally loads from file path
+
+## Minor changes
+* `vignettes/mimsy.Rmd` rewritten for clarity and screenshots added
+
 # mimsy 0.3.1
 
 ## Major changes

@@ -3,4 +3,4 @@ development:
 url: https://michelleckelly.github.io/mimsy/
 template:
     params:
-        bootswatch: united
+        bootswatch: simplex
