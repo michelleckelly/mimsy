@@ -1,7 +1,8 @@
 [![PyPI status](https://img.shields.io/pypi/status/ansicolortags.svg)](https://GitHub.com/michelleckelly/mimsy/)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/michelleckelly/mimsy/graphs/commit-activity)
 
-## mimsy
+<img src="man/figures/logo.svg" align = "left" alt = "" />
+## mimsy 
 _calculate dissolved gas concentrations from MIMS signal data without getting a headache_
 
 ### Description  
