@@ -90,18 +90,9 @@ You'll need to add some special columns to your data file before loading it into
 
 ### 3.2. Load your CSV file into R using `read.csv()`  
 
-```{r load.csv.silent, eval = FALSE}
+```{r load.csv, eval = TRUE}
 # Load data into R
 data <- read.csv(file = "data.csv", header = TRUE, stringsAsFactors = FALSE)
-
-# Check out the structure
-str(data, vec.len = 2)
-```
-```{r load.csv, eval = TRUE, echo=FALSE}
-# Load data
-data <- 
-  read.csv(file = "C://Users/Michelle/Documents/MS_ResearchProjects/R_packages/mimsy/vignettes/data.csv", 
-           header = TRUE, stringsAsFactors = FALSE)
 
 # Check out the structure
 str(data, vec.len = 2)
@@ -109,17 +100,16 @@ str(data, vec.len = 2)
 
 ### 3.3. Run the `mimsy()` function  
 
+You must specify the barometric pressure (as `baromet.press`) and its units in the function argument. Units must be one of `"atm"`, `"hPa"`, `"psi"`, `"bar"`, or `"Torr"`. All other inputs, such as background corrections or standard salinity, are optional. Check out `?mimsy` for more information.  
+
 ```{r run, eval = TRUE, warning=FALSE}
 # Run the function
 results <- mimsy(data, baromet.press = 977.2, units = "hPa")
 ```
-```{r run.silent, echo = FALSE, eval=FALSE}
-results <- mimsy(data, baromet.press = 977.2, units = "hPa")
-```
-
-You must specify the barometric pressure (`baromet.press`) and its units in the function argument. Units must be one of `"atm"`, `"hPa"`, `"psi"`, `"bar"`, or `"Torr"`. All other inputs, such as background corrections or standard salinity, are optional. Check out `?mimsy` for more information.  
 
 ### 3.4. Explore the results  
+
+You'll see that `mimsy()` returns a list containing five seperate dataframes (`results`, `solubility.Concentrations`, `calibration.Factors`, `calibration.DriftCorrection`, and `results.full`). Check out ?mimsy() for more specific information on those outputs and how they were calculated.  
 
 ```{r results}
 # Check out the structure of the output
@@ -128,8 +118,6 @@ summary(results)
 # See the summarized results dataframe
 str(results$results, give.attr = FALSE)
 ```
-
-You'll see that `mimsy()` returns a list containing five seperate dataframes (`results`, `solubility.Concentrations`, `calibration.Factors`, `calibration.DriftCorrection`, and `results.full`). Check out ?mimsy() for more specific information on those outputs and how they were calculated.  
 
 ### 3.5. Save the results  
 

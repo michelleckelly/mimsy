@@ -178,35 +178,36 @@
 data &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="dt">file =</span> <span class="st">"data.csv"</span>, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)
 
 <span class="co"># Check out the structure</span>
-<span class="kw">str</span>(data, <span class="dt">vec.len =</span> <span class="dv">2</span>)</code></pre></div>
-<pre><code>#&gt; 'data.frame':    42 obs. of  14 variables:
-#&gt;  $ Type          : chr  "Standard" "Standard" ...
-#&gt;  $ Group         : int  1 1 1 1 1 ...
-#&gt;  $ CollectionTemp: num  24.9 24.9 24.9 26.3 26.3 ...
-#&gt;  $ RunDate       : chr  "2/1/2018" "2/1/2018" ...
-#&gt;  $ Label         : chr  NA NA ...
-#&gt;  $ Index         : int  3029 3079 3128 3212 3261 ...
-#&gt;  $ Time          : chr  "10:32:53 AM" "10:34:07 AM" ...
-#&gt;  $ X28           : num  1.20e-08 1.20e-08 1.20e-08 1.19e-08 1.18e-08 ...
-#&gt;  $ X32           : num  5.75e-09 5.75e-09 5.75e-09 5.66e-09 5.66e-09 ...
-#&gt;  $ X40           : num  2.98e-10 2.98e-10 2.98e-10 2.93e-10 2.93e-10 ...
-#&gt;  $ X99           : num  5.51e-07 5.49e-07 5.49e-07 5.41e-07 5.41e-07 ...
-#&gt;  $ N2.Ar         : num  40.3 40.3 ...
-#&gt;  $ O2.Ar         : num  19.3 19.3 ...
-#&gt;  $ Notes         : chr  "Barometric pressure =  977.2 hPa" "" ...</code></pre>
+<span class="kw">str</span>(data, <span class="dt">vec.len =</span> <span class="dv">2</span>)
+<span class="co">#&gt; 'data.frame':    42 obs. of  14 variables:</span>
+<span class="co">#&gt;  $ Type          : chr  "Standard" "Standard" ...</span>
+<span class="co">#&gt;  $ Group         : int  1 1 1 1 1 ...</span>
+<span class="co">#&gt;  $ CollectionTemp: num  24.9 24.9 24.9 26.3 26.3 ...</span>
+<span class="co">#&gt;  $ RunDate       : chr  "2/1/2018" "2/1/2018" ...</span>
+<span class="co">#&gt;  $ Label         : chr  NA NA ...</span>
+<span class="co">#&gt;  $ Index         : int  3029 3079 3128 3212 3261 ...</span>
+<span class="co">#&gt;  $ Time          : chr  "10:32:53 AM" "10:34:07 AM" ...</span>
+<span class="co">#&gt;  $ X28           : num  1.20e-08 1.20e-08 1.20e-08 1.19e-08 1.18e-08 ...</span>
+<span class="co">#&gt;  $ X32           : num  5.75e-09 5.75e-09 5.75e-09 5.66e-09 5.66e-09 ...</span>
+<span class="co">#&gt;  $ X40           : num  2.98e-10 2.98e-10 2.98e-10 2.93e-10 2.93e-10 ...</span>
+<span class="co">#&gt;  $ X99           : num  5.51e-07 5.49e-07 5.49e-07 5.41e-07 5.41e-07 ...</span>
+<span class="co">#&gt;  $ N2.Ar         : num  40.3 40.3 ...</span>
+<span class="co">#&gt;  $ O2.Ar         : num  19.3 19.3 ...</span>
+<span class="co">#&gt;  $ Notes         : chr  "Barometric pressure =  977.2 hPa" "" ...</span></code></pre></div>
 </div>
 <div id="run-the-mimsy-function" class="section level3">
 <h3 class="hasAnchor">
 <a href="#run-the-mimsy-function" class="anchor"></a>3.3. Run the <code><a href="../reference/mimsy.html">mimsy()</a></code> function</h3>
+<p>You must specify the barometric pressure (as <code>baromet.press</code>) and its units in the function argument. Units must be one of <code>"atm"</code>, <code>"hPa"</code>, <code>"psi"</code>, <code>"bar"</code>, or <code>"Torr"</code>. All other inputs, such as background corrections or standard salinity, are optional. Check out <code><a href="../reference/mimsy.html">?mimsy</a></code> for more information.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Run the function</span>
 results &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mimsy.html">mimsy</a></span>(data, <span class="dt">baromet.press =</span> <span class="fl">977.2</span>, <span class="dt">units =</span> <span class="st">"hPa"</span>)
 <span class="co">#&gt; Calculated dissolved concentrations based on a two-point temperature standard.</span>
 <span class="co">#&gt; Standard 1: 24.9 C, Standard 2: 26.3 C</span></code></pre></div>
-<p>You must specify the barometric pressure (<code>baromet.press</code>) and its units in the function argument. Units must be one of <code>"atm"</code>, <code>"hPa"</code>, <code>"psi"</code>, <code>"bar"</code>, or <code>"Torr"</code>. All other inputs, such as background corrections or standard salinity, are optional. Check out <code><a href="../reference/mimsy.html">?mimsy</a></code> for more information.</p>
 </div>
 <div id="explore-the-results" class="section level3">
 <h3 class="hasAnchor">
 <a href="#explore-the-results" class="anchor"></a>3.4. Explore the results</h3>
+<p>You’ll see that <code><a href="../reference/mimsy.html">mimsy()</a></code> returns a list containing five seperate dataframes (<code>results</code>, <code>solubility.Concentrations</code>, <code>calibration.Factors</code>, <code>calibration.DriftCorrection</code>, and <code>results.full</code>). Check out ?mimsy() for more specific information on those outputs and how they were calculated.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Check out the structure of the output</span>
 <span class="kw">summary</span>(results)
 <span class="co">#&gt;                             Length Class      Mode</span>
@@ -230,7 +231,6 @@ results &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mim
 <span class="co">#&gt;  $ N2_mg         : num  13.1 13.1 13 12.4 12.5 ...</span>
 <span class="co">#&gt;  $ O2_mg         : num  9.63 9.62 9.61 9.29 9.37 ...</span>
 <span class="co">#&gt;  $ Ar_mg         : num  0.48 0.479 0.478 0.464 0.464 ...</span></code></pre></div>
-<p>You’ll see that <code><a href="../reference/mimsy.html">mimsy()</a></code> returns a list containing five seperate dataframes (<code>results</code>, <code>solubility.Concentrations</code>, <code>calibration.Factors</code>, <code>calibration.DriftCorrection</code>, and <code>results.full</code>). Check out ?mimsy() for more specific information on those outputs and how they were calculated.</p>
 </div>
 <div id="save-the-results" class="section level3">
 <h3 class="hasAnchor">
