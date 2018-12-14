@@ -18,6 +18,7 @@ library(mimsy)
 
 ### Citation
 
+To see the recommended citation for this package, run `citation("mimsy")` in the R console:
 ```R
 citation("mimsy")
 ```
