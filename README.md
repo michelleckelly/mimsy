@@ -1,16 +1,14 @@
-[![PyPI status](https://img.shields.io/pypi/status/ansicolortags.svg)](https://GitHub.com/michelleckelly/mimsy/)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/michelleckelly/mimsy/graphs/commit-activity)
-
-<img src="man/figures/logo.svg" align = "left" alt = "" />
-## mimsy 
+## mimsy <img src="man/figures/logo.svg" align = "right" alt = "" width = "120 />
 _calculate dissolved gas concentrations from MIMS signal data without getting a headache_
 
-### Description  
-`mimsy` is an R package that calculates dissolved gas concentrations from raw MIMS (Membrane Inlet Mass Spectrometer, Bay Instruments) signal data based on dissolved gas solubilities. Use the `mimsy` function on a formatted .csv file to return dissolved gas concentrations (mg and μMole) of N<sub>2</sub>, O<sub>2</sub>, Ar based on gas solubility at temperature, pressure, and salinity. Then, easily save the output of `mimsy` to a multi-tab Excel workbook with the `mimsy.save` function. Supports dual-temperature standard calibration for dual-bath MIMS setups.
+[![Travis-CI build status](https://travis-ci.org/michelleckelly/mimsy.svg?branch=master)](https://travis-ci.org/michelleckelly/mimsy)
+[![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+
+mimsy is designed to make it quick and easy to calculate dissolved gas concentrations from your raw MIMS (Membrane Inlet Mass Spectrometer) data. View the quick start guide at <https://michelleckelly.github.io/mimsy/articles/mimsy.html> 
 
 ### Installation  
 
-```R
+```{r, eval = FALSE}
 # Pull package from github using devtools
 library(devtools)
 install_github("michelleckelly/mimsy", dependencies = "Depends")
@@ -20,7 +18,10 @@ library(mimsy)
 ```
 
 ### Citation
-Run `citation("mimsy")` in the R console to view the recommended citation for this package.
+
+```{r, eval = FALSE}
+citation("mimsy")
+```
 
 ### Disclaimer
 `mimsy` holds no official endorsement from the Bay Instruments company. This software is preliminary and subject to revision. By the use of this software, the user assumes their own responsibility for ensuring the accuracy of the program. 
