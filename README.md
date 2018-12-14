@@ -1,13 +1,11 @@
-mimsy <img src="man/figures/logo.svg" align = "right" alt = "" width = "120 />
---------
-_calculate dissolved gas concentrations from MIMS signal data without getting a headache_
+# mimsy <img src="man/figures/logo.svg" align = "right" width = "120" />
 
-[![Travis-CI build status](https://travis-ci.org/michelleckelly/mimsy.svg?branch=master)](https://travis-ci.org/michelleckelly/mimsy)
+[![Travis CI Build Status](https://travis-ci.com/michelleckelly/mimsy.svg?branch=master)](https://travis-ci.com/michelleckelly/mimsy)
 [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 
-mimsy is designed to make it quick and easy to calculate dissolved gas concentrations from your raw MIMS (Membrane Inlet Mass Spectrometer) data. View the quick start guide in [Get started](https://michelleckelly.github.io/mimsy/articles/mimsy.html)
+mimsy is designed to make it quick and easy to calculate dissolved gas concentrations from your raw MIMS (Membrane Inlet Mass Spectrometer) data. [View the quick start guide here.](https://michelleckelly.github.io/mimsy/articles/mimsy.html)
 
-## Installation  
+### Installation  
 
 ```R
 # Pull package from github using devtools
@@ -18,16 +16,16 @@ install_github("michelleckelly/mimsy", dependencies = "Depends")
 library(mimsy)
 ```
 
-## Citation
+### Citation
 
 ```R
 citation("mimsy")
 ```
 
-## Disclaimer
+### Disclaimer
 `mimsy` holds no official endorsement from the Bay Instruments company. This software is preliminary and subject to revision. By the use of this software, the user assumes their own responsibility for ensuring the accuracy of the program. 
 
-## References
+### References
 Garcia, H., and L. Gordon (1992), _Oxygen solubility in seawater: Better fitting
 equations._ Limnology and Oceanography, 37(6). https://doi.org/10.4319/lo.1992.37.6.1307
 

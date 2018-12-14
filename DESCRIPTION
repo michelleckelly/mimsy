@@ -1,6 +1,6 @@
 Package: mimsy
 Type: Package
-Title: Calculate Dissolved Gas Concentrations from MIMS Signal Data Without Getting a Headache
+Title: Calculate MIMS Dissolved Gas Concentrations Without Getting a Headache
 Version: 0.4.1
 Date: 2018-10-10
 Authors@R: c(
