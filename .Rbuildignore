@@ -1,4 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^_pkgdown\.yml$
+^_pkgdown.yml$
+^.travis.yml$
 ^docs$
+^cran-comments.md$
