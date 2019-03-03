@@ -1,4 +1,3 @@
-
 # mimsy 0.4.2
 
 ## Minor changes
