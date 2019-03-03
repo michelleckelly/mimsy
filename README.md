@@ -1,11 +1,30 @@
-# mimsy <img src="man/figures/logo.svg" align = "right" width = "120" />
+# mimsy <img src="man/figures/logo.png" align = "right" width = "120" />
 
 [![Travis CI Build Status](https://travis-ci.com/michelleckelly/mimsy.svg?branch=master)](https://travis-ci.com/michelleckelly/mimsy)
 [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 
-mimsy is designed to make it quick and easy to calculate dissolved gas concentrations from your raw MIMS (Membrane Inlet Mass Spectrometer) data. [View the quick start guide here.](https://michelleckelly.github.io/mimsy/articles/mimsy.html)
+"Calculate MIMS dissolved gas concentrations without getting a headache."  
 
-### Installation  
+`mimsy` is a data analysis package that transforms raw MIMS (Membrane Inlet Mass Spectrometer) signal data into dissolved gas concentration readings using standard solubility equations. `mimsy` is designed to be simple and accessible for non-R users.  
+
+Click on the **Get started** tab above to read through the detailed how-to guide. 
+
+### Crunch data in 5 lines of code or less
+```R
+# Load data into R
+data <- read.csv(file = "data.csv", header = TRUE, stringsAsFactors = FALSE)
+
+# Run the mimsy function
+results <- mimsy(data, baromet.press = 977.2, units = "hPa")
+
+# Save the results
+mimsy.save(results, file = "results.xlsx") # To Excel file
+save(results, file = "results.RData") # To RData file
+
+# Done! :)
+```
+
+### Installation instructions 
 
 ```R
 # Pull package from github using devtools
@@ -16,7 +35,7 @@ install_github("michelleckelly/mimsy", dependencies = "Depends")
 library(mimsy)
 ```
 
-### Citation
+### Recommended citation
 
 To see the recommended citation for this package, run `citation("mimsy")` in the R console:
 ```R

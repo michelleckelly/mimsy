@@ -1,3 +1,11 @@
+
+# mimsy 0.4.2
+
+## Minor changes
+* Preparation for submission to CRAN
+* `README.md` updated with full workflow example
+* logo updated
+
 # mimsy 0.4.1
 
 ## Major changes
