@@ -54,6 +54,8 @@
 
 mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                   tz = Sys.timezone(), salinity = 0) {
+  Type <- data$Type
+  Group <- data$Group
 
   # Check if "Type" is the first column ----------------------------------------
 
@@ -290,7 +292,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
         for (groupNo in 1:max(data$Group)) {
             # individually extract each group of standards
-            cal.block <- data %>% filter(Type == "Standard" && Group == groupNo)
+            cal.block <- data %>% filter(Type == "Standard" & Group == groupNo)
 
             # calculate calibration factor calfactor = solubility concentration
             # at std temp / avg(MIMS readings at std temp)

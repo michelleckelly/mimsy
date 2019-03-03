@@ -2,14 +2,14 @@ Package: mimsy
 Type: Package
 Title: Calculate MIMS Dissolved Gas Concentrations Without Getting a Headache
 Version: 0.4.2
-Date: 2018-10-10
+Date: 2019-03-03
 Authors@R: c(
 	person("Michelle C.", "Kelly", , "michellecatherinekelly@gmail.com", role = c("aut", "cre"))
 	)
 Author: Michelle C. Kelly [aut, cre]
 Description: Calculate dissolved gas concentrations from raw MIMS 
 	(Membrane Inlet Mass Spectrometer, Bay Instruments) signal data. 
-	Use the mimsy function on a formatted .csv file to return dissolved 
+	Use the mimsy function on a formatted CSV file to return dissolved 
 	gas concentrations (mg and microMole) and ratios of N2, O2, Ar based on 
 	gas solubility at temperature, pressure, and salinity (Benson and Krause 
 	1984, Garcia and Gordon 1992, Stull 1947, Hamme and Emerson 2004). Then, 
