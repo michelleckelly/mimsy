@@ -23,13 +23,12 @@ License: MIT + file LICENSE
 URL: https://github.com/michelleckelly/mimsy, https://michelleckelly.github.io/mimsy/
 BugReports: https://github.com/michelleckelly/mimsy/issues
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 Imports: dplyr,
     magrittr,
     lubridate,
 	openxlsx,
 	utils
 Suggests: knitr,
-    rmarkdown,
-	kableExtra
+    rmarkdown
 VignetteBuilder: knitr

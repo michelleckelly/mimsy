@@ -8,9 +8,13 @@
 #' @return Outputs an excel workbook to the user's working directory
 #'
 #' @examples
-#' \dontrun{
-#' mimsy.save(data, file = "results.xlsx")
-#' }
+#' data <-
+#'   read.csv(file = system.file("extdata", "data.csv", package = "mimsy"),
+#'            header = TRUE, stringsAsFactors = FALSE)
+#'
+#' results <- mimsy(data, baromet.press = 981.2, units = 'hPa')
+#'
+#' mimsy.save(results, file = file.path(tempdir(), "results.xlsx"))
 #'
 #' @importFrom openxlsx "write.xlsx"
 #'

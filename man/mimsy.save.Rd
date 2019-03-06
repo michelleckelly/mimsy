@@ -18,8 +18,12 @@ Outputs an excel workbook to the user's working directory
 Easily save the full output of the `mimsy` calculation function to a nicely-formatted, multi-tab Excel .xlsx file.
 }
 \examples{
-\dontrun{
-mimsy.save(data, file = "results.xlsx")
-}
+data <-
+  read.csv(file = system.file("extdata", "data.csv", package = "mimsy"),
+           header = TRUE, stringsAsFactors = FALSE)
+
+results <- mimsy(data, baromet.press = 981.2, units = 'hPa')
+
+mimsy.save(results, file = file.path(tempdir(), "results.xlsx"))
 
 }

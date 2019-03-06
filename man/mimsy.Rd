@@ -2,10 +2,10 @@
 % Please edit documentation in R/mimsy.R
 \name{mimsy}
 \alias{mimsy}
-\title{\code{mimsy} Calculate dissolved gas concentrations}
+\title{\code{mimsy} Calculate MIMS dissolved gas concentrations}
 \usage{
-mimsy(data, baromet.press, units, bg.correct = FALSE, tz = Sys.timezone(),
-  salinity = 0)
+mimsy(data, baromet.press, units, bg.correct = FALSE,
+  tz = Sys.timezone(), salinity = 0)
 }
 \arguments{
 \item{data}{the dataframe of MIMS data}
@@ -37,9 +37,11 @@ a list, containing 5 dataframes:
 Return dissolved gas concentrations in units of micromole and milligram from membrane inlet mass spectrometer (MIMS) signal data
 }
 \examples{
-\dontrun{
-data <- mimsy(file = 'data.csv', baromet.press = 981.2, units = 'hPa')
-}
+data <-
+  read.csv(file = system.file("extdata", "data.csv", package = "mimsy"),
+           header = TRUE, stringsAsFactors = FALSE)
+
+results <- mimsy(data, baromet.press = 981.2, units = 'hPa')
 
 }
 \references{

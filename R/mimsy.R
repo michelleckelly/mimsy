@@ -1,4 +1,4 @@
-#' \code{mimsy} Calculate dissolved gas concentrations
+#' \code{mimsy} Calculate MIMS dissolved gas concentrations
 #'
 #' Return dissolved gas concentrations in units of micromole and milligram from membrane inlet mass spectrometer (MIMS) signal data
 #'
@@ -39,9 +39,11 @@
 #' in distilled water and seawater}, Deep-Sea Research I, 51(11), 1517-1528.
 #'
 #' @examples
-#' \dontrun{
-#' data <- mimsy(file = 'data.csv', baromet.press = 981.2, units = 'hPa')
-#' }
+#' data <-
+#'   read.csv(file = system.file("extdata", "data.csv", package = "mimsy"),
+#'            header = TRUE, stringsAsFactors = FALSE)
+#'
+#' results <- mimsy(data, baromet.press = 981.2, units = 'hPa')
 #'
 #' @importFrom lubridate "mdy_hms"
 #' @importFrom dplyr "group_by"
