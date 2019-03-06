@@ -1,7 +1,8 @@
 pandoc: 1.19.2.1
 pkgdown: 1.3.0
 pkgdown_sha: ~
-articles: []
+articles:
+  mimsy: mimsy.html
 urls:
   reference: https://michelleckelly.github.io/mimsy//reference
   article: https://michelleckelly.github.io/mimsy//articles

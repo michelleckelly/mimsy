@@ -97,10 +97,10 @@
 data &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/read.table">read.csv</a></span>(<span class="dt">file =</span> <span class="st">"data.csv"</span>, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)
 
 <span class="co"># Run the mimsy function</span>
-results &lt;-<span class="st"> </span><span class="kw">mimsy</span>(data, <span class="dt">baromet.press =</span> <span class="fl">977.2</span>, <span class="dt">units =</span> <span class="st">"hPa"</span>)
+results &lt;-<span class="st"> </span><span class="kw"><a href="reference/mimsy.html">mimsy</a></span>(data, <span class="dt">baromet.press =</span> <span class="fl">977.2</span>, <span class="dt">units =</span> <span class="st">"hPa"</span>)
 
 <span class="co"># Save the results</span>
-<span class="kw">mimsy.save</span>(results, <span class="dt">file =</span> <span class="st">"results.xlsx"</span>) <span class="co"># To Excel file</span>
+<span class="kw"><a href="reference/mimsy.save.html">mimsy.save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.xlsx"</span>) <span class="co"># To Excel file</span>
 <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/save">save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.RData"</span>) <span class="co"># To RData file</span>
 
 <span class="co"># Done! :)</span></code></pre></div>
