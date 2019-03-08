@@ -1,9 +1,8 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Example file ("data.csv") now included in inst/extdata/
-* Examples in mimsy.R and mimsy.save.R are no longer wrapped in \dontrun{} and are now testable
-* Examples and vignettes now write files to the temporary directory using tempdir()
+* Software names are now in single quotes (e.g. 'Excel') in DESCRIPTION
+* Function names now end with '()' (e.g. mimsy.save() ) in DESCRIPTION
 
 ## Test environments
 * local Windows 10 install, R 3.5.2
