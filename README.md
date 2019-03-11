@@ -42,7 +42,7 @@ citation("mimsy")
 ```
 
 ### Disclaimer
-`mimsy` holds no official endorsement from the Bay Instruments company. This software is preliminary and subject to revision. By the use of this software, the user assumes their own responsibility for ensuring the accuracy of the program. 
+`mimsy` holds no endorsement from the Bay Instruments company. This software is preliminary and subject to revision. By the use of this software, the user assumes their own responsibility for ensuring the accuracy of the program. 
 
 ### References
 Garcia, H., and L. Gordon (1992), _Oxygen solubility in seawater: Better fitting
