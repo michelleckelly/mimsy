@@ -10,7 +10,7 @@ Author: Michelle C. Kelly [aut, cre]
 Description: Calculate dissolved gas concentrations from raw MIMS 
 	(Membrane Inlet Mass Spectrometer) signal data. Use mimsy() on 
 	a formatted CSV file to return dissolved gas concentrations 
-	(mg and microMole) and ratios of N2, O2, Ar based on 
+	(mg and microMole) of N2, O2, Ar based on 
 	gas solubility at temperature, pressure, and salinity. See references 
 	Benson and Krause (1984) <DOI:10.4319/lo.1992.37.6.1307>, Garcia and 
 	Gordon (1992) <DOI:10.4319/lo.1984.29.3.0620>, Stull (1947) 

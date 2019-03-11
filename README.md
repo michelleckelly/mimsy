@@ -5,7 +5,7 @@
 
 "Calculate MIMS dissolved gas concentrations without getting a headache."  
 
-`mimsy` is a data analysis package that transforms raw MIMS (Membrane Inlet Mass Spectrometer) signal data into dissolved gas concentration readings (mg, micromole) and gas ratios (N2:Ar, O2:Ar) based on gas solubility at temperature, pressure, and salinity. Supports dual-temperature standard calibration for dual-bath MIMS setups. `mimsy` is designed to be simple and accessible for non-R users.  
+`mimsy` is a data analysis package that transforms raw MIMS (Membrane Inlet Mass Spectrometer) signal data into dissolved gas concentration readings (mg, micromole) of N2, O2, and Ar based on gas solubility at temperature, pressure, and salinity. Supports dual-temperature standard calibration for dual-bath MIMS setups. `mimsy` is designed to be simple and accessible for non-R users.  
 
 Click on the **Get started** tab above to read through the detailed how-to guide. 
 
