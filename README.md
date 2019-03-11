@@ -27,9 +27,8 @@ save(results, file = "results.RData") # To RData file
 ### Installation instructions 
 
 ```R
-# Pull package from github using devtools
-library(devtools)
-install_github("michelleckelly/mimsy", dependencies = "Depends")
+# Download package
+install.packages("mimsy")
 
 # Load package into your R environment
 library(mimsy)

@@ -74,7 +74,7 @@
     <div class="page-header toc-ignore">
       <h1>Get started</h1>
             
-            <h4 class="date">2019-03-06</h4>
+            <h4 class="date">2019-03-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/michelleckelly/mimsy/blob/master/vignettes/mimsy.Rmd"><code>vignettes/mimsy.Rmd</code></a></small>
       <div class="hidden name"><code>mimsy.Rmd</code></div>
@@ -92,17 +92,11 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>2. Installation</h2>
-<p>mimsy is not yet released on CRAN, the official repository for R packages. To download mimsy from GitHub, use the devtools package:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Install the devtools package</span>
-<span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"devtools"</span>)
+<p>Install mimsy from the CRAN repository and load into your R environment:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Install the package</span>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"mimsy"</span>)
 
-<span class="co"># Load devtools</span>
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(devtools)
-
-<span class="co"># Download mimsy from github using devtools</span>
-<span class="kw">install_github</span>(<span class="st">"michelleckelly/mimsy"</span>, <span class="dt">dependencies =</span> <span class="st">"Depends"</span>)</code></pre></div>
-<p>Afterwards, you can load mimsy like any other package:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load mimsy</span>
+<span class="co"># Load the package</span>
 <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(mimsy)</code></pre></div>
 </div>
 <div id="running-mimsy" class="section level2">
@@ -242,19 +236,15 @@ results &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mim
 
 <span class="co"># Save output to an RData file</span>
 <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/save">save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.RData"</span>)</code></pre></div>
-<p>We don’t reccomend saving results dataframes to CSV files (although you can), as you’ll need multiple CSV’s to preserve all of the outputs, and that gets kind of messy. A good alternative is to save both an Excel workbook copy and an RData copy, that way all of your output is preserved every time.</p>
+<p>We don’t reccomend saving results dataframes to CSV files (although it is possible), as you’ll need multiple CSV’s to preserve all of the outputs, and that gets kind of messy. A good alternative is to save both an Excel workbook copy and an RData copy, that way all of your output is preserved every time.</p>
 <p>You can load RData files back into R using <code><a href="https://www.rdocumentation.org/packages/base/topics/load">load("results.RData")</a></code>. Check out <code>?load()</code> for more info.</p>
 </div>
 </div>
 <div id="putting-it-all-together" class="section level2">
 <h2 class="hasAnchor">
 <a href="#putting-it-all-together" class="anchor"></a>4. Putting it all together</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Install the devtools package</span>
-<span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"devtools"</span>)
-<span class="co"># Load devtools</span>
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(devtools)
-<span class="co"># Download mimsy from Github using devtools</span>
-<span class="kw">install_github</span>(<span class="st">"michelleckelly/mimsy"</span>, <span class="dt">dependencies =</span> <span class="st">"Depends"</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Install mimsy</span>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"mimsy"</span>)
 
 <span class="co"># Load mimsy</span>
 <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(mimsy)

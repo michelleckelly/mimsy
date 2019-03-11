@@ -25,23 +25,13 @@ If you find bugs in this software, or you would like to suggest new features, pl
 
 ## 2. Installation  
 
-mimsy is not yet released on CRAN, the official repository for R packages. To download mimsy from GitHub, use the devtools package:  
+Install mimsy from the CRAN repository and load into your R environment:  
 
 ```{r install.packages, eval = FALSE}
-# Install the devtools package
-install.packages("devtools")
+# Install the package
+install.packages("mimsy")
 
-# Load devtools
-library(devtools)
-
-# Download mimsy from github using devtools
-install_github("michelleckelly/mimsy", dependencies = "Depends")
-```
-
-Afterwards, you can load mimsy like any other package:
-
-```{r library, eval = FALSE}
-# Load mimsy
+# Load the package
 library(mimsy)
 ```
 
@@ -127,19 +117,15 @@ mimsy.save(results, file = "results.xlsx")
 save(results, file = "results.RData")
 ```
 
-We don't reccomend saving results dataframes to CSV files (although you can), as you'll need multiple CSV's to preserve all of the outputs, and that gets kind of messy. A good alternative is to save both an Excel workbook copy and an RData copy, that way all of your output is preserved every time.
+We don't reccomend saving results dataframes to CSV files (although it is possible), as you'll need multiple CSV's to preserve all of the outputs, and that gets kind of messy. A good alternative is to save both an Excel workbook copy and an RData copy, that way all of your output is preserved every time.
 
 You can load RData files back into R using `load("results.RData")`. Check out `?load()` for more info.
 
 ## 4. Putting it all together
 
 ```{r fullScript, eval=FALSE}
-# Install the devtools package
-install.packages("devtools")
-# Load devtools
-library(devtools)
-# Download mimsy from Github using devtools
-install_github("michelleckelly/mimsy", dependencies = "Depends")
+# Install mimsy
+install.packages("mimsy")
 
 # Load mimsy
 library(mimsy)

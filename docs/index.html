@@ -12,16 +12,15 @@
 <script src="pkgdown.js"></script><meta property="og:title" content="Calculate MIMS Dissolved Gas Concentrations Without Getting a Headache">
 <meta property="og:description" content="Calculate dissolved gas concentrations from raw MIMS 
 	(Membrane Inlet Mass Spectrometer, Bay Instruments) signal data. 
-	Use the mimsy function on a formatted CSV file to return dissolved 
-	gas concentrations (mg and microMole) and ratios of N2, O2, Ar based on 
+	Use mimsy() on a formatted CSV file to return dissolved gas 
+	concentrations (mg and microMole) and ratios of N2, O2, Ar based on 
 	gas solubility at temperature, pressure, and salinity. See references 
 	Benson and Krause (1984) &lt;DOI:10.4319/lo.1992.37.6.1307&gt;, Garcia and 
 	Gordon (1992) &lt;DOI:10.4319/lo.1984.29.3.0620&gt;, Stull (1947) 
 	&lt;DOI:10.1021/ie50448a022&gt;, and Hamme and Emerson (2004) 
 	&lt;DOI:10.1016/j.dsr.2004.06.009&gt; for more information. Easily save the 
-	output to a nicely-formatted multi-tab Excel workbook with the mimsy.save 
-	function. Supports dual-temperature standard calibration for dual-bath 
-	MIMS setups.">
+	output to a nicely-formatted multi-tab 'Excel' workbook with mimsy.save(). 
+	Supports dual-temperature standard calibration for dual-bath MIMS setups.">
 <meta property="og:image" content="https://michelleckelly.github.io/mimsy/logo.png">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -108,9 +107,8 @@ results &lt;-<span class="st"> </span><span class="kw"><a href="reference/mimsy.
 <div id="installation-instructions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#installation-instructions" class="anchor"></a>Installation instructions</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Pull package from github using devtools</span>
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(devtools)
-<span class="kw">install_github</span>(<span class="st">"michelleckelly/mimsy"</span>, <span class="dt">dependencies =</span> <span class="st">"Depends"</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Download package</span>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"mimsy"</span>)
 
 <span class="co"># Load package into your R environment</span>
 <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(mimsy)</code></pre></div>
@@ -141,6 +139,8 @@ results &lt;-<span class="st"> </span><span class="kw"><a href="reference/mimsy.
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
+<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=mimsy">https://​cloud.r-project.org/​package=mimsy</a>
+</li>
 <li>Browse source code at <br><a href="https://github.com/michelleckelly/mimsy">https://​github.com/​michelleckelly/​mimsy</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/michelleckelly/mimsy/issues">https://​github.com/​michelleckelly/​mimsy/​issues</a>
