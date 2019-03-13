@@ -85,6 +85,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     if (all(data[1:6,1] == c('Standard','Standard','Standard',
                              'Sample','Sample','Sample'))) {
       std.temps <- unique(data$CollectionTemp[1:3])
+      stop('Single-point temperature calibration is not yet supported, but will be soon. Please send an email to michellekelly@ku.edu if you would like this update to take priority! :)')
     }
 
   # Format time column -------------------------------------------------------
@@ -101,7 +102,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   }
   if (bg.correct != FALSE) {
     # UPDATEFLAG
-    message("Background correction not yet supported. In meantime, please set bg.correct to FALSE")
+    message("Background correction is not yet supported, but will be soon. Please send an email to michellekelly@ku.edu if you would like this update to take priority! :)")
   }
 
   # Barometric pressure conversion -------------------------------------------
@@ -133,7 +134,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
   # 3. Calculate solubilites of dissolved gas --------------------------------
 
-  # initialize vector to store concentration values
+  # initialize vector to store concentration values NOTE will need to adapt this for single temp vs dual temp
   solubility.conc <- data.frame(O2.conc_uMol.kg = numeric(length = 2),
                                 N2.conc_uMol.kg = numeric(length = 2),
                                 Ar.conc_uMol.kg = numeric(length = 2),
@@ -562,6 +563,8 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                         results.full = data)
         return(outlist)
     }
-    # if (all(data[1:6,1] == c('Standard','Standard','Standard','Sample','Sample','Sample'))) {
-    # stop('Single-point temperature calibration not yet supported') }
+     if (all(data[1:6,1] == c('Standard','Standard','Standard',
+                              'Sample','Sample','Sample'))) {
+       stop('Single-point temperature calibration is not yet supported, but will be soon. Please send an email to michellekelly@ku.edu if you would like this update to take priority! :)')
+       }
 }
