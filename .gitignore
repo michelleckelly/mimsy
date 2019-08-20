@@ -16,9 +16,3 @@
 inst/doc
 *.DS_Store
 *.Rapp.history
-
-# Ignore .csv files being used for testing
-.csv
-
-# Ignore logos folder of SVG images
-/Logos_mimsy/
