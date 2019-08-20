@@ -14,6 +14,8 @@
 # Ignore temporary Rproject files
 .Rproj.user
 inst/doc
+*.DS_Store
+*.Rapp.history
 
 # Ignore .csv files being used for testing
 .csv

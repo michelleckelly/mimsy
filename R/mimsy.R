@@ -85,11 +85,12 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   }
 
   # Single-Point calibration (one temperature standard)
-  if (length(unique(data[StdIndex, "CollectionTemp"])) == 1) {
+  if (length(unique(data[StdIndex, "CollectionTemp"])) == 1){
     # Set std.temps equal to the unique temperatures in this column
     std.temps <- unique(data[StdIndex, "CollectionTemp"])
-    stop('Single-point temperature calibration is not yet supported, but will be soon. Please send an email to michellekelly@ku.edu if you would like this update to take priority! :)')
+    #stop('Single-point temperature calibration is not yet supported, but will be soon. Please send an email to michellekelly@ku.edu if you would like this update to take priority! :)')
   }
+
 
   # Format time column -------------------------------------------------------
 
