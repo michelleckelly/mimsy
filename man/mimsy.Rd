@@ -45,8 +45,8 @@ results <- mimsy(data, baromet.press = 981.2, units = 'hPa')
 
 }
 \references{
-Garcia, H., and L. Gordon (1992), \emph{Oxygen solubility in seawater: Better fitting
-equations}, Limnology and Oceanography, 37(6).
+Garcia, H., and L. Gordon (1992), \emph{Oxygen solubility in seawater:
+Better fitting equations}, Limnology and Oceanography, 37(6).
 
 Benson, B. B. & Krause, D. (1984). \emph{The concentration and isotopic
 fractionation of oxygen dissolved in freshwater and seawater in equilibrium
@@ -57,6 +57,7 @@ Stull, D. R. (1947). \emph{Vapor Pressure of Pure Substances. Organic and
 Inorganic Compounds.} Industrial & Engineering Chemistry, 39(4), 517-540.
 doi: 10.1021/ie50448a022
 
-Hamme, R. C. & Emerson, S. R. (2004). \emph{The solubility of neon, nitrogen and argon
-in distilled water and seawater}, Deep-Sea Research I, 51(11), 1517-1528.
+Hamme, R. C. & Emerson, S. R. (2004). \emph{The solubility of neon,
+nitrogen and argon in distilled water and seawater}, Deep-Sea Research I,
+51(11), 1517-1528.
 }
