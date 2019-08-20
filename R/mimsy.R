@@ -23,8 +23,8 @@
 #'
 #' @references
 #'
-#' Garcia, H., and L. Gordon (1992), \emph{Oxygen solubility in seawater: Better fitting
-#' equations}, Limnology and Oceanography, 37(6).
+#' Garcia, H., and L. Gordon (1992), \emph{Oxygen solubility in seawater:
+#' Better fitting equations}, Limnology and Oceanography, 37(6).
 #'
 #' Benson, B. B. & Krause, D. (1984). \emph{The concentration and isotopic
 #' fractionation of oxygen dissolved in freshwater and seawater in equilibrium
@@ -35,8 +35,9 @@
 #' Inorganic Compounds.} Industrial & Engineering Chemistry, 39(4), 517-540.
 #' doi: 10.1021/ie50448a022
 #'
-#' Hamme, R. C. & Emerson, S. R. (2004). \emph{The solubility of neon, nitrogen and argon
-#' in distilled water and seawater}, Deep-Sea Research I, 51(11), 1517-1528.
+#' Hamme, R. C. & Emerson, S. R. (2004). \emph{The solubility of neon,
+#' nitrogen and argon in distilled water and seawater}, Deep-Sea Research I,
+#' 51(11), 1517-1528.
 #'
 #' @examples
 #' data <-
@@ -66,27 +67,29 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     data <- dplyr::select(data, Type, dplyr::everything())
   }
 
-  # UPDATEFLAG: check csv has correct column names check baromet.press has
-  # acceptable units check for consistent
+  # UPDATEFLAG: check csv has correct column names, check baromet.press has
+  # acceptable units
+
+  # Returns index of rows in standard
+  StdIndex <- which(data$Group == 1 & data$Type == "Standard")
 
   # Get standard temperatures --------------------------------------------------
-  # Two point temperature standard
-  if (all(data[1:6, 1] == c("Standard", "Standard", "Standard",
-                            "Standard", "Standard", "Standard"))) {
+  # Two-Point calibration (Two temperature standards)
+  if (length(unique(data[StdIndex, "CollectionTemp"])) == 2){
     # Set std.temps equal to the unique temperatures in this column
-    std.temps <- unique(data$CollectionTemp[1:6])
-
+    std.temps <- unique(data[StdIndex, "CollectionTemp"])
     # Check if there are more than two standard temperatures
     if (length(std.temps) > 2){
       stop("Detecting more than two unique temperature values in the first block of standards. \nPlease check that standard temperatures have been entered correctly.")
-      }
     }
-    # Single point temperature standard
-    if (all(data[1:6,1] == c('Standard','Standard','Standard',
-                             'Sample','Sample','Sample'))) {
-      std.temps <- unique(data$CollectionTemp[1:3])
-      stop('Single-point temperature calibration is not yet supported, but will be soon. Please send an email to michellekelly@ku.edu if you would like this update to take priority! :)')
-    }
+  }
+
+  # Single-Point calibration (one temperature standard)
+  if (length(unique(data[StdIndex, "CollectionTemp"])) == 1) {
+    # Set std.temps equal to the unique temperatures in this column
+    std.temps <- unique(data[StdIndex, "CollectionTemp"])
+    stop('Single-point temperature calibration is not yet supported, but will be soon. Please send an email to michellekelly@ku.edu if you would like this update to take priority! :)')
+  }
 
   # Format time column -------------------------------------------------------
 
@@ -277,9 +280,8 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     # Group data by Type (`Standard` or `Sample`) and Group (numeric, 1:n)
     data <- dplyr::group_by(data, data$Type, data$Group)
 
-    # two-point calibration has 6 standard readings
-    if (all(data[1:6, 1] == c("Standard", "Standard", "Standard", "Standard",
-                              "Standard", "Standard"))) {
+    # Two-point calibration
+    if (length(unique(data[StdIndex, "CollectionTemp"])) == 2) {
 
         message("Calculated dissolved concentrations based on a two-point temperature standard.")
         message(paste0("Standard 1: ", std.temps[1], " C, Standard 2: ",
@@ -563,8 +565,9 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                         results.full = data)
         return(outlist)
     }
-     if (all(data[1:6,1] == c('Standard','Standard','Standard',
-                              'Sample','Sample','Sample'))) {
+
+  # Single-point calibration
+  if (length(unique(data[StdIndex, "CollectionTemp"])) == 1) {
        stop('Single-point temperature calibration is not yet supported, but will be soon. Please send an email to michellekelly@ku.edu if you would like this update to take priority! :)')
-       }
+  }
 }
