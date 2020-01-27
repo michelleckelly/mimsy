@@ -1,7 +1,7 @@
 Package: mimsy
 Type: Package
 Title: Calculate MIMS Dissolved Gas Concentrations Without Getting a Headache
-Version: 0.4.2
+Version: 0.4.3
 Date: 2019-03-03
 Authors@R: c(
 	person("Michelle C.", "Kelly", , "michellecatherinekelly@gmail.com", role = c("aut", "cre"))
@@ -22,7 +22,7 @@ License: MIT + file LICENSE
 URL: https://github.com/michelleckelly/mimsy, https://michelleckelly.github.io/mimsy/
 BugReports: https://github.com/michelleckelly/mimsy/issues
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Encoding: UTF-8
 Imports: dplyr,
     magrittr,

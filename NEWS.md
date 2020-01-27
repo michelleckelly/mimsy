@@ -1,3 +1,8 @@
+# mimsy 0.4.3
+
+## Bug fixes
+* Mistake in conversion from barometric pressure in units of Torr to units of atmospheres corrected
+
 # mimsy 0.4.2
 
 ## Minor changes

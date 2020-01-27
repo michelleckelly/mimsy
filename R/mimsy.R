@@ -120,7 +120,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   }
   # Torr to atm
   if (units == "Torr") {
-      baromet.press.atm <- mean(baromet.press) * 760
+      baromet.press.atm <- mean(baromet.press) / 760
   }
   # psi to atm
   if (units == "psi") {
