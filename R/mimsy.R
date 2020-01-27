@@ -282,12 +282,12 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     data <- dplyr::group_by(data, data$Type, data$Group)
 
   # Single-point calibration
-  if (length(unique(data[StdIndex, "CollectionTemp"])) == 1) {
-    message('Single-point temperature calibration is not yet supported, but will be soon. Please send an email to michellekelly@ku.edu if you would like this update to take priority! :)')
+  if (nrow(unique(data[StdIndex, "CollectionTemp"])) == 1) {
+    message('Single-point temperature calibration is not yet supported, but will be soon. Please send an email to mckelly1@mtu.edu if you would like this update to take priority! :)')
   }
 
   # Two-point calibration
-  if (length(unique(data[StdIndex, "CollectionTemp"])) == 2) {
+  if (nrow(unique(data[StdIndex, "CollectionTemp"])) == 2) {
 
     message("Calculated dissolved concentrations based on a two-point temperature standard.")
     message(paste0("Standard 1: ", std.temps[1], " C, Standard 2: ",
