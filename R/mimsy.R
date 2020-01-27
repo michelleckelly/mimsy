@@ -106,7 +106,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   }
   if (bg.correct != FALSE) {
     # UPDATEFLAG
-    message("Background correction is not yet supported, but will be soon. Please send an email to michellekelly@ku.edu if you would like this update to take priority! :)")
+    message("Background correction is not yet supported, but will be soon. Please send an email to mckelly1@mtu.edu if you would like this update to take priority! :)")
   }
 
   # Barometric pressure conversion -------------------------------------------
@@ -139,10 +139,12 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   # 3. Calculate solubilites of dissolved gas --------------------------------
 
   # initialize vector to store concentration values NOTE will need to adapt this for single temp vs dual temp
+
   solubility.conc <- data.frame(O2.conc_uMol.kg = numeric(length = 2),
                                 N2.conc_uMol.kg = numeric(length = 2),
                                 Ar.conc_uMol.kg = numeric(length = 2),
-                                row.names = std.temps)
+                                row.names = paste(std.temps, "deg C"))
+
   # O2 saturation calculation ------------------------------------------------
   for (i in seq_along(std.temps)) {
 
