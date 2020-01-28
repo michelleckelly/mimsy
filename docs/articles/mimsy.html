@@ -6,9 +6,16 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Get started • mimsy</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/journal/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Get started">
 <meta property="og:description" content="">
 <meta property="og:image" content="https://michelleckelly.github.io/mimsy/logo.png">
@@ -31,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mimsy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.3</span>
       </span>
     </div>
 
@@ -39,7 +46,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -56,7 +63,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/michelleckelly/mimsy">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -69,12 +76,13 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Get started</h1>
             
-            <h4 class="date">2019-08-20</h4>
+            <h4 class="date">2020-01-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/michelleckelly/mimsy/blob/master/vignettes/mimsy.Rmd"><code>vignettes/mimsy.Rmd</code></a></small>
       <div class="hidden name"><code>mimsy.Rmd</code></div>
@@ -93,11 +101,11 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>2. Installation</h2>
 <p>Install mimsy from the CRAN repository and load into your R environment:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Install the package</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"mimsy"</span>)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co"># Load the package</span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(mimsy)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># Install the package</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"mimsy"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3"></a></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="co"># Load the package</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(mimsy)</span></code></pre></div>
 </div>
 <div id="running-mimsy" class="section level2">
 <h2 class="hasAnchor">
@@ -105,11 +113,11 @@
 <p>The general structure for running mimsy is:</p>
 <ol style="list-style-type: decimal">
 <li>Format your CSV file</li>
-<li>Load CSV file into R using <code><a href="https://www.rdocumentation.org/packages/utils/topics/read.table">read.csv()</a></code>
+<li>Load CSV file into R using <code><a href="https://rdrr.io/r/utils/read.table.html">read.csv()</a></code>
 </li>
 <li>Run the <code><a href="../reference/mimsy.html">mimsy()</a></code> function</li>
 <li>Explore the results</li>
-<li>Save the results to an Excel file using <code><a href="../reference/mimsy.save.html">mimsy.save()</a></code> or an RData file using <code><a href="https://www.rdocumentation.org/packages/base/topics/save">save()</a></code>
+<li>Save the results to an Excel file using <code><a href="../reference/mimsy.save.html">mimsy.save()</a></code> or an RData file using <code><a href="https://rdrr.io/r/base/save.html">save()</a></code>
 </li>
 </ol>
 <div id="format-your-csv-file" class="section level3">
@@ -117,7 +125,7 @@
 <a href="#format-your-csv-file" class="anchor"></a>3.1. Format your CSV file</h3>
 <p>You’ll need to add some special columns to your data file before loading it into R. The easiest way to do this is to use a spreadsheet editor like Excel. We recommend saving a seperate copy of your raw data file for mimsy (add "_mimsy" to the file name) to prevent any accidents.</p>
 <div class="figure">
-<img src="excel.png" alt="Figure 1. An example of a correctly formatted raw data file."><p class="caption">Figure 1. An example of a correctly formatted raw data file.</p>
+<img src="excel.png" alt=""><p class="caption">Figure 1. An example of a correctly formatted raw data file.</p>
 </div>
 <p><strong>CSV file format:</strong></p>
 <ul>
@@ -168,102 +176,103 @@
 </div>
 <div id="load-your-csv-file-into-r-using-read-csv" class="section level3">
 <h3 class="hasAnchor">
-<a href="#load-your-csv-file-into-r-using-read-csv" class="anchor"></a>3.2. Load your CSV file into R using <code><a href="https://www.rdocumentation.org/packages/utils/topics/read.table">read.csv()</a></code>
+<a href="#load-your-csv-file-into-r-using-read-csv" class="anchor"></a>3.2. Load your CSV file into R using <code>read.csv()</code>
 </h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Load data into R</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">data &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/read.table">read.csv</a></span>(<span class="dt">file =</span> <span class="st">"data.csv"</span>, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># Check out the structure</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/str">str</a></span>(data, <span class="dt">vec.len =</span> <span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="co">#&gt; 'data.frame':    42 obs. of  14 variables:</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co">#&gt;  $ Type          : chr  "Standard" "Standard" ...</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="co">#&gt;  $ Group         : int  1 1 1 1 1 ...</span></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co">#&gt;  $ CollectionTemp: num  24.9 24.9 24.9 26.3 26.3 ...</span></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="co">#&gt;  $ RunDate       : chr  "2/1/2018" "2/1/2018" ...</span></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="co">#&gt;  $ Label         : chr  NA NA ...</span></a>
-<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="co">#&gt;  $ Index         : int  3029 3079 3128 3212 3261 ...</span></a>
-<a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co">#&gt;  $ Time          : chr  "10:32:53 AM" "10:34:07 AM" ...</span></a>
-<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="co">#&gt;  $ X28           : num  1.20e-08 1.20e-08 1.20e-08 1.19e-08 1.18e-08 ...</span></a>
-<a class="sourceLine" id="cb2-15" data-line-number="15"><span class="co">#&gt;  $ X32           : num  5.75e-09 5.75e-09 5.75e-09 5.66e-09 5.66e-09 ...</span></a>
-<a class="sourceLine" id="cb2-16" data-line-number="16"><span class="co">#&gt;  $ X40           : num  2.98e-10 2.98e-10 2.98e-10 2.93e-10 2.93e-10 ...</span></a>
-<a class="sourceLine" id="cb2-17" data-line-number="17"><span class="co">#&gt;  $ X99           : num  5.51e-07 5.49e-07 5.49e-07 5.41e-07 5.41e-07 ...</span></a>
-<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">#&gt;  $ N2.Ar         : num  40.3 40.3 ...</span></a>
-<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#&gt;  $ O2.Ar         : num  19.3 19.3 ...</span></a>
-<a class="sourceLine" id="cb2-20" data-line-number="20"><span class="co">#&gt;  $ Notes         : chr  "Barometric pressure =  977.2 hPa" "" ...</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Load data into R</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>data &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span>(<span class="dt">file =</span> <span class="st">"data.csv"</span>, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co"># Check out the structure</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="kw"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(data, <span class="dt">vec.len =</span> <span class="dv">2</span>)</span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="co">#&gt; 'data.frame':    42 obs. of  14 variables:</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="co">#&gt;  $ Type          : chr  "Standard" "Standard" ...</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="co">#&gt;  $ Group         : int  1 1 1 1 1 ...</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="co">#&gt;  $ CollectionTemp: num  24.9 24.9 24.9 26.3 26.3 ...</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="co">#&gt;  $ RunDate       : chr  "2/1/2018" "2/1/2018" ...</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="co">#&gt;  $ Label         : chr  NA NA ...</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a><span class="co">#&gt;  $ Index         : int  3029 3079 3128 3212 3261 ...</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a><span class="co">#&gt;  $ Time          : chr  "10:32:53 AM" "10:34:07 AM" ...</span></span>
+<span id="cb2-14"><a href="#cb2-14"></a><span class="co">#&gt;  $ X28           : num  1.20e-08 1.20e-08 1.20e-08 1.19e-08 1.18e-08 ...</span></span>
+<span id="cb2-15"><a href="#cb2-15"></a><span class="co">#&gt;  $ X32           : num  5.75e-09 5.75e-09 5.75e-09 5.66e-09 5.66e-09 ...</span></span>
+<span id="cb2-16"><a href="#cb2-16"></a><span class="co">#&gt;  $ X40           : num  2.98e-10 2.98e-10 2.98e-10 2.93e-10 2.93e-10 ...</span></span>
+<span id="cb2-17"><a href="#cb2-17"></a><span class="co">#&gt;  $ X99           : num  5.51e-07 5.49e-07 5.49e-07 5.41e-07 5.41e-07 ...</span></span>
+<span id="cb2-18"><a href="#cb2-18"></a><span class="co">#&gt;  $ N2.Ar         : num  40.3 40.3 ...</span></span>
+<span id="cb2-19"><a href="#cb2-19"></a><span class="co">#&gt;  $ O2.Ar         : num  19.3 19.3 ...</span></span>
+<span id="cb2-20"><a href="#cb2-20"></a><span class="co">#&gt;  $ Notes         : chr  "Barometric pressure =  977.2 hPa" "" ...</span></span></code></pre></div>
 </div>
 <div id="run-the-mimsy-function" class="section level3">
 <h3 class="hasAnchor">
-<a href="#run-the-mimsy-function" class="anchor"></a>3.3. Run the <code><a href="../reference/mimsy.html">mimsy()</a></code> function</h3>
+<a href="#run-the-mimsy-function" class="anchor"></a>3.3. Run the <code>mimsy()</code> function</h3>
 <p>You must specify the barometric pressure (as <code>baromet.press</code>) and its units in the function argument. Units must be one of <code>"atm"</code>, <code>"hPa"</code>, <code>"psi"</code>, <code>"bar"</code>, or <code>"Torr"</code>. All other inputs, such as background corrections or standard salinity, are optional. Check out <code><a href="../reference/mimsy.html">?mimsy</a></code> for more information.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Run the function</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">results &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mimsy.html">mimsy</a></span>(data, <span class="dt">baromet.press =</span> <span class="fl">977.2</span>, <span class="dt">units =</span> <span class="st">"hPa"</span>)</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">#&gt; Calculated dissolved concentrations based on a two-point temperature standard.</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">#&gt; Standard 1: 24.9 C, Standard 2: 26.3 C</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Run the function</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>results &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mimsy.html">mimsy</a></span>(data, <span class="dt">baromet.press =</span> <span class="fl">977.2</span>, <span class="dt">units =</span> <span class="st">"hPa"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co">#&gt; Calculated dissolved concentrations based on a two-point temperature standard.</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co">#&gt; Standard 1: 24.9 C, Standard 2: 26.3 C</span></span></code></pre></div>
 </div>
 <div id="explore-the-results" class="section level3">
 <h3 class="hasAnchor">
 <a href="#explore-the-results" class="anchor"></a>3.4. Explore the results</h3>
 <p>You’ll see that <code><a href="../reference/mimsy.html">mimsy()</a></code> returns a list containing five seperate dataframes (<code>results</code>, <code>solubility.Concentrations</code>, <code>calibration.Factors</code>, <code>calibration.DriftCorrection</code>, and <code>results.full</code>). Check out ?mimsy() for more specific information on those outputs and how they were calculated.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># Check out the structure of the output</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(results)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">#&gt;                             Length Class      Mode</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">#&gt; results                     11     grouped_df list</span></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">#&gt; solubility.Concentrations    3     data.frame list</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co">#&gt; calibration.Factors          3     data.frame list</span></a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="co">#&gt; calibration.DriftCorrection 12     data.frame list</span></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co">#&gt; results.full                30     grouped_df list</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="co"># See the summarized results dataframe</span></a>
-<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/str">str</a></span>(results<span class="op">$</span>results, <span class="dt">give.attr =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co">#&gt; Classes 'grouped_df', 'tbl_df', 'tbl' and 'data.frame':  24 obs. of  11 variables:</span></a>
-<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="co">#&gt;  $ CollectionTemp: num  25.1 25.1 25.1 26.1 26.1 26.1 25.3 25.3 25.3 24.9 ...</span></a>
-<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co">#&gt;  $ Label         : chr  "Sample1" "Sample2" "Sample3" "Sample4" ...</span></a>
-<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="co">#&gt;  $ Notes         : chr  "" "" "" "" ...</span></a>
-<a class="sourceLine" id="cb4-16" data-line-number="16"><span class="co">#&gt;  $ data$Type     : chr  "Sample" "Sample" "Sample" "Sample" ...</span></a>
-<a class="sourceLine" id="cb4-17" data-line-number="17"><span class="co">#&gt;  $ data$Group    : int  1 1 1 1 1 1 1 1 1 1 ...</span></a>
-<a class="sourceLine" id="cb4-18" data-line-number="18"><span class="co">#&gt;  $ N2_uMol       : num  469 469 465 443 447 ...</span></a>
-<a class="sourceLine" id="cb4-19" data-line-number="19"><span class="co">#&gt;  $ O2_uMol       : num  301 301 300 290 293 ...</span></a>
-<a class="sourceLine" id="cb4-20" data-line-number="20"><span class="co">#&gt;  $ Ar_uMol       : num  12 12 11.9 11.6 11.6 ...</span></a>
-<a class="sourceLine" id="cb4-21" data-line-number="21"><span class="co">#&gt;  $ N2_mg         : num  13.1 13.1 13 12.4 12.5 ...</span></a>
-<a class="sourceLine" id="cb4-22" data-line-number="22"><span class="co">#&gt;  $ O2_mg         : num  9.63 9.62 9.61 9.29 9.37 ...</span></a>
-<a class="sourceLine" id="cb4-23" data-line-number="23"><span class="co">#&gt;  $ Ar_mg         : num  0.48 0.479 0.478 0.464 0.464 ...</span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># Check out the structure of the output</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(results)</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="co">#&gt;                             Length Class      Mode</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="co">#&gt; results                     11     grouped_df list</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="co">#&gt; solubility.Concentrations    3     data.frame list</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="co">#&gt; calibration.Factors          3     data.frame list</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="co">#&gt; calibration.DriftCorrection 12     data.frame list</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="co">#&gt; results.full                30     grouped_df list</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a></span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="co"># See the summarized results dataframe</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="kw"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(results<span class="op">$</span>results, <span class="dt">give.attr =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb4-12"><a href="#cb4-12"></a><span class="co">#&gt; Classes 'grouped_df', 'tbl_df', 'tbl' and 'data.frame':  24 obs. of  11 variables:</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a><span class="co">#&gt;  $ CollectionTemp: num  25.1 25.1 25.1 26.1 26.1 26.1 25.3 25.3 25.3 24.9 ...</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a><span class="co">#&gt;  $ Label         : chr  "Sample1" "Sample2" "Sample3" "Sample4" ...</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a><span class="co">#&gt;  $ Notes         : chr  "" "" "" "" ...</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a><span class="co">#&gt;  $ data$Type     : chr  "Sample" "Sample" "Sample" "Sample" ...</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a><span class="co">#&gt;  $ data$Group    : int  1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a><span class="co">#&gt;  $ N2_uMol       : num  469 469 465 443 447 ...</span></span>
+<span id="cb4-19"><a href="#cb4-19"></a><span class="co">#&gt;  $ O2_uMol       : num  301 301 300 290 293 ...</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a><span class="co">#&gt;  $ Ar_uMol       : num  12 12 11.9 11.6 11.6 ...</span></span>
+<span id="cb4-21"><a href="#cb4-21"></a><span class="co">#&gt;  $ N2_mg         : num  13.1 13.1 13 12.4 12.5 ...</span></span>
+<span id="cb4-22"><a href="#cb4-22"></a><span class="co">#&gt;  $ O2_mg         : num  9.63 9.62 9.61 9.29 9.37 ...</span></span>
+<span id="cb4-23"><a href="#cb4-23"></a><span class="co">#&gt;  $ Ar_mg         : num  0.48 0.479 0.478 0.464 0.464 ...</span></span></code></pre></div>
 </div>
 <div id="save-the-results" class="section level3">
 <h3 class="hasAnchor">
 <a href="#save-the-results" class="anchor"></a>3.5. Save the results</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># Save output to an Excel workbook</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw"><a href="../reference/mimsy.save.html">mimsy.save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.xlsx"</span>)</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="co"># Save output to an RData file</span></a>
-<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/save">save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.RData"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Save output to an Excel workbook</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw"><a href="../reference/mimsy.save.html">mimsy.save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.xlsx"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co"># Save output to an RData file</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="kw"><a href="https://rdrr.io/r/base/save.html">save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.RData"</span>)</span></code></pre></div>
 <p>We don’t reccomend saving results dataframes to CSV files (although it is possible), as you’ll need multiple CSV’s to preserve all of the outputs, and that gets kind of messy. A good alternative is to save both an Excel workbook copy and an RData copy, that way all of your output is preserved every time.</p>
-<p>You can load RData files back into R using <code><a href="https://www.rdocumentation.org/packages/base/topics/load">load("results.RData")</a></code>. Check out <code>?load()</code> for more info.</p>
+<p>You can load RData files back into R using <code><a href="https://rdrr.io/r/base/load.html">load("results.RData")</a></code>. Check out <code>?load()</code> for more info.</p>
 </div>
 </div>
 <div id="putting-it-all-together" class="section level2">
 <h2 class="hasAnchor">
 <a href="#putting-it-all-together" class="anchor"></a>4. Putting it all together</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># Install mimsy</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"mimsy"</span>)</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="co"># Load mimsy</span></a>
-<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(mimsy)</a>
-<a class="sourceLine" id="cb6-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="co"># Load data into R</span></a>
-<a class="sourceLine" id="cb6-8" data-line-number="8">data &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/read.table">read.csv</a></span>(<span class="dt">file =</span> <span class="st">"data.csv"</span>, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb6-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb6-10" data-line-number="10"><span class="co"># Run the mimsy function</span></a>
-<a class="sourceLine" id="cb6-11" data-line-number="11">results &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mimsy.html">mimsy</a></span>(data, <span class="dt">baromet.press =</span> <span class="fl">977.2</span>, <span class="dt">units =</span> <span class="st">"hPa"</span>)</a>
-<a class="sourceLine" id="cb6-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb6-13" data-line-number="13"><span class="co"># Save the results</span></a>
-<a class="sourceLine" id="cb6-14" data-line-number="14"><span class="kw"><a href="../reference/mimsy.save.html">mimsy.save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.xlsx"</span>) <span class="co"># To Excel file</span></a>
-<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/save">save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.RData"</span>) <span class="co"># To RData file</span></a>
-<a class="sourceLine" id="cb6-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb6-17" data-line-number="17"><span class="co"># Done! :)</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># Install mimsy</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"mimsy"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="co"># Load mimsy</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(mimsy)</span>
+<span id="cb6-6"><a href="#cb6-6"></a></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="co"># Load data into R</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a>data &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span>(<span class="dt">file =</span> <span class="st">"data.csv"</span>, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb6-9"><a href="#cb6-9"></a></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="co"># Run the mimsy function</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a>results &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mimsy.html">mimsy</a></span>(data, <span class="dt">baromet.press =</span> <span class="fl">977.2</span>, <span class="dt">units =</span> <span class="st">"hPa"</span>)</span>
+<span id="cb6-12"><a href="#cb6-12"></a></span>
+<span id="cb6-13"><a href="#cb6-13"></a><span class="co"># Save the results</span></span>
+<span id="cb6-14"><a href="#cb6-14"></a><span class="kw"><a href="../reference/mimsy.save.html">mimsy.save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.xlsx"</span>) <span class="co"># To Excel file</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a><span class="kw"><a href="https://rdrr.io/r/base/save.html">save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.RData"</span>) <span class="co"># To RData file</span></span>
+<span id="cb6-16"><a href="#cb6-16"></a></span>
+<span id="cb6-17"><a href="#cb6-17"></a><span class="co"># Done! :)</span></span></code></pre></div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
         <div id="tocnav">
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
@@ -279,17 +288,20 @@
 </div>
 
 
+
       <footer><div class="copyright">
   <p>Developed by Michelle C. Kelly.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>
