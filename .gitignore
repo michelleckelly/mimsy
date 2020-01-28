@@ -16,3 +16,6 @@
 inst/doc
 *.DS_Store
 *.Rapp.history
+
+# Ignore pkgdown folder
+/pkgdown/
