@@ -4,7 +4,9 @@ Title: Calculate MIMS Dissolved Gas Concentrations Without Getting a Headache
 Version: 0.4.3
 Date: 2020-01-28
 Authors@R: c(
-	person("Michelle C.", "Kelly", , "michellecatherinekelly@gmail.com", role = c("aut", "cre"))
+	person("Michelle Catherine", "Kelly", , "mckelly1@mtu.edu", role = c("aut", "cre")),
+	person("Kevin", "Nevorski", , role = c("ctb")),
+	person("Amy M.", "Marcarelli", , role = c("ctb"))
 	)
 Author: Michelle C. Kelly [aut, cre]
 Description: Calculate dissolved gas concentrations from raw MIMS 

@@ -80,7 +80,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     std.temps <- unique(data[StdIndex, "CollectionTemp"])
     # Check if there are more than two standard temperatures
     if (length(std.temps) > 2){
-      stop("Detecting more than two unique temperature values in the first block of standards. \nPlease check that standard temperatures have been entered correctly.")
+      stop("ERROR: More than two unique temperature values in standards")
     }
   }
 
@@ -88,25 +88,24 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   if (length(unique(data[StdIndex, "CollectionTemp"])) == 1){
     # Set std.temps equal to the unique temperatures in this column
     std.temps <- unique(data[StdIndex, "CollectionTemp"])
-    #stop('Single-point temperature calibration is not yet supported, but will be soon. Please send an email to michellekelly@ku.edu if you would like this update to take priority! :)')
   }
 
 
   # Format time column -------------------------------------------------------
 
   data$Time <- lubridate::mdy_hms(paste(data$RunDate, data$Time),
-                                  tz = Sys.timezone())
+                                  tz = tz)
   data$RunDate <- NULL
 
   # 2. Background corrections ------------------------------------------------
 
   if (bg.correct == FALSE) {
-      # set background correction value to zero
-      bg.correct <- 0
+    # set background correction value to zero
+    bg.correct <- 0
   }
   if (bg.correct != FALSE) {
     # UPDATEFLAG
-    message("Background correction is not yet supported, but will be soon. Please send an email to mckelly1@mtu.edu if you would like this update to take priority! :)")
+    message("ERROR: Background correction is not yet supported")
   }
 
   # Barometric pressure conversion -------------------------------------------
@@ -116,29 +115,29 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   }
   # hPa to atm
   if (units == "hPa") {
-      baromet.press.atm <- mean(baromet.press) * 0.00098692316931427
+    baromet.press.atm <- mean(baromet.press) * 0.00098692316931427
   }
   # Torr to atm
   if (units == "Torr") {
-      baromet.press.atm <- mean(baromet.press) / 760
+    baromet.press.atm <- mean(baromet.press) / 760
   }
   # psi to atm
   if (units == "psi") {
-      baromet.press.atm <- mean(baromet.press) * 14.6959487755142
+    baromet.press.atm <- mean(baromet.press) * 14.6959487755142
   }
   # bar to atm
   if (units == "bar") {
-      baromet.press.atm <- mean(baromet.press) * 1.01325
+    baromet.press.atm <- mean(baromet.press) * 1.01325
   }
   # stop message for non-sanctioned units
   if (!(units %in% c("atm", "hPa", "Torr", "psi", "bar"))) {
-      stop("Please report barometric pressure in units of `atm`, `hPa`, `psi`,
+    stop("Please report barometric pressure in units of `atm`, `hPa`, `psi`,
             `bar`, or `Torr`.")
   }
 
   # 3. Calculate solubilites of dissolved gas --------------------------------
 
-  # initialize vector to store concentration values NOTE will need to adapt this for single temp vs dual temp
+  # initialize vector to store concentration values
 
   solubility.conc <- data.frame(O2.conc_uMol.kg = numeric(length = 2),
                                 N2.conc_uMol.kg = numeric(length = 2),
@@ -189,117 +188,124 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     solubility.conc$O2.conc_uMol.kg[i] <- O2.sat * press.corr
   }
 
-    # N2 saturation calculation ------------------------------------------------
-    for (i in seq_along(std.temps)) {
+  # N2 saturation calculation ------------------------------------------------
+  for (i in seq_along(std.temps)) {
 
-      t <- std.temps[i]
+    t <- std.temps[i]
 
-      # Vapor pressure correction use the Antoine equation to calculate vapor
-      # pressure of water [bar] See NIST Chemistry WebBook for general tables,
-      # these parameters valid for temperatures between -18 to 100C (Stull 1947)
+    # Vapor pressure correction use the Antoine equation to calculate vapor
+    # pressure of water [bar] See NIST Chemistry WebBook for general tables,
+    # these parameters valid for temperatures between -18 to 100C (Stull 1947)
 
-      vapor.press <- exp(4.6543 - (1435.264/((t + 273.15) + -64.848)))
-      vapor.press <- vapor.press * 0.98692  # conversion from [bar] to [atm]
+    vapor.press <- exp(4.6543 - (1435.264/((t + 273.15) + -64.848)))
+    vapor.press <- vapor.press * 0.98692  # conversion from [bar] to [atm]
 
-      # pressure correction [atm] = (current pressure - vapor pressure) /
-      # (standard pressure [atm] - vapor pressure)
-      press.corr <- (baromet.press.atm - vapor.press)/(1 - vapor.press)
+    # pressure correction [atm] = (current pressure - vapor pressure) /
+    # (standard pressure [atm] - vapor pressure)
+    press.corr <- (baromet.press.atm - vapor.press)/(1 - vapor.press)
 
-      # N2 saturation calculation Coefficients [umol/kg]
-      # (Hamme and Emerson 2004, Table 4)
-      A0 <- 6.42931
-      A1 <- 2.92704
-      A2 <- 4.32531
-      A3 <- 4.69149
-      B0 <- -7.44129 * 10^-3
-      B1 <- -8.02566 * 10^-3
-      B2 <- -1.46775 * 10^-2
-      # Scaled temperature (Hamme and Emerson 2004, eqn. 2, but identical to
-      # Garcia and Gordon 1992, eqn. 8)
-      TS <- log((298.15 - t)/(273.15 + t))
+    # N2 saturation calculation Coefficients [umol/kg]
+    # (Hamme and Emerson 2004, Table 4)
+    A0 <- 6.42931
+    A1 <- 2.92704
+    A2 <- 4.32531
+    A3 <- 4.69149
+    B0 <- -7.44129 * 10^-3
+    B1 <- -8.02566 * 10^-3
+    B2 <- -1.46775 * 10^-2
+    # Scaled temperature (Hamme and Emerson 2004, eqn. 2, but identical to
+    # Garcia and Gordon 1992, eqn. 8)
+    TS <- log((298.15 - t)/(273.15 + t))
 
-      # Salinity [per mille]
-      S <- salinity
+    # Salinity [per mille]
+    S <- salinity
 
-      # Calculate saturation concentration at temperature and salinity
-      # (Hamme and erson 2004, eqn. 1)
-      lnN2.sat <-
-        A0 + A1 * TS + A2 * TS^2 + A3 * TS^3 + S * (B0 + B1 * TS + B2 * TS^2 +
-                                                      B3 * TS^3)
-      N2.sat <- exp(lnN2.sat)
+    # Calculate saturation concentration at temperature and salinity
+    # (Hamme and emerson 2004, eqn. 1)
+    lnN2.sat <-
+      A0 + A1 * TS + A2 * TS^2 + A3 * TS^3 + S * (B0 + B1 * TS + B2 * TS^2)
+    N2.sat <- exp(lnN2.sat)
 
-      # Correct saturation with pressure correction, solubility.conc units are
-      # [umol/kg]
-      solubility.conc$N2.conc_uMol.kg[i] <- N2.sat * press.corr
-    }
+    # Correct saturation with pressure correction, solubility.conc units are
+    # [umol/kg]
+    solubility.conc$N2.conc_uMol.kg[i] <- N2.sat * press.corr
+  }
 
-    # Ar saturation calculation ------------------------------------------------
+  # Ar saturation calculation ------------------------------------------------
 
-    for (i in seq_along(std.temps)) {
+  # Define custom function, as this calculation will be repeated on all samples
+  arSat <- function(t){
+    # Vapor pressure correction use the Antoine equation to calculate vapor
+    # pressure of water [bar] See NIST Chemistry WebBook for general tables,
+    # these parameters valid for temperatures between -18 to 100C (Stull 1947)
+    vapor.press <- exp(4.6543 - (1435.264/((t + 273.15) + -64.848)))
+    vapor.press <- vapor.press * 0.98692  # conversion from [bar] to [atm]
 
-      t <- std.temps[i]
+    # pressure correction [atm] = (current pressure - vapor pressure) /
+    # (standard pressure [atm] - vapor pressure)
+    press.corr <- (baromet.press.atm - vapor.press)/(1 - vapor.press)
 
-      # Vapor pressure correction use the Antoine equation to calculate vapor
-      # pressure of water [bar] See
-      # NIST Chemistry WebBook for general tables, these parameters valid for
-      # temperatures between -18 to
-      # 100C (Stull 1947)
-      vapor.press <- exp(4.6543 - (1435.264/((t + 273.15) + -64.848)))
-      vapor.press <- vapor.press * 0.98692  # conversion from [bar] to [atm]
+    # Ar saturation calculation Coefficients [umol/kg]
+    # (Hamme and Emerson 2004, Table 4)
+    A0 <- 2.7915
+    A1 <- 3.17609
+    A2 <- 4.13116
+    A3 <- 4.90379
+    B0 <- -6.96233 * 10^-3
+    B1 <- -7.9997 * 10^-3
+    B2 <- -1.16888 * 10^-2
+    # Scaled temperature (Hamme and Emerson 2004, eqn. 2,
+    # but identical to Garcia and Gordon 1992, eqn. 8)
+    TS <- log((298.15 - t)/(273.15 + t))
 
-      # pressure correction [atm] = (current pressure - vapor pressure) /
-      # (standard pressure [atm] - vapor pressure)
-      press.corr <- (baromet.press.atm - vapor.press)/(1 - vapor.press)
+    # Salinity [per mille]
+    S <- salinity
 
-      # Ar saturation calculation Coefficients [umol/kg]
-      # (Hamme and Emerson 2004, Table 4)
-      A0 <- 2.7915
-      A1 <- 3.17609
-      A2 <- 4.13116
-      A3 <- 4.90379
-      B0 <- -6.96233 * 10^-3
-      B1 <- -7.9997 * 10^-3
-      B2 <- -1.16888 * 10^-2
-      # Scaled temperature (Hamme and Emerson 2004, eqn. 2,
-      # but identical to Garcia and Gordon 1992, eqn. 8)
-      TS <- log((298.15 - t)/(273.15 + t))
+    # Calculate saturation concentration at temperature and salinity
+    # (Hamme and emerson 2004, eqn. 1)
+    lnAr.sat <-
+      A0 + A1 * TS + A2 * TS^2 + A3 * TS^3 + S * (B0 + B1 * TS + B2 * TS^2)
+    Ar.sat <- exp(lnAr.sat)
+    # Correct saturation with pressure correction, solubility.conc units
+    # are [umol/kg]
+    result <- Ar.sat * press.corr
+    return(result)
+  }
 
-      # Salinity [per mille]
-      S <- salinity
+  # Run function for standards
+  for (i in seq_along(std.temps)) {
+    t <- std.temps[i]
+    # Run function
+    solubility.conc$Ar.conc_uMol.kg[i] <- arSat(t)
+  }
 
-      # Calculate saturation concentration at temperature and salinity
-      # (Hamme and erson 2004, eqn. 1)
-      lnAr.sat <-
-        A0 + A1 * TS + A2 * TS^2 + A3 * TS^3 + S * (B0 + B1 * TS + B2 * TS^2
-                                                    + B3 * TS^3)
-      Ar.sat <- exp(lnAr.sat)
-      # Correct saturation with pressure correction, solubility.conc units
-      # are [umol/kg]
-      solubility.conc$Ar.conc_uMol.kg[i] <- Ar.sat * press.corr
-    }
+  # 4. Calculate calibration factors -----------------------------------------
 
-    # 4. Calculate calibration factors -----------------------------------------
+  # Group data by Type (`Standard` or `Sample`) and Group (numeric, 1:n)
+  data <- dplyr::group_by(data, data$Type, data$Group)
 
-    # Group data by Type (`Standard` or `Sample`) and Group (numeric, 1:n)
-    data <- dplyr::group_by(data, data$Type, data$Group)
+  # Calculate Ar saturation at temperature and pressure for all samples
+  data$arSat.conc_uMol.kg <- arSat(data$CollectionTemp)
 
   # Single-point calibration
   if (nrow(unique(data[StdIndex, "CollectionTemp"])) == 1) {
-    message('Single-point temperature calibration is not yet supported, but will be soon. Please send an email to mckelly1@mtu.edu if you would like this update to take priority! :)')
+    message('ERROR: Single-point temperature calibration is not yet supported')
   }
 
   # Two-point calibration
   if (nrow(unique(data[StdIndex, "CollectionTemp"])) == 2) {
 
-    message("Calculated dissolved concentrations based on a two-point temperature standard.")
+    message("Calculated concentrations based on a two-point temperature standard.")
     message(paste0("Standard 1: ", std.temps[1], " C, Standard 2: ",
-                    std.temps[2], " C"))
+                   std.temps[2], " C"))
 
     # assemble empty data frame for calibration factors
     calfactor <-
       data.frame(calfactor_28 = numeric(length = max(data$Group) * 2),
                  calfactor_32 = numeric(length = max(data$Group) *2),
                  calfactor_40 = numeric(length = max(data$Group) * 2),
+                 calfactor_N2Ar = numeric(length = max(data$Group) * 2),
+                 calfactor_O2Ar = numeric(length = max(data$Group) * 2),
                  row.names = paste0(std.temps, "degC_", "Group_",
                                     rep(1:max(data$Group), each = 2)))
     for (groupNo in 1:max(data$Group)) {
@@ -327,9 +333,38 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
         solubility.conc$Ar.conc_uMol.kg[1]/mean(cal.block$X40[1:3])
       calfactor$calfactor_40[2 * groupNo] <-
         solubility.conc$Ar.conc_uMol.kg[2]/mean(cal.block$X40[4:6])
-      }
+
+      # Calculate N2:Ar calibration factors
+      #     = ([N2]saturation / [Ar]saturation) / Raw N2:Ar signal data
+      # Standard temp 1
+      calfactor$calfactor_N2Ar[2 * groupNo - 1] <-
+        (solubility.conc$N2.conc_uMol.kg[1]/
+           solubility.conc$Ar.conc_uMol.kg[1])/
+        mean(cal.block$N2.Ar[1:3])
+      # Standard temp 2
+      calfactor$calfactor_N2Ar[2 * groupNo] <-
+        (solubility.conc$N2.conc_uMol.kg[2]/
+           solubility.conc$Ar.conc_uMol.kg[2])/
+        mean(cal.block$N2.Ar[4:6])
+
+      # Calculate O2:Ar calibration factors
+      #     = ([O2]saturation / [Ar]saturation) / Raw O2:Ar signal data
+      # Standard temp 1
+      calfactor$calfactor_O2Ar[2 * groupNo - 1] <-
+        (solubility.conc$O2.conc_uMol.kg[1]/
+           solubility.conc$Ar.conc_uMol.kg[1])/
+        mean(cal.block$O2.Ar[1:3])
+      # Standard temp 2
+      calfactor$calfactor_O2Ar[2 * groupNo] <-
+        (solubility.conc$O2.conc_uMol.kg[2]/
+           solubility.conc$Ar.conc_uMol.kg[2])/
+        mean(cal.block$O2.Ar[4:6])
+
+    }
 
     # 5. Calculate slope and intercepts of calibration curve -----------------
+    # Use a linear model from the mean low and high temperature calibration
+    # data to correct the calibration factor for a range of temperatures
     calslope <-
       data.frame(calslope_28 = numeric(length = max(data$Group)),
                  calintercept_28 = numeric(length = max(data$Group)),
@@ -337,6 +372,10 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                  calintercept_32 = numeric(length = max(data$Group)),
                  calslope_40 = numeric(length = max(data$Group)),
                  calintercept_40 = numeric(length = max(data$Group)),
+                 calslope_N2Ar = numeric(length = max(data$Group)),
+                 calintercept_N2Ar = numeric(length = max(data$Group)),
+                 calslope_O2Ar = numeric(length = max(data$Group)),
+                 calintercept_O2Ar = numeric(length = max(data$Group)),
                  row.names = paste0("Group", 1:max(data$Group)))
 
     for (groupNo in 1:max(data$Group)) {
@@ -360,7 +399,19 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                  calfactor$calfactor_40[2 * groupNo]) ~ std.temps)
       calslope$calslope_40[groupNo] <- lm$coefficients[2]  # slope
       calslope$calintercept_40[groupNo] <- lm$coefficients[1]  #intercept
-      }
+
+      # N2:Ar
+      lm <- lm(c(calfactor$calfactor_N2Ar[2 * groupNo - 1],
+                 calfactor$calfactor_N2Ar[2 * groupNo]) ~ std.temps)
+      calslope$calslope_N2Ar[groupNo] <- lm$coefficients[2]  # slope
+      calslope$calintercept_N2Ar[groupNo] <- lm$coefficients[1]  #intercept
+
+      # O2:Ar
+      lm <- lm(c(calfactor$calfactor_O2Ar[2 * groupNo - 1],
+                 calfactor$calfactor_O2Ar[2 * groupNo]) ~ std.temps)
+      calslope$calslope_O2Ar[groupNo] <- lm$coefficients[2]  # slope
+      calslope$calintercept_O2Ar[groupNo] <- lm$coefficients[1]  #intercept
+    }
 
     # 6. Perform drift correction for calibration slope and intercept ------
 
@@ -371,6 +422,10 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     calslope$DRIFT.calintercept_32 <- NA
     calslope$DRIFT.calslope_40 <- NA
     calslope$DRIFT.calintercept_40 <- NA
+    calslope$DRIFT.calslope_N2Ar <- NA
+    calslope$DRIFT.calintercept_N2Ar <- NA
+    calslope$DRIFT.calslope_O2Ar <- NA
+    calslope$DRIFT.calintercept_O2Ar <- NA
 
     for (groupNo in 1:max(data$Group)) {
       # take the slope between successive calibration (slope or intercept)
@@ -420,6 +475,37 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
         as.numeric(difftime(data$Time[data$Group == (groupNo + 1)][1],
                             data$Time[data$Group == groupNo][1],
                             units = "days"))
+
+      # Drift corrected N2:Ar slope
+      calslope$DRIFT.calslope_N2Ar[groupNo] <-
+        (calslope$calslope_N2Ar[groupNo + 1] -
+           calslope$calslope_N2Ar[groupNo]) /
+        as.numeric(difftime(data$Time[data$Group == (groupNo + 1)][1],
+                            data$Time[data$Group == groupNo][1],
+                            units = "days"))
+      # intercept
+      calslope$DRIFT.calintercept_N2Ar[groupNo] <-
+        (calslope$calintercept_N2Ar[groupNo + 1] -
+           calslope$calintercept_N2Ar[groupNo]) /
+        as.numeric(difftime(data$Time[data$Group == (groupNo + 1)][1],
+                            data$Time[data$Group == groupNo][1],
+                            units = "days"))
+
+      # Drift corrected O2:Ar slope
+      calslope$DRIFT.calslope_O2Ar[groupNo] <-
+        (calslope$calslope_O2Ar[groupNo + 1] -
+           calslope$calslope_O2Ar[groupNo]) /
+        as.numeric(difftime(data$Time[data$Group == (groupNo + 1)][1],
+                            data$Time[data$Group == groupNo][1],
+                            units = "days"))
+      # intercept
+      calslope$DRIFT.calintercept_O2Ar[groupNo] <-
+        (calslope$calintercept_O2Ar[groupNo + 1] -
+           calslope$calintercept_O2Ar[groupNo]) /
+        as.numeric(difftime(data$Time[data$Group == (groupNo + 1)][1],
+                            data$Time[data$Group == groupNo][1],
+                            units = "days"))
+
       # if there's no standard group at the tail (aka, run ends after a
       # sample) base the drift correction on the preceding block of
       # standards
@@ -438,7 +524,15 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
           calslope$DRIFT.calslope_40[groupNo - 1]
         calslope$DRIFT.calintercept_40[groupNo] <-
           calslope$DRIFT.calintercept_40[groupNo - 1]
-        }
+        calslope$DRIFT.calslope_N2Ar[groupNo] <-
+          calslope$DRIFT.calslope_N2Ar[groupNo - 1]
+        calslope$DRIFT.calintercept_N2Ar[groupNo] <-
+          calslope$DRIFT.calintercept_N2Ar[groupNo - 1]
+        calslope$DRIFT.calslope_O2Ar[groupNo] <-
+          calslope$DRIFT.calslope_O2Ar[groupNo - 1]
+        calslope$DRIFT.calintercept_O2Ar[groupNo] <-
+          calslope$DRIFT.calintercept_O2Ar[groupNo - 1]
+      }
     }
 
 
@@ -451,6 +545,10 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     data$INTERPOLATED.calintercept_32 <- NA
     data$INTERPOLATED.calslope_40 <- NA
     data$INTERPOLATED.calintercept_40 <- NA
+    data$INTERPOLATED.calslope_N2Ar <- NA
+    data$INTERPOLATED.calintercept_N2Ar <- NA
+    data$INTERPOLATED.calslope_O2Ar <- NA
+    data$INTERPOLATED.calintercept_O2Ar <- NA
 
     # create list to fill with interpolated values
     datalist = list()
@@ -500,12 +598,38 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
           (calslope$DRIFT.calintercept_40[groupNo] *
              as.numeric(difftime(group.block$Time[i],
                                  group.block$Time[1], units = "days")))
-        }  # close internal row for loop
+
+        # N2:Ar
+        group.block$INTERPOLATED.calslope_N2Ar[i] <-
+          calslope$calslope_N2Ar[groupNo] +
+          (calslope$DRIFT.calslope_N2Ar[groupNo] *
+             as.numeric(difftime(group.block$Time[i],
+                                 group.block$Time[1], units = "days")))
+
+        group.block$INTERPOLATED.calintercept_N2Ar[i] <-
+          calslope$calintercept_N2Ar[groupNo] +
+          (calslope$DRIFT.calintercept_N2Ar[groupNo] *
+             as.numeric(difftime(group.block$Time[i],
+                                 group.block$Time[1], units = "days")))
+
+        # O2:Ar
+        group.block$INTERPOLATED.calslope_O2Ar[i] <-
+          calslope$calslope_O2Ar[groupNo] +
+          (calslope$DRIFT.calslope_O2Ar[groupNo] *
+             as.numeric(difftime(group.block$Time[i],
+                                 group.block$Time[1], units = "days")))
+
+        group.block$INTERPOLATED.calintercept_O2Ar[i] <-
+          calslope$calintercept_O2Ar[groupNo] +
+          (calslope$DRIFT.calintercept_O2Ar[groupNo] *
+             as.numeric(difftime(group.block$Time[i],
+                                 group.block$Time[1], units = "days")))
+      }  # close internal row for loop
 
       # create list of sample blocks
       datalist[[groupNo]] <- group.block
 
-      }  # close external group for loop
+    }  # close external group for loop
 
     # convert datalist from list to dataframe this dataframe will become the
     # 'detailed' data output to the user
@@ -513,7 +637,8 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
     # 8. Calculate drift and temperature corrected calibration factors -------
 
-    # (interpolated calslope * temperature at collection) + interpolated calintercept Mass 28
+    # (interpolated calslope * temperature at collection) + interpolated
+    # calintercept Mass 28
     data$INTERPOLATED.calfactor_28 <-
       (data$INTERPOLATED.calslope_28 * data$CollectionTemp) +
       data$INTERPOLATED.calintercept_28
@@ -528,16 +653,40 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
       (data$INTERPOLATED.calslope_40 * data$CollectionTemp) +
       data$INTERPOLATED.calintercept_40
 
+    # N2:Ar
+    data$INTERPOLATED.calfactor_N2Ar <-
+      (data$INTERPOLATED.calslope_N2Ar * data$CollectionTemp) +
+      data$INTERPOLATED.calintercept_N2Ar
+
+    # O2:Ar
+    data$INTERPOLATED.calfactor_O2Ar <-
+      (data$INTERPOLATED.calslope_O2Ar * data$CollectionTemp) +
+      data$INTERPOLATED.calintercept_O2Ar
+
     # 9. Calculate final concentrations -------------------------------------
+    # Calculate concentrations by multiplying signal by interpolated calibration factors
+    data$Ar_uMol <- data$X40 * data$INTERPOLATED.calfactor_28
+    data$N2Ar <- data$N2.Ar * data$INTERPOLATED.calfactor_N2Ar
+    data$O2Ar <- data$O2.Ar * data$INTERPOLATED.calfactor_O2Ar
 
-    # BG corrected reading * interpolated calfactor
-    data$N2_uMol <- data$X28 * data$INTERPOLATED.calfactor_28
-    data$O2_uMol <- data$X32 * data$INTERPOLATED.calfactor_32
-    data$Ar_uMol <- data$X40 * data$INTERPOLATED.calfactor_40
+    # Transform N2Ar and O2Ar ratios into concentrations of N2 or O2, using
+    # Ar saturation concentration at temperature
+    data$N2_uMol <- data$N2Ar * data$arSat.conc_uMol.kg
+    data$O2_uMol <- data$O2Ar * data$arSat.conc_uMol.kg
 
-    # convert from microM to mg
+    # Apply bubble correction for oxygen
+    # = [O2] + [O2:Ar ratio] * (Ar at saturation - [Ar])
+    # Notes on bubble correction: 1) This correction is most appropriate for O2
+    # samples as O2 and Ar have similar soluability and diffusion rates
+    # 2) This bubble correction assumes any argon below saturation means that
+    # N2 and O2 were lost due to bubbling in in-field sample incubations
+    data$O2.BubbleCorrected_uMol <- data$O2_uMol + data$O2Ar *
+      (data$arSat.conc_uMol.kg - data$Ar_uMol)
+
+    # Unit conversion: Convert from microM to mg
     data$N2_mg <- data$N2_uMol * 10^(-6) * 28 * 10^3
     data$O2_mg <- data$O2_uMol * 10^(-6) * 32 * 10^3
+    data$O2.BubbleCorrected_mg <- data$O2.BubbleCorrected_uMol * 10^(-6) * 32 * 10^3
     data$Ar_mg <- data$Ar_uMol * 10^(-6) * 40 * 10^3
 
     # 10. Output results to user -------------------------------------------
@@ -558,14 +707,24 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                                        "INTERPOLATED.calintercept_32",
                                        "INTERPOLATED.calslope_40",
                                        "INTERPOLATED.calintercept_40",
+                                       "INTERPOLATED.calslope_N2Ar",
+                                       "INTERPOLATED.calintercept_N2Ar",
+                                       "INTERPOLATED.calslope_O2Ar",
+                                       "INTERPOLATED.calintercept_O2Ar",
                                        "INTERPOLATED.calfactor_28",
                                        "INTERPOLATED.calfactor_32",
-                                       "INTERPOLATED.calfactor_40"))]
+                                       "INTERPOLATED.calfactor_40",
+                                       "INTERPOLATED.calfactor_N2Ar",
+                                       "INTERPOLATED.calfactor_O2Ar"))]
 
     # grab only the sample results
     results <- results[results$Type == "Sample", ]
     results$Type <- NULL
     results$Group <- NULL
+    results$`data$Type` <- NULL
+    results$`data$Group` <- NULL
+    data$`data$Type` <- NULL
+    data$`data$Group` <- NULL
 
     outlist <- list(results = results,
                     solubility.Concentrations = solubility.conc,
@@ -574,6 +733,5 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                     results.full = data)
     return(outlist)
 
-    }
+  }
 }
-

@@ -1,3 +1,9 @@
+# mimsy 0.5.0
+
+## Major changes
+* Concentrations now calculated using dissolved gas ratios for improved accuracy
+* Added bubble correction calculation for dissolved oxygen
+
 # mimsy 0.4.3
 
 ## Bug fixes
