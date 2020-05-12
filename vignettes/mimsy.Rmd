@@ -9,12 +9,14 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", 
+                      attr.source='.numberLines'
 )
 library(mimsy)
 library(knitr)
+library(xfun)
+xfun::pkg_load2(c("base64enc", "htmltools", "mime"))
+library(kableExtra)
 ```
 
 ## 1. Introduction  
@@ -35,6 +37,20 @@ install.packages("mimsy")
 library(mimsy)
 ```
 
+Alternatively, the latest in-development version of `mimsy` can be pulled from Github via:
+
+```{r install.developers, eval = FALSE}
+# Install and load devtools
+install.packages("devtools")
+library(devtools)
+
+# Download mimsy from Github
+install_github("michelleckelly/mimsy")
+
+# Load the package
+library(mimsy)
+```
+
 ## 3. Running mimsy  
 
 The general structure for running mimsy is:  
@@ -49,7 +65,11 @@ The general structure for running mimsy is:
 
 You'll need to add some special columns to your data file before loading it into R. The easiest way to do this is to use a spreadsheet editor like Excel. We recommend saving a seperate copy of your raw data file for mimsy (add "_mimsy" to the file name) to prevent any accidents.  
 
-![Figure 1. An example of a correctly formatted raw data file.](excel.png)  
+Click to download an example CSV file for single water bath MIMS setups ("one temperature setups"): `r xfun::embed_file('data_oneTemp.csv')`  
+
+Click to download an example CSV file for dual water bath MIMS setups ("two temperature setups"): `r xfun::embed_file('data_twoTemp.csv')`  
+
+![Figure 1. An example of a correctly formatted raw data file for a MIMS setup with two water baths.](excel.png){ width=90% }  
 
 **CSV file format:**  
 
@@ -71,20 +91,32 @@ You'll need to add some special columns to your data file before loading it into
     + The name of this column must be "RunDate" (check for correct capitalization)  
 
 * Label or other sample identifier columns  
-    +  mimsy will preserve all labelling columns in the final output, so you should add whatever labels or notes columns you like
+    + mimsy will preserve all labelling columns in the final output, so you should add whatever labels or notes columns you like
 
-* Index, Time, 28, 32, 40, 99, N2/Ar, O2/Ar columns  
-    + This is the default output from the MIMS  
+* Index, Time, 28, 32, 40, N2/Ar, O2/Ar columns  
+    + This is the default output from the MIMS. If you have a newer setup, this may also include a "99" column indicating the MIMS' internal pressure. Including, or not including, this column won't affect your results.   
 
 ### 3.2. Load your CSV file into R using `read.csv()`  
 
-```{r load.csv, eval = TRUE}
+```{r load.csv_view, eval = FALSE}
 # Load data into R
-data <- read.csv(file = "data.csv", header = TRUE, stringsAsFactors = FALSE)
+data <- read.csv(file = "data_twoTemp.csv", header = TRUE, stringsAsFactors = FALSE)
 
-# Check out the structure
-str(data, vec.len = 2)
+# Check it out
+data
 ```
+
+```{r load.csv_hide, eval = TRUE, echo = FALSE}
+# Load data into R
+data <- read.csv(file = "data_twoTemp.csv", header = TRUE, stringsAsFactors = FALSE)
+# Check it out
+data %>%
+  kable() %>%
+  kable_styling() %>%
+  scroll_box(width = "100%", height = "500px")
+```
+
+Don't be worried that your "28", "32", and "40" columns are now "X28", "X32", and "X40". As R doesn't accept column names that start with a number, it added an "X" to these column names when the data was imported. Similarly, "N2/Ar" and "O2/Ar" have been automatically adjusted to "N2.Ar" and "O2.Ar".
 
 ### 3.3. Run the `mimsy()` function  
 
@@ -99,13 +131,34 @@ results <- mimsy(data, baromet.press = 977.2, units = "hPa")
 
 You'll see that `mimsy()` returns a list containing five seperate dataframes (`results`, `solubility.Concentrations`, `calibration.Factors`, `calibration.DriftCorrection`, and `results.full`). Check out ?mimsy() for more specific information on those outputs and how they were calculated.  
 
-```{r results}
-# Check out the structure of the output
-summary(results)
-
-# See the summarized results dataframe
-str(results$results, give.attr = FALSE)
+```{r results, eval=FALSE}
+# Check out the summarized results
+results$results
 ```
+
+The summarized results includes the calculated gas concentrations for all samples:
+
+```{r, eval = TRUE, echo = FALSE}
+# Check out the summarized results
+results$results %>%
+  kable() %>%
+  kable_styling() %>%
+  scroll_box(width = "100%", height = "500px")
+```
+
+```{r solub, eval=FALSE}
+# Check out the solubility concentrations
+results$solubility.Concentrations
+```
+
+```{r, eval = TRUE, echo = FALSE}
+# Check out the solubility concentrations
+results$solubility.Concentrations %>%
+  kable() %>%
+  kable_styling()
+```
+
+Check out ?mimsy() for more specific information on the `results`, `solubility.Concentrations`, `calibration.Factors`, `calibration.DriftCorrection`, and `results.full` dataframes, including details on how they were calculated.
 
 ### 3.5. Save the results  
 

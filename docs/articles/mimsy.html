@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mimsy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
       </span>
     </div>
 
@@ -77,12 +77,12 @@
 
       
 
-      </header><div class="row">
+      </header><script src="mimsy_files/kePrint-0.0.1/kePrint.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Get started</h1>
             
-            <h4 class="date">2020-04-07</h4>
+            <h4 class="date">2020-05-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/michelleckelly/mimsy/blob/master/vignettes/mimsy.Rmd"><code>vignettes/mimsy.Rmd</code></a></small>
       <div class="hidden name"><code>mimsy.Rmd</code></div>
@@ -101,11 +101,21 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>2. Installation</h2>
 <p>Install mimsy from the CRAN repository and load into your R environment:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># Install the package</span></span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># Install the package</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"mimsy"</span>)</span>
 <span id="cb1-3"><a href="#cb1-3"></a></span>
 <span id="cb1-4"><a href="#cb1-4"></a><span class="co"># Load the package</span></span>
 <span id="cb1-5"><a href="#cb1-5"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(mimsy)</span></code></pre></div>
+<p>Alternatively, the latest in-development version of <code>mimsy</code> can be pulled from Github via:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Install and load devtools</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"devtools"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(devtools)</span>
+<span id="cb2-4"><a href="#cb2-4"></a></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="co"># Download mimsy from Github</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">"michelleckelly/mimsy"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7"></a></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="co"># Load the package</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(mimsy)</span></code></pre></div>
 </div>
 <div id="running-mimsy" class="section level2">
 <h2 class="hasAnchor">
@@ -124,8 +134,10 @@
 <h3 class="hasAnchor">
 <a href="#format-your-csv-file" class="anchor"></a>3.1. Format your CSV file</h3>
 <p>You’ll need to add some special columns to your data file before loading it into R. The easiest way to do this is to use a spreadsheet editor like Excel. We recommend saving a seperate copy of your raw data file for mimsy (add "_mimsy" to the file name) to prevent any accidents.</p>
+<p>Click to download an example CSV file for single water bath MIMS setups (“one temperature setups”): <a href="data:text/csv;base64,VHlwZSxHcm91cCxDb2xsZWN0aW9uVGVtcCxSdW5EYXRlLExhYmVsLEluZGV4LFRpbWUsMjgsMzIsNDAsTjIvQXIsTzIvQXIsTm90ZXMNClN0YW5kYXJkLDEsMjQuOSwyLzEvMTgsTkEsMzAyOSwxMDozMjo1MyBBTSwxLjIwRS0wOCw1Ljc1RS0wOSwyLjk4RS0xMCw0MC4yNzY1OSwxOS4yOTYxNSxCYXJvbWV0cmljIHByZXNzdXJlID0gIDk3Ny4yIGhQYQ0KU3RhbmRhcmQsMSwyNC45LDIvMS8xOCxOQSwzMDc5LDEwOjM0OjA3IEFNLDEuMjBFLTA4LDUuNzVFLTA5LDIuOThFLTEwLDQwLjI4NTM5LDE5LjI5OTkyLA0KU3RhbmRhcmQsMSwyNC45LDIvMS8xOCxOQSwzMTI4LDEwOjM1OjE5IEFNLDEuMjBFLTA4LDUuNzVFLTA5LDIuOThFLTEwLDQwLjI5NTgsMTkuMzAzNzcsDQpTYW1wbGUsMSwyNS4xLDIvMS8xOCxTYW1wbGUxLDM0NTUsMTA6NDM6MjAgQU0sMS4xOUUtMDgsNi43MkUtMDksMi45NEUtMTAsNDAuNDYyNjYsMjIuODIxNTIsDQpTYW1wbGUsMSwyNS4xLDIvMS8xOCxTYW1wbGUyLDM1NTQsMTA6NDU6NDYgQU0sMS4xOUUtMDgsNi43MUUtMDksMi45M0UtMTAsNDAuNDc5NzgsMjIuODg4MTYsDQpTYW1wbGUsMSwyNS4xLDIvMS8xOCxTYW1wbGUzLDM2MjAsMTA6NDc6MjMgQU0sMS4xOEUtMDgsNi43MEUtMDksMi45MkUtMTAsNDAuNDc2MDcsMjIuOTE2NDcsDQpTYW1wbGUsMSwyNi4xLDIvMS8xOCxTYW1wbGU0LDM3MDEsMTA6NDk6MjIgQU0sMS4xM0UtMDgsNi40OEUtMDksMi44NUUtMTAsMzkuNzkwMzMsMjIuNzczMjksDQpTYW1wbGUsMSwyNi4xLDIvMS8xOCxTYW1wbGU1LDM3OTIsMTA6NTE6MzYgQU0sMS4xNEUtMDgsNi41M0UtMDksMi44NUUtMTAsMzkuODcxMjEsMjIuOTMzNjUsDQpTYW1wbGUsMSwyNi4xLDIvMS8xOCxTYW1wbGU2LDM5MTMsMTA6NTQ6MzQgQU0sMS4xN0UtMDgsNi42MkUtMDksMi44OUUtMTAsNDAuMzM0ODUsMjIuODU4NzYsDQpTYW1wbGUsMSwyNS4zLDIvMS8xOCxTYW1wbGU3LDM5NzUsMTA6NTY6MDUgQU0sMS4xNkUtMDgsNi40OUUtMDksMi44N0UtMTAsNDAuNDQxNTksMjIuNTg2MzEsDQpTYW1wbGUsMSwyNS4zLDIvMS8xOCxTYW1wbGU4LDQwNDMsMTA6NTc6NDUgQU0sMS4xN0UtMDgsNi42MUUtMDksMi44OUUtMTAsNDAuNDA5ODEsMjIuODg4NzgsDQpTYW1wbGUsMSwyNS4zLDIvMS8xOCxTYW1wbGU5LDQxMjEsMTA6NTk6NDAgQU0sMS4xNkUtMDgsNi42OEUtMDksMi44OEUtMTAsNDAuMjg0LDIzLjE4MDI2LA0KU2FtcGxlLDEsMjQuOSwyLzEvMTgsU2FtcGxlMTAsNDIzMywxMTowMjoyNSBBTSwxLjE4RS0wOCw1LjU2RS0wOSwyLjg4RS0xMCw0MC44NjU1NywxOS4yNzQ5NiwNClNhbXBsZSwxLDI0LjksMi8xLzE4LFNhbXBsZTExLDQzMjcsMTE6MDQ6NDMgQU0sMS4xOEUtMDgsNS41NEUtMDksMi44OUUtMTAsNDAuOTAwNjMsMTkuMjAzMzYsDQpTYW1wbGUsMSwyNC45LDIvMS8xOCxTYW1wbGUxMiw0NDIyLDExOjA3OjAzIEFNLDEuMTlFLTA4LDUuNTZFLTA5LDIuOTBFLTEwLDQwLjg3ODAzLDE5LjE3ODI5LA0KU3RhbmRhcmQsMiwyNC45LDIvMS8xOCxOQSw0NjU0LDExOjEyOjQ1IEFNLDEuMTlFLTA4LDUuNjlFLTA5LDIuOTRFLTEwLDQwLjM4MDcxLDE5LjM0MjcyLA0KU3RhbmRhcmQsMiwyNC45LDIvMS8xOCxOQSw0NzQyLDExOjE0OjU0IEFNLDEuMTlFLTA4LDUuNjlFLTA5LDIuOTRFLTEwLDQwLjM3MzUxLDE5LjM0MjM0LA0KU3RhbmRhcmQsMiwyNC45LDIvMS8xOCxOQSw0Nzc5LDExOjE1OjQ4IEFNLDEuMTlFLTA4LDUuNjlFLTA5LDIuOTRFLTEwLDQwLjM4MTI3LDE5LjM0NTc5LA0KU2FtcGxlLDIsMjYuMywyLzEvMTgsU2FtcGxlMTMsNDUxNiwxMTowOToyMSBBTSwxLjE3RS0wOCw1LjQ3RS0wOSwyLjg4RS0xMCw0MC44MDM0NywxOS4wMDM0NCwNClNhbXBsZSwyLDI2LjMsMi8xLzE4LFNhbXBsZTE0LDUwODksMTE6MjM6MjUgQU0sMS4xOEUtMDgsNS41OEUtMDksMi45MEUtMTAsNDAuODUzODksMTkuMjQ5MTQsDQpTYW1wbGUsMiwyNi4zLDIvMS8xOCxTYW1wbGUxNSw1MTc5LDExOjI1OjM3IEFNLDEuMThFLTA4LDUuNTlFLTA5LDIuOTBFLTEwLDQwLjgyNTE5LDE5LjI4NzY1LA0KU2FtcGxlLDIsMjUuNywyLzEvMTgsU2FtcGxlMTYsNTI3MCwxMToyNzo1MSBBTSwxLjE4RS0wOCw1LjQ3RS0wOSwyLjg4RS0xMCw0MC44NzcxMiwxOC45ODI5MSwNClNhbXBsZSwyLDI1LjcsMi8xLzE4LFNhbXBsZTE3LDUzNzAsMTE6MzA6MTggQU0sMS4xOEUtMDgsNS41M0UtMDksMi44OEUtMTAsNDAuODI5ODYsMTkuMjA0NjYsDQpTYW1wbGUsMiwyNS43LDIvMS8xOCxTYW1wbGUxOCw1NDc1LDExOjMyOjUzIEFNLDEuMThFLTA4LDUuNTZFLTA5LDIuODhFLTEwLDQwLjgyNjEsMTkuMjczNTUsDQpTYW1wbGUsMiwyNS45LDIvMS8xOCxTYW1wbGUxOSw1NjY4LDExOjM3OjM3IEFNLDEuMTZFLTA4LDcuMzBFLTA5LDIuODdFLTEwLDQwLjI5NjQ0LDI1LjQwMzcsDQpTYW1wbGUsMiwyNS45LDIvMS8xOCxTYW1wbGUyMCw1NzQxLDExOjM5OjI0IEFNLDEuMTVFLTA4LDcuMzNFLTA5LDIuODdFLTEwLDQwLjI0MjYsMjUuNTYxMjQsDQpTYW1wbGUsMiwyNS45LDIvMS8xOCxTYW1wbGUyMSw1OTcyLDExOjQ1OjA0IEFNLDEuMTZFLTA4LDcuMzJFLTA5LDIuODdFLTEwLDQwLjM2MTQ3LDI1LjUxOTc2LA0KU2FtcGxlLDIsMjUuMiwyLzEvMTgsU2FtcGxlMjIsNjA3OSwxMTo0Nzo0MiBBTSwxLjEzRS0wOCw3LjU5RS0wOSwyLjgzRS0xMCw0MC4wMzU3LDI2LjgxNjM5LA0KU2FtcGxlLDIsMjUuMiwyLzEvMTgsU2FtcGxlMjMsNjE5MiwxMTo1MDoyOCBBTSwxLjE0RS0wOCw3LjY2RS0wOSwyLjg0RS0xMCw0MC4xNTE0OSwyNi45NTA4LA0KU2FtcGxlLDIsMjUuMiwyLzEvMTgsU2FtcGxlMjQsNjMzNSwxMTo1Mzo1OCBBTSwxLjEyRS0wOCw3LjYxRS0wOSwyLjgwRS0xMCwzOS43Nzk2LDI3LjE1MTE4LA0KU3RhbmRhcmQsMywyNC45LDIvMS8xOCxOQSw2NDc1LDExOjU3OjI0IEFNLDEuMThFLTA4LDUuNzFFLTA5LDIuOTFFLTEwLDQwLjQ2NDg0LDE5LjYzMDY5LA0KU3RhbmRhcmQsMywyNC45LDIvMS8xOCxOQSw2NTQyLDExOjU5OjAzIEFNLDEuMThFLTA4LDUuNjlFLTA5LDIuOTFFLTEwLDQwLjQ2OTMyLDE5LjUzMTc5LA0KU3RhbmRhcmQsMywyNC45LDIvMS8xOCxOQSw2NTk5LDEyOjAwOjI3IFBNLDEuMThFLTA4LDUuNjhFLTA5LDIuOTFFLTEwLDQwLjQ5MzUyLDE5LjUwMzE0LA==" download="data_oneTemp.csv">Download data_oneTemp.csv</a></p>
+<p>Click to download an example CSV file for dual water bath MIMS setups (“two temperature setups”): <a href="data:text/csv;base64,VHlwZSxHcm91cCxDb2xsZWN0aW9uVGVtcCxSdW5EYXRlLExhYmVsLEluZGV4LFRpbWUsMjgsMzIsNDAsTjIvQXIsTzIvQXIsTm90ZXMNClN0YW5kYXJkLDEsMjQuOSwyLzEvMTgsTkEsMzAyOSwxMDozMjo1MyBBTSwxLjIwRS0wOCw1Ljc1RS0wOSwyLjk4RS0xMCw0MC4yNzY1OSwxOS4yOTYxNSxCYXJvbWV0cmljIHByZXNzdXJlID0gIDk3Ny4yIGhQYQ0KU3RhbmRhcmQsMSwyNC45LDIvMS8xOCxOQSwzMDc5LDEwOjM0OjA3IEFNLDEuMjBFLTA4LDUuNzVFLTA5LDIuOThFLTEwLDQwLjI4NTM5LDE5LjI5OTkyLA0KU3RhbmRhcmQsMSwyNC45LDIvMS8xOCxOQSwzMTI4LDEwOjM1OjE5IEFNLDEuMjBFLTA4LDUuNzVFLTA5LDIuOThFLTEwLDQwLjI5NTgsMTkuMzAzNzcsDQpTdGFuZGFyZCwxLDI2LjMsMi8xLzE4LE5BLDMyMTIsMTA6Mzc6MjIgQU0sMS4xOUUtMDgsNS42NkUtMDksMi45M0UtMTAsNDAuNDI4NzMsMTkuMzEwNiwNClN0YW5kYXJkLDEsMjYuMywyLzEvMTgsTkEsMzI2MSwxMDozODozNSBBTSwxLjE4RS0wOCw1LjY2RS0wOSwyLjkzRS0xMCw0MC40MTg1OCwxOS4zMDgxMywNClN0YW5kYXJkLDEsMjYuMywyLzEvMTgsTkEsMzMxNSwxMDozOTo1NCBBTSwxLjE5RS0wOCw1LjY2RS0wOSwyLjkzRS0xMCw0MC40MzI3LDE5LjMwODQzLA0KU2FtcGxlLDEsMjUuMSwyLzEvMTgsU2FtcGxlMSwzNDU1LDEwOjQzOjIwIEFNLDEuMTlFLTA4LDYuNzJFLTA5LDIuOTRFLTEwLDQwLjQ2MjY2LDIyLjgyMTUyLA0KU2FtcGxlLDEsMjUuMSwyLzEvMTgsU2FtcGxlMiwzNTU0LDEwOjQ1OjQ2IEFNLDEuMTlFLTA4LDYuNzFFLTA5LDIuOTNFLTEwLDQwLjQ3OTc4LDIyLjg4ODE2LA0KU2FtcGxlLDEsMjUuMSwyLzEvMTgsU2FtcGxlMywzNjIwLDEwOjQ3OjIzIEFNLDEuMThFLTA4LDYuNzBFLTA5LDIuOTJFLTEwLDQwLjQ3NjA3LDIyLjkxNjQ3LA0KU2FtcGxlLDEsMjYuMSwyLzEvMTgsU2FtcGxlNCwzNzAxLDEwOjQ5OjIyIEFNLDEuMTNFLTA4LDYuNDhFLTA5LDIuODVFLTEwLDM5Ljc5MDMzLDIyLjc3MzI5LA0KU2FtcGxlLDEsMjYuMSwyLzEvMTgsU2FtcGxlNSwzNzkyLDEwOjUxOjM2IEFNLDEuMTRFLTA4LDYuNTNFLTA5LDIuODVFLTEwLDM5Ljg3MTIxLDIyLjkzMzY1LA0KU2FtcGxlLDEsMjYuMSwyLzEvMTgsU2FtcGxlNiwzOTEzLDEwOjU0OjM0IEFNLDEuMTdFLTA4LDYuNjJFLTA5LDIuODlFLTEwLDQwLjMzNDg1LDIyLjg1ODc2LA0KU2FtcGxlLDEsMjUuMywyLzEvMTgsU2FtcGxlNywzOTc1LDEwOjU2OjA1IEFNLDEuMTZFLTA4LDYuNDlFLTA5LDIuODdFLTEwLDQwLjQ0MTU5LDIyLjU4NjMxLA0KU2FtcGxlLDEsMjUuMywyLzEvMTgsU2FtcGxlOCw0MDQzLDEwOjU3OjQ1IEFNLDEuMTdFLTA4LDYuNjFFLTA5LDIuODlFLTEwLDQwLjQwOTgxLDIyLjg4ODc4LA0KU2FtcGxlLDEsMjUuMywyLzEvMTgsU2FtcGxlOSw0MTIxLDEwOjU5OjQwIEFNLDEuMTZFLTA4LDYuNjhFLTA5LDIuODhFLTEwLDQwLjI4NCwyMy4xODAyNiwNClNhbXBsZSwxLDI0LjksMi8xLzE4LFNhbXBsZTEwLDQyMzMsMTE6MDI6MjUgQU0sMS4xOEUtMDgsNS41NkUtMDksMi44OEUtMTAsNDAuODY1NTcsMTkuMjc0OTYsDQpTYW1wbGUsMSwyNC45LDIvMS8xOCxTYW1wbGUxMSw0MzI3LDExOjA0OjQzIEFNLDEuMThFLTA4LDUuNTRFLTA5LDIuODlFLTEwLDQwLjkwMDYzLDE5LjIwMzM2LA0KU2FtcGxlLDEsMjQuOSwyLzEvMTgsU2FtcGxlMTIsNDQyMiwxMTowNzowMyBBTSwxLjE5RS0wOCw1LjU2RS0wOSwyLjkwRS0xMCw0MC44NzgwMywxOS4xNzgyOSwNClN0YW5kYXJkLDIsMjQuOSwyLzEvMTgsTkEsNDY1NCwxMToxMjo0NSBBTSwxLjE5RS0wOCw1LjY5RS0wOSwyLjk0RS0xMCw0MC4zODA3MSwxOS4zNDI3MiwNClN0YW5kYXJkLDIsMjQuOSwyLzEvMTgsTkEsNDc0MiwxMToxNDo1NCBBTSwxLjE5RS0wOCw1LjY5RS0wOSwyLjk0RS0xMCw0MC4zNzM1MSwxOS4zNDIzNCwNClN0YW5kYXJkLDIsMjQuOSwyLzEvMTgsTkEsNDc3OSwxMToxNTo0OCBBTSwxLjE5RS0wOCw1LjY5RS0wOSwyLjk0RS0xMCw0MC4zODEyNywxOS4zNDU3OSwNClN0YW5kYXJkLDIsMjYuMywyLzEvMTgsTkEsNDg2NiwxMToxNzo1NyBBTSwxLjE3RS0wOCw1LjYwRS0wOSwyLjkwRS0xMCw0MC40ODI1LDE5LjM0ODc1LA0KU3RhbmRhcmQsMiwyNi4zLDIvMS8xOCxOQSw0OTYyLDExOjIwOjE4IEFNLDEuMTdFLTA4LDUuNjBFLTA5LDIuODlFLTEwLDQwLjQ4Nzg0LDE5LjM0OTM3LA0KU3RhbmRhcmQsMiwyNi4zLDIvMS8xOCxOQSw1MDA3LDExOjIxOjI0IEFNLDEuMTdFLTA4LDUuNTlFLTA5LDIuODlFLTEwLDQwLjQ4NTU3LDE5LjM0ODYyLA0KU2FtcGxlLDIsMjYuMywyLzEvMTgsU2FtcGxlMTMsNDUxNiwxMTowOToyMSBBTSwxLjE3RS0wOCw1LjQ3RS0wOSwyLjg4RS0xMCw0MC44MDM0NywxOS4wMDM0NCwNClNhbXBsZSwyLDI2LjMsMi8xLzE4LFNhbXBsZTE0LDUwODksMTE6MjM6MjUgQU0sMS4xOEUtMDgsNS41OEUtMDksMi45MEUtMTAsNDAuODUzODksMTkuMjQ5MTQsDQpTYW1wbGUsMiwyNi4zLDIvMS8xOCxTYW1wbGUxNSw1MTc5LDExOjI1OjM3IEFNLDEuMThFLTA4LDUuNTlFLTA5LDIuOTBFLTEwLDQwLjgyNTE5LDE5LjI4NzY1LA0KU2FtcGxlLDIsMjUuNywyLzEvMTgsU2FtcGxlMTYsNTI3MCwxMToyNzo1MSBBTSwxLjE4RS0wOCw1LjQ3RS0wOSwyLjg4RS0xMCw0MC44NzcxMiwxOC45ODI5MSwNClNhbXBsZSwyLDI1LjcsMi8xLzE4LFNhbXBsZTE3LDUzNzAsMTE6MzA6MTggQU0sMS4xOEUtMDgsNS41M0UtMDksMi44OEUtMTAsNDAuODI5ODYsMTkuMjA0NjYsDQpTYW1wbGUsMiwyNS43LDIvMS8xOCxTYW1wbGUxOCw1NDc1LDExOjMyOjUzIEFNLDEuMThFLTA4LDUuNTZFLTA5LDIuODhFLTEwLDQwLjgyNjEsMTkuMjczNTUsDQpTYW1wbGUsMiwyNS45LDIvMS8xOCxTYW1wbGUxOSw1NjY4LDExOjM3OjM3IEFNLDEuMTZFLTA4LDcuMzBFLTA5LDIuODdFLTEwLDQwLjI5NjQ0LDI1LjQwMzcsDQpTYW1wbGUsMiwyNS45LDIvMS8xOCxTYW1wbGUyMCw1NzQxLDExOjM5OjI0IEFNLDEuMTVFLTA4LDcuMzNFLTA5LDIuODdFLTEwLDQwLjI0MjYsMjUuNTYxMjQsDQpTYW1wbGUsMiwyNS45LDIvMS8xOCxTYW1wbGUyMSw1OTcyLDExOjQ1OjA0IEFNLDEuMTZFLTA4LDcuMzJFLTA5LDIuODdFLTEwLDQwLjM2MTQ3LDI1LjUxOTc2LA0KU2FtcGxlLDIsMjUuMiwyLzEvMTgsU2FtcGxlMjIsNjA3OSwxMTo0Nzo0MiBBTSwxLjEzRS0wOCw3LjU5RS0wOSwyLjgzRS0xMCw0MC4wMzU3LDI2LjgxNjM5LA0KU2FtcGxlLDIsMjUuMiwyLzEvMTgsU2FtcGxlMjMsNjE5MiwxMTo1MDoyOCBBTSwxLjE0RS0wOCw3LjY2RS0wOSwyLjg0RS0xMCw0MC4xNTE0OSwyNi45NTA4LA0KU2FtcGxlLDIsMjUuMiwyLzEvMTgsU2FtcGxlMjQsNjMzNSwxMTo1Mzo1OCBBTSwxLjEyRS0wOCw3LjYxRS0wOSwyLjgwRS0xMCwzOS43Nzk2LDI3LjE1MTE4LA0KU3RhbmRhcmQsMywyNC45LDIvMS8xOCxOQSw2NDc1LDExOjU3OjI0IEFNLDEuMThFLTA4LDUuNzFFLTA5LDIuOTFFLTEwLDQwLjQ2NDg0LDE5LjYzMDY5LA0KU3RhbmRhcmQsMywyNC45LDIvMS8xOCxOQSw2NTQyLDExOjU5OjAzIEFNLDEuMThFLTA4LDUuNjlFLTA5LDIuOTFFLTEwLDQwLjQ2OTMyLDE5LjUzMTc5LA0KU3RhbmRhcmQsMywyNC45LDIvMS8xOCxOQSw2NTk5LDEyOjAwOjI3IFBNLDEuMThFLTA4LDUuNjhFLTA5LDIuOTFFLTEwLDQwLjQ5MzUyLDE5LjUwMzE0LA0KU3RhbmRhcmQsMywyNi4zLDIvMS8xOCxOQSw2NzIzLDEyOjAzOjI5IFBNLDEuMTZFLTA4LDUuNTlFLTA5LDIuODdFLTEwLDQwLjU1MTUsMTkuNDU1MjcsDQpTdGFuZGFyZCwzLDI2LjMsMi8xLzE4LE5BLDY4MjUsMTI6MDU6NTkgUE0sMS4xNkUtMDgsNS41OEUtMDksMi44N0UtMTAsNDAuNTQ5MzksMTkuNDI5OTUsDQpTdGFuZGFyZCwzLDI2LjMsMi8xLzE4LE5BLDY4NzAsMTI6MDc6MDYgUE0sMS4xNkUtMDgsNS41OEUtMDksMi44N0UtMTAsNDAuNTU5NzMsMTkuNDI4MDcs" download="data_twoTemp.csv">Download data_twoTemp.csv</a></p>
 <div class="figure">
-<img src="excel.png" alt=""><p class="caption">Figure 1. An example of a correctly formatted raw data file.</p>
+<img src="excel.png" style="width:90.0%" alt=""><p class="caption">Figure 1. An example of a correctly formatted raw data file.</p>
 </div>
 <p><strong>CSV file format:</strong></p>
 <ul>
@@ -167,9 +179,9 @@
 <li>mimsy will preserve all labelling columns in the final output, so you should add whatever labels or notes columns you like</li>
 </ul>
 </li>
-<li>Index, Time, 28, 32, 40, 99, N2/Ar, O2/Ar columns
+<li>Index, Time, 28, 32, 40, N2/Ar, O2/Ar columns
 <ul>
-<li>This is the default output from the MIMS</li>
+<li>This is the default output from the MIMS. If you have a newer setup, this may also include a “99” column indicating the MIMS’ internal pressure. Including, or not including, this column won’t affect your results.</li>
 </ul>
 </li>
 </ul>
@@ -178,75 +190,2380 @@
 <h3 class="hasAnchor">
 <a href="#load-your-csv-file-into-r-using-read-csv" class="anchor"></a>3.2. Load your CSV file into R using <code>read.csv()</code>
 </h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Load data into R</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>data &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span>(<span class="dt">file =</span> <span class="st">"data.csv"</span>, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb2-3"><a href="#cb2-3"></a></span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="co"># Check out the structure</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="kw"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(data, <span class="dt">vec.len =</span> <span class="dv">2</span>)</span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="co">#&gt; 'data.frame':    42 obs. of  14 variables:</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="co">#&gt;  $ Type          : chr  "Standard" "Standard" ...</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a><span class="co">#&gt;  $ Group         : int  1 1 1 1 1 ...</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a><span class="co">#&gt;  $ CollectionTemp: num  24.9 24.9 24.9 26.3 26.3 ...</span></span>
-<span id="cb2-10"><a href="#cb2-10"></a><span class="co">#&gt;  $ RunDate       : chr  "2/1/2018" "2/1/2018" ...</span></span>
-<span id="cb2-11"><a href="#cb2-11"></a><span class="co">#&gt;  $ Label         : chr  NA NA ...</span></span>
-<span id="cb2-12"><a href="#cb2-12"></a><span class="co">#&gt;  $ Index         : int  3029 3079 3128 3212 3261 ...</span></span>
-<span id="cb2-13"><a href="#cb2-13"></a><span class="co">#&gt;  $ Time          : chr  "10:32:53 AM" "10:34:07 AM" ...</span></span>
-<span id="cb2-14"><a href="#cb2-14"></a><span class="co">#&gt;  $ X28           : num  1.20e-08 1.20e-08 1.20e-08 1.19e-08 1.18e-08 ...</span></span>
-<span id="cb2-15"><a href="#cb2-15"></a><span class="co">#&gt;  $ X32           : num  5.75e-09 5.75e-09 5.75e-09 5.66e-09 5.66e-09 ...</span></span>
-<span id="cb2-16"><a href="#cb2-16"></a><span class="co">#&gt;  $ X40           : num  2.98e-10 2.98e-10 2.98e-10 2.93e-10 2.93e-10 ...</span></span>
-<span id="cb2-17"><a href="#cb2-17"></a><span class="co">#&gt;  $ X99           : num  5.51e-07 5.49e-07 5.49e-07 5.41e-07 5.41e-07 ...</span></span>
-<span id="cb2-18"><a href="#cb2-18"></a><span class="co">#&gt;  $ N2.Ar         : num  40.3 40.3 ...</span></span>
-<span id="cb2-19"><a href="#cb2-19"></a><span class="co">#&gt;  $ O2.Ar         : num  19.3 19.3 ...</span></span>
-<span id="cb2-20"><a href="#cb2-20"></a><span class="co">#&gt;  $ Notes         : chr  "Barometric pressure =  977.2 hPa" "" ...</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Load data into R</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>data &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span>(<span class="dt">file =</span> <span class="st">"data_twoTemp.csv"</span>, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co"># Check it out</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>data</span></code></pre></div>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; ">
+<table class="table table">
+<thead><tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Type
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Group
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+CollectionTemp
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+RunDate
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Label
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Index
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Time
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+X28
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+X32
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+X40
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+N2.Ar
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+O2.Ar
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Notes
+</th>
+</tr></thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+24.9
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3029
+</td>
+<td style="text-align:left;">
+10:32:53 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.27659
+</td>
+<td style="text-align:right;">
+19.29615
+</td>
+<td style="text-align:left;">
+Barometric pressure = 977.2 hPa
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+24.9
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3079
+</td>
+<td style="text-align:left;">
+10:34:07 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.28539
+</td>
+<td style="text-align:right;">
+19.29992
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+24.9
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3128
+</td>
+<td style="text-align:left;">
+10:35:19 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.29580
+</td>
+<td style="text-align:right;">
+19.30377
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+26.3
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3212
+</td>
+<td style="text-align:left;">
+10:37:22 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.42873
+</td>
+<td style="text-align:right;">
+19.31060
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+26.3
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3261
+</td>
+<td style="text-align:left;">
+10:38:35 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.41858
+</td>
+<td style="text-align:right;">
+19.30813
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+26.3
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3315
+</td>
+<td style="text-align:left;">
+10:39:54 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.43270
+</td>
+<td style="text-align:right;">
+19.30843
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+25.1
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample1
+</td>
+<td style="text-align:right;">
+3455
+</td>
+<td style="text-align:left;">
+10:43:20 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.46266
+</td>
+<td style="text-align:right;">
+22.82152
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+25.1
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample2
+</td>
+<td style="text-align:right;">
+3554
+</td>
+<td style="text-align:left;">
+10:45:46 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.47978
+</td>
+<td style="text-align:right;">
+22.88816
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+25.1
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample3
+</td>
+<td style="text-align:right;">
+3620
+</td>
+<td style="text-align:left;">
+10:47:23 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.47607
+</td>
+<td style="text-align:right;">
+22.91647
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+26.1
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample4
+</td>
+<td style="text-align:right;">
+3701
+</td>
+<td style="text-align:left;">
+10:49:22 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+39.79033
+</td>
+<td style="text-align:right;">
+22.77329
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+26.1
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample5
+</td>
+<td style="text-align:right;">
+3792
+</td>
+<td style="text-align:left;">
+10:51:36 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+39.87121
+</td>
+<td style="text-align:right;">
+22.93365
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+26.1
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample6
+</td>
+<td style="text-align:right;">
+3913
+</td>
+<td style="text-align:left;">
+10:54:34 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.33485
+</td>
+<td style="text-align:right;">
+22.85876
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+25.3
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample7
+</td>
+<td style="text-align:right;">
+3975
+</td>
+<td style="text-align:left;">
+10:56:05 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.44159
+</td>
+<td style="text-align:right;">
+22.58631
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+25.3
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample8
+</td>
+<td style="text-align:right;">
+4043
+</td>
+<td style="text-align:left;">
+10:57:45 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.40981
+</td>
+<td style="text-align:right;">
+22.88878
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+25.3
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample9
+</td>
+<td style="text-align:right;">
+4121
+</td>
+<td style="text-align:left;">
+10:59:40 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.28400
+</td>
+<td style="text-align:right;">
+23.18026
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+24.9
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample10
+</td>
+<td style="text-align:right;">
+4233
+</td>
+<td style="text-align:left;">
+11:02:25 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.86557
+</td>
+<td style="text-align:right;">
+19.27496
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+24.9
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample11
+</td>
+<td style="text-align:right;">
+4327
+</td>
+<td style="text-align:left;">
+11:04:43 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.90063
+</td>
+<td style="text-align:right;">
+19.20336
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+24.9
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample12
+</td>
+<td style="text-align:right;">
+4422
+</td>
+<td style="text-align:left;">
+11:07:03 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.87803
+</td>
+<td style="text-align:right;">
+19.17829
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+24.9
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+4654
+</td>
+<td style="text-align:left;">
+11:12:45 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.38071
+</td>
+<td style="text-align:right;">
+19.34272
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+24.9
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+4742
+</td>
+<td style="text-align:left;">
+11:14:54 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.37351
+</td>
+<td style="text-align:right;">
+19.34234
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+24.9
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+4779
+</td>
+<td style="text-align:left;">
+11:15:48 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.38127
+</td>
+<td style="text-align:right;">
+19.34579
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+26.3
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+4866
+</td>
+<td style="text-align:left;">
+11:17:57 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.48250
+</td>
+<td style="text-align:right;">
+19.34875
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+26.3
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+4962
+</td>
+<td style="text-align:left;">
+11:20:18 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.48784
+</td>
+<td style="text-align:right;">
+19.34937
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+26.3
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+5007
+</td>
+<td style="text-align:left;">
+11:21:24 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.48557
+</td>
+<td style="text-align:right;">
+19.34862
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+26.3
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample13
+</td>
+<td style="text-align:right;">
+4516
+</td>
+<td style="text-align:left;">
+11:09:21 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.80347
+</td>
+<td style="text-align:right;">
+19.00344
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+26.3
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample14
+</td>
+<td style="text-align:right;">
+5089
+</td>
+<td style="text-align:left;">
+11:23:25 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.85389
+</td>
+<td style="text-align:right;">
+19.24914
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+26.3
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample15
+</td>
+<td style="text-align:right;">
+5179
+</td>
+<td style="text-align:left;">
+11:25:37 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.82519
+</td>
+<td style="text-align:right;">
+19.28765
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+25.7
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample16
+</td>
+<td style="text-align:right;">
+5270
+</td>
+<td style="text-align:left;">
+11:27:51 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.87712
+</td>
+<td style="text-align:right;">
+18.98291
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+25.7
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample17
+</td>
+<td style="text-align:right;">
+5370
+</td>
+<td style="text-align:left;">
+11:30:18 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.82986
+</td>
+<td style="text-align:right;">
+19.20466
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+25.7
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample18
+</td>
+<td style="text-align:right;">
+5475
+</td>
+<td style="text-align:left;">
+11:32:53 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.82610
+</td>
+<td style="text-align:right;">
+19.27355
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+25.9
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample19
+</td>
+<td style="text-align:right;">
+5668
+</td>
+<td style="text-align:left;">
+11:37:37 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.29644
+</td>
+<td style="text-align:right;">
+25.40370
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+25.9
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample20
+</td>
+<td style="text-align:right;">
+5741
+</td>
+<td style="text-align:left;">
+11:39:24 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.24260
+</td>
+<td style="text-align:right;">
+25.56124
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+25.9
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample21
+</td>
+<td style="text-align:right;">
+5972
+</td>
+<td style="text-align:left;">
+11:45:04 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.36147
+</td>
+<td style="text-align:right;">
+25.51976
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+25.2
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample22
+</td>
+<td style="text-align:right;">
+6079
+</td>
+<td style="text-align:left;">
+11:47:42 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.03570
+</td>
+<td style="text-align:right;">
+26.81639
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+25.2
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample23
+</td>
+<td style="text-align:right;">
+6192
+</td>
+<td style="text-align:left;">
+11:50:28 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.15149
+</td>
+<td style="text-align:right;">
+26.95080
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+25.2
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+Sample24
+</td>
+<td style="text-align:right;">
+6335
+</td>
+<td style="text-align:left;">
+11:53:58 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+39.77960
+</td>
+<td style="text-align:right;">
+27.15118
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+24.9
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+6475
+</td>
+<td style="text-align:left;">
+11:57:24 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.46484
+</td>
+<td style="text-align:right;">
+19.63069
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+24.9
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+6542
+</td>
+<td style="text-align:left;">
+11:59:03 AM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.46932
+</td>
+<td style="text-align:right;">
+19.53179
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+24.9
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+6599
+</td>
+<td style="text-align:left;">
+12:00:27 PM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.49352
+</td>
+<td style="text-align:right;">
+19.50314
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+26.3
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+6723
+</td>
+<td style="text-align:left;">
+12:03:29 PM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.55150
+</td>
+<td style="text-align:right;">
+19.45527
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+26.3
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+6825
+</td>
+<td style="text-align:left;">
+12:05:59 PM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.54939
+</td>
+<td style="text-align:right;">
+19.42995
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+26.3
+</td>
+<td style="text-align:left;">
+2/1/18
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+6870
+</td>
+<td style="text-align:left;">
+12:07:06 PM
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40.55973
+</td>
+<td style="text-align:right;">
+19.42807
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Don’t be worried that your “28”, “32”, and “40” columns are now “X28”, “X32”, and “X40”. As R doesn’t accept column names that start with a number, it added an “X” to these column names when the data was imported. Similarly, “N2/Ar” and “O2/Ar” have been automatically adjusted to “N2.Ar” and “O2.Ar”.</p>
 </div>
 <div id="run-the-mimsy-function" class="section level3">
 <h3 class="hasAnchor">
 <a href="#run-the-mimsy-function" class="anchor"></a>3.3. Run the <code>mimsy()</code> function</h3>
 <p>You must specify the barometric pressure (as <code>baromet.press</code>) and its units in the function argument. Units must be one of <code>"atm"</code>, <code>"hPa"</code>, <code>"psi"</code>, <code>"bar"</code>, or <code>"Torr"</code>. All other inputs, such as background corrections or standard salinity, are optional. Check out <code><a href="../reference/mimsy.html">?mimsy</a></code> for more information.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Run the function</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>results &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mimsy.html">mimsy</a></span>(data, <span class="dt">baromet.press =</span> <span class="fl">977.2</span>, <span class="dt">units =</span> <span class="st">"hPa"</span>)</span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="co">#&gt; Calculated concentrations based on a two-point temperature standard.</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="co">#&gt; Standard 1: 24.9 C, Standard 2: 26.3 C</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># Run the function</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>results &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mimsy.html">mimsy</a></span>(data, <span class="dt">baromet.press =</span> <span class="fl">977.2</span>, <span class="dt">units =</span> <span class="st">"hPa"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="co">#&gt; Calculated dissolved concentrations based on a two-point temperature standard.</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="co">#&gt; Standard 1: 24.9 C, Standard 2: 26.3 C</span></span></code></pre></div>
 </div>
 <div id="explore-the-results" class="section level3">
 <h3 class="hasAnchor">
 <a href="#explore-the-results" class="anchor"></a>3.4. Explore the results</h3>
 <p>You’ll see that <code><a href="../reference/mimsy.html">mimsy()</a></code> returns a list containing five seperate dataframes (<code>results</code>, <code>solubility.Concentrations</code>, <code>calibration.Factors</code>, <code>calibration.DriftCorrection</code>, and <code>results.full</code>). Check out ?mimsy() for more specific information on those outputs and how they were calculated.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># Check out the structure of the output</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(results)</span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="co">#&gt;                             Length Class      Mode</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="co">#&gt; results                     14     grouped_df list</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="co">#&gt; solubility.Concentrations    3     data.frame list</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="co">#&gt; calibration.Factors          5     data.frame list</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="co">#&gt; calibration.DriftCorrection 20     data.frame list</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a><span class="co">#&gt; results.full                39     grouped_df list</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a></span>
-<span id="cb4-10"><a href="#cb4-10"></a><span class="co"># See the summarized results dataframe</span></span>
-<span id="cb4-11"><a href="#cb4-11"></a><span class="kw"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(results<span class="op">$</span>results, <span class="dt">give.attr =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb4-12"><a href="#cb4-12"></a><span class="co">#&gt; Classes 'grouped_df', 'tbl_df', 'tbl' and 'data.frame':  24 obs. of  14 variables:</span></span>
-<span id="cb4-13"><a href="#cb4-13"></a><span class="co">#&gt;  $ CollectionTemp         : num  25.1 25.1 25.1 26.1 26.1 26.1 25.3 25.3 25.3 24.9 ...</span></span>
-<span id="cb4-14"><a href="#cb4-14"></a><span class="co">#&gt;  $ Label                  : chr  "Sample1" "Sample2" "Sample3" "Sample4" ...</span></span>
-<span id="cb4-15"><a href="#cb4-15"></a><span class="co">#&gt;  $ Notes                  : chr  "" "" "" "" ...</span></span>
-<span id="cb4-16"><a href="#cb4-16"></a><span class="co">#&gt;  $ arSat.conc_uMol.kg     : num  12.1 12.1 12.1 11.9 11.9 ...</span></span>
-<span id="cb4-17"><a href="#cb4-17"></a><span class="co">#&gt;  $ Ar_uMol                : num  11.6 11.6 11.5 11.2 11.2 ...</span></span>
-<span id="cb4-18"><a href="#cb4-18"></a><span class="co">#&gt;  $ N2Ar                   : num  39 39.1 39.1 38.4 38.5 ...</span></span>
-<span id="cb4-19"><a href="#cb4-19"></a><span class="co">#&gt;  $ O2Ar                   : num  25 25.1 25.1 25.1 25.3 ...</span></span>
-<span id="cb4-20"><a href="#cb4-20"></a><span class="co">#&gt;  $ N2_uMol                : num  472 473 473 456 457 ...</span></span>
-<span id="cb4-21"><a href="#cb4-21"></a><span class="co">#&gt;  $ O2_uMol                : num  303 303 304 298 300 ...</span></span>
-<span id="cb4-22"><a href="#cb4-22"></a><span class="co">#&gt;  $ O2.BubbleCorrected_uMol: num  316 317 319 316 318 ...</span></span>
-<span id="cb4-23"><a href="#cb4-23"></a><span class="co">#&gt;  $ N2_mg                  : num  13.2 13.2 13.2 12.8 12.8 ...</span></span>
-<span id="cb4-24"><a href="#cb4-24"></a><span class="co">#&gt;  $ O2_mg                  : num  9.68 9.71 9.72 9.54 9.61 ...</span></span>
-<span id="cb4-25"><a href="#cb4-25"></a><span class="co">#&gt;  $ O2.BubbleCorrected_mg  : num  10.1 10.2 10.2 10.1 10.2 ...</span></span>
-<span id="cb4-26"><a href="#cb4-26"></a><span class="co">#&gt;  $ Ar_mg                  : num  0.463 0.462 0.461 0.447 0.447 ...</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Check out the summarized results</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>results<span class="op">$</span>results</span></code></pre></div>
+<p>The summarized results includes the calculated gas concentrations for all samples:</p>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; ">
+<table class="table table">
+<thead><tr>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+CollectionTemp
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Label
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Notes
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+arSat.conc_uMol.kg
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Ar_uMol
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+N2Ar
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+O2Ar
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+N2_uMol
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+O2_uMol
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+O2.BubbleCorrected_uMol
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+N2_mg
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+O2_mg
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+O2.BubbleCorrected_mg
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Ar_mg
+</th>
+</tr></thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+25.1
+</td>
+<td style="text-align:left;">
+Sample1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:right;">
+12.09965
+</td>
+<td style="text-align:right;">
+11.58375
+</td>
+<td style="text-align:right;">
+39.04704
+</td>
+<td style="text-align:right;">
+25.01304
+</td>
+<td style="text-align:right;">
+472.4557
+</td>
+<td style="text-align:right;">
+302.6491
+</td>
+<td style="text-align:right;">
+315.5533
+</td>
+<td style="text-align:right;">
+13.22876
+</td>
+<td style="text-align:right;">
+9.684772
+</td>
+<td style="text-align:right;">
+10.097706
+</td>
+<td style="text-align:right;">
+0.4633502
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+25.1
+</td>
+<td style="text-align:left;">
+Sample2
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:right;">
+12.09965
+</td>
+<td style="text-align:right;">
+11.55084
+</td>
+<td style="text-align:right;">
+39.05838
+</td>
+<td style="text-align:right;">
+25.08267
+</td>
+<td style="text-align:right;">
+472.5929
+</td>
+<td style="text-align:right;">
+303.4915
+</td>
+<td style="text-align:right;">
+317.2572
+</td>
+<td style="text-align:right;">
+13.23260
+</td>
+<td style="text-align:right;">
+9.711729
+</td>
+<td style="text-align:right;">
+10.152230
+</td>
+<td style="text-align:right;">
+0.4620337
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+25.1
+</td>
+<td style="text-align:left;">
+Sample3
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:right;">
+12.09965
+</td>
+<td style="text-align:right;">
+11.51571
+</td>
+<td style="text-align:right;">
+39.05136
+</td>
+<td style="text-align:right;">
+25.11142
+</td>
+<td style="text-align:right;">
+472.5079
+</td>
+<td style="text-align:right;">
+303.8394
+</td>
+<td style="text-align:right;">
+318.5030
+</td>
+<td style="text-align:right;">
+13.23022
+</td>
+<td style="text-align:right;">
+9.722862
+</td>
+<td style="text-align:right;">
+10.192094
+</td>
+<td style="text-align:right;">
+0.4606286
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+26.1
+</td>
+<td style="text-align:left;">
+Sample4
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:right;">
+11.88145
+</td>
+<td style="text-align:right;">
+11.17233
+</td>
+<td style="text-align:right;">
+38.37769
+</td>
+<td style="text-align:right;">
+25.09848
+</td>
+<td style="text-align:right;">
+455.9827
+</td>
+<td style="text-align:right;">
+298.2064
+</td>
+<td style="text-align:right;">
+316.0043
+</td>
+<td style="text-align:right;">
+12.76751
+</td>
+<td style="text-align:right;">
+9.542604
+</td>
+<td style="text-align:right;">
+10.112136
+</td>
+<td style="text-align:right;">
+0.4468932
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+26.1
+</td>
+<td style="text-align:left;">
+Sample5
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:right;">
+11.88145
+</td>
+<td style="text-align:right;">
+11.18067
+</td>
+<td style="text-align:right;">
+38.45231
+</td>
+<td style="text-align:right;">
+25.27225
+</td>
+<td style="text-align:right;">
+456.8693
+</td>
+<td style="text-align:right;">
+300.2711
+</td>
+<td style="text-align:right;">
+317.9814
+</td>
+<td style="text-align:right;">
+12.79234
+</td>
+<td style="text-align:right;">
+9.608674
+</td>
+<td style="text-align:right;">
+10.175403
+</td>
+<td style="text-align:right;">
+0.4472269
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+26.1
+</td>
+<td style="text-align:left;">
+Sample6
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:right;">
+11.88145
+</td>
+<td style="text-align:right;">
+11.34883
+</td>
+<td style="text-align:right;">
+38.89491
+</td>
+<td style="text-align:right;">
+25.18581
+</td>
+<td style="text-align:right;">
+462.1280
+</td>
+<td style="text-align:right;">
+299.2440
+</td>
+<td style="text-align:right;">
+312.6585
+</td>
+<td style="text-align:right;">
+12.93958
+</td>
+<td style="text-align:right;">
+9.575807
+</td>
+<td style="text-align:right;">
+10.005072
+</td>
+<td style="text-align:right;">
+0.4539532
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+25.3
+</td>
+<td style="text-align:left;">
+Sample7
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:right;">
+12.05545
+</td>
+<td style="text-align:right;">
+11.32820
+</td>
+<td style="text-align:right;">
+38.99877
+</td>
+<td style="text-align:right;">
+24.76680
+</td>
+<td style="text-align:right;">
+470.1476
+</td>
+<td style="text-align:right;">
+298.5748
+</td>
+<td style="text-align:right;">
+316.5864
+</td>
+<td style="text-align:right;">
+13.16413
+</td>
+<td style="text-align:right;">
+9.554393
+</td>
+<td style="text-align:right;">
+10.130765
+</td>
+<td style="text-align:right;">
+0.4531279
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+25.3
+</td>
+<td style="text-align:left;">
+Sample8
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:right;">
+12.05545
+</td>
+<td style="text-align:right;">
+11.41191
+</td>
+<td style="text-align:right;">
+38.96478
+</td>
+<td style="text-align:right;">
+25.09616
+</td>
+<td style="text-align:right;">
+469.7378
+</td>
+<td style="text-align:right;">
+302.5454
+</td>
+<td style="text-align:right;">
+318.6957
+</td>
+<td style="text-align:right;">
+13.15266
+</td>
+<td style="text-align:right;">
+9.681451
+</td>
+<td style="text-align:right;">
+10.198261
+</td>
+<td style="text-align:right;">
+0.4564764
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+25.3
+</td>
+<td style="text-align:left;">
+Sample9
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:right;">
+12.05545
+</td>
+<td style="text-align:right;">
+11.37789
+</td>
+<td style="text-align:right;">
+38.83963
+</td>
+<td style="text-align:right;">
+25.41305
+</td>
+<td style="text-align:right;">
+468.2291
+</td>
+<td style="text-align:right;">
+306.3657
+</td>
+<td style="text-align:right;">
+323.5845
+</td>
+<td style="text-align:right;">
+13.11041
+</td>
+<td style="text-align:right;">
+9.803702
+</td>
+<td style="text-align:right;">
+10.354705
+</td>
+<td style="text-align:right;">
+0.4551155
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+24.9
+</td>
+<td style="text-align:left;">
+Sample10
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:right;">
+12.14415
+</td>
+<td style="text-align:right;">
+11.40900
+</td>
+<td style="text-align:right;">
+39.39490
+</td>
+<td style="text-align:right;">
+21.07834
+</td>
+<td style="text-align:right;">
+478.4175
+</td>
+<td style="text-align:right;">
+255.9785
+</td>
+<td style="text-align:right;">
+271.4742
+</td>
+<td style="text-align:right;">
+13.39569
+</td>
+<td style="text-align:right;">
+8.191311
+</td>
+<td style="text-align:right;">
+8.687174
+</td>
+<td style="text-align:right;">
+0.4563599
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+24.9
+</td>
+<td style="text-align:left;">
+Sample11
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:right;">
+12.14415
+</td>
+<td style="text-align:right;">
+11.45413
+</td>
+<td style="text-align:right;">
+39.42348
+</td>
+<td style="text-align:right;">
+20.99730
+</td>
+<td style="text-align:right;">
+478.7645
+</td>
+<td style="text-align:right;">
+254.9943
+</td>
+<td style="text-align:right;">
+269.4829
+</td>
+<td style="text-align:right;">
+13.40541
+</td>
+<td style="text-align:right;">
+8.159818
+</td>
+<td style="text-align:right;">
+8.623451
+</td>
+<td style="text-align:right;">
+0.4581651
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+24.9
+</td>
+<td style="text-align:left;">
+Sample12
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:right;">
+12.14415
+</td>
+<td style="text-align:right;">
+11.49938
+</td>
+<td style="text-align:right;">
+39.39640
+</td>
+<td style="text-align:right;">
+20.96711
+</td>
+<td style="text-align:right;">
+478.4356
+</td>
+<td style="text-align:right;">
+254.6277
+</td>
+<td style="text-align:right;">
+268.1467
+</td>
+<td style="text-align:right;">
+13.39620
+</td>
+<td style="text-align:right;">
+8.148087
+</td>
+<td style="text-align:right;">
+8.580694
+</td>
+<td style="text-align:right;">
+0.4599751
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># Check out the solubility concentrations</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>results<span class="op">$</span>solubility.Concentrations</span></code></pre></div>
+<table class="table table">
+<thead><tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+O2.conc_uMol.kg
+</th>
+<th style="text-align:right;">
+N2.conc_uMol.kg
+</th>
+<th style="text-align:right;">
+Ar.conc_uMol.kg
+</th>
+</tr></thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+24.9 deg C
+</td>
+<td style="text-align:right;">
+256.7397
+</td>
+<td style="text-align:right;">
+472.4339
+</td>
+<td style="text-align:right;">
+12.14415
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+26.3 deg C
+</td>
+<td style="text-align:right;">
+252.4423
+</td>
+<td style="text-align:right;">
+461.8634
+</td>
+<td style="text-align:right;">
+11.83865
+</td>
+</tr>
+</tbody>
+</table>
+<p>Check out ?mimsy() for more specific information on the <code>results</code>, <code>solubility.Concentrations</code>, <code>calibration.Factors</code>, <code>calibration.DriftCorrection</code>, and <code>results.full</code> dataframes, including details on how they were calculated.</p>
 </div>
 <div id="save-the-results" class="section level3">
 <h3 class="hasAnchor">
 <a href="#save-the-results" class="anchor"></a>3.5. Save the results</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Save output to an Excel workbook</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="kw"><a href="../reference/mimsy.save.html">mimsy.save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.xlsx"</span>)</span>
-<span id="cb5-3"><a href="#cb5-3"></a></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="co"># Save output to an RData file</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="kw"><a href="https://rdrr.io/r/base/save.html">save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.RData"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># Save output to an Excel workbook</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="kw"><a href="../reference/mimsy.save.html">mimsy.save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.xlsx"</span>)</span>
+<span id="cb7-3"><a href="#cb7-3"></a></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="co"># Save output to an RData file</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="kw"><a href="https://rdrr.io/r/base/save.html">save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.RData"</span>)</span></code></pre></div>
 <p>We don’t reccomend saving results dataframes to CSV files (although it is possible), as you’ll need multiple CSV’s to preserve all of the outputs, and that gets kind of messy. A good alternative is to save both an Excel workbook copy and an RData copy, that way all of your output is preserved every time.</p>
 <p>You can load RData files back into R using <code><a href="https://rdrr.io/r/base/load.html">load("results.RData")</a></code>. Check out <code>?load()</code> for more info.</p>
 </div>
@@ -254,23 +2571,23 @@
 <div id="putting-it-all-together" class="section level2">
 <h2 class="hasAnchor">
 <a href="#putting-it-all-together" class="anchor"></a>4. Putting it all together</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># Install mimsy</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"mimsy"</span>)</span>
-<span id="cb6-3"><a href="#cb6-3"></a></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="co"># Load mimsy</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(mimsy)</span>
-<span id="cb6-6"><a href="#cb6-6"></a></span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="co"># Load data into R</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a>data &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span>(<span class="dt">file =</span> <span class="st">"data.csv"</span>, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb6-9"><a href="#cb6-9"></a></span>
-<span id="cb6-10"><a href="#cb6-10"></a><span class="co"># Run the mimsy function</span></span>
-<span id="cb6-11"><a href="#cb6-11"></a>results &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mimsy.html">mimsy</a></span>(data, <span class="dt">baromet.press =</span> <span class="fl">977.2</span>, <span class="dt">units =</span> <span class="st">"hPa"</span>)</span>
-<span id="cb6-12"><a href="#cb6-12"></a></span>
-<span id="cb6-13"><a href="#cb6-13"></a><span class="co"># Save the results</span></span>
-<span id="cb6-14"><a href="#cb6-14"></a><span class="kw"><a href="../reference/mimsy.save.html">mimsy.save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.xlsx"</span>) <span class="co"># To Excel file</span></span>
-<span id="cb6-15"><a href="#cb6-15"></a><span class="kw"><a href="https://rdrr.io/r/base/save.html">save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.RData"</span>) <span class="co"># To RData file</span></span>
-<span id="cb6-16"><a href="#cb6-16"></a></span>
-<span id="cb6-17"><a href="#cb6-17"></a><span class="co"># Done! :)</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># Install mimsy</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"mimsy"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="co"># Load mimsy</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(mimsy)</span>
+<span id="cb8-6"><a href="#cb8-6"></a></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="co"># Load data into R</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a>data &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span>(<span class="dt">file =</span> <span class="st">"data.csv"</span>, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="co"># Run the mimsy function</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a>results &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mimsy.html">mimsy</a></span>(data, <span class="dt">baromet.press =</span> <span class="fl">977.2</span>, <span class="dt">units =</span> <span class="st">"hPa"</span>)</span>
+<span id="cb8-12"><a href="#cb8-12"></a></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="co"># Save the results</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a><span class="kw"><a href="../reference/mimsy.save.html">mimsy.save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.xlsx"</span>) <span class="co"># To Excel file</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a><span class="kw"><a href="https://rdrr.io/r/base/save.html">save</a></span>(results, <span class="dt">file =</span> <span class="st">"results.RData"</span>) <span class="co"># To RData file</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a></span>
+<span id="cb8-17"><a href="#cb8-17"></a><span class="co"># Done! :)</span></span></code></pre></div>
 </div>
   </div>
 

@@ -1,3 +1,9 @@
+# mimsy 0.6.0
+
+## Major changes
+* Support for single temperature MIMS bath setups added
+* Updated Get Started vignetted with clarified directions and downloadable examples
+
 # mimsy 0.5.0
 
 ## Major changes

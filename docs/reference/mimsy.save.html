@@ -77,7 +77,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mimsy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
       </span>
     </div>
 
@@ -152,7 +152,7 @@
   <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span>(<span class='kw'>file</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"data.csv"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"mimsy"</span>),
            <span class='kw'>header</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
 
-<span class='no'>results</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mimsy.html'>mimsy</a></span>(<span class='no'>data</span>, <span class='kw'>baromet.press</span> <span class='kw'>=</span> <span class='fl'>981.2</span>, <span class='kw'>units</span> <span class='kw'>=</span> <span class='st'>'hPa'</span>)</div><div class='output co'>#&gt; <span class='message'>Calculated concentrations based on a two-point temperature standard.</span></div><div class='output co'>#&gt; <span class='message'>Standard 1: 24.9 C, Standard 2: 26.3 C</span></div><div class='input'>
+<span class='no'>results</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mimsy.html'>mimsy</a></span>(<span class='no'>data</span>, <span class='kw'>baromet.press</span> <span class='kw'>=</span> <span class='fl'>981.2</span>, <span class='kw'>units</span> <span class='kw'>=</span> <span class='st'>'hPa'</span>)</div><div class='output co'>#&gt; <span class='message'>Calculated dissolved concentrations based on a two-point temperature standard.</span></div><div class='output co'>#&gt; <span class='message'>Standard 1: 24.9 C, Standard 2: 26.3 C</span></div><div class='input'>
 <span class='fu'>mimsy.save</span>(<span class='no'>results</span>, <span class='kw'>file</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>(), <span class='st'>"results.xlsx"</span>))</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

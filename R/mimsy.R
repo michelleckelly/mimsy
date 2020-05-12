@@ -74,20 +74,13 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   StdIndex <- which(data$Group == 1 & data$Type == "Standard")
 
   # Get standard temperatures --------------------------------------------------
-  # Two-Point calibration (Two temperature standards)
-  if (length(unique(data[StdIndex, "CollectionTemp"])) == 2){
+  if (length(unique(data[StdIndex, "CollectionTemp"])) == 1 | 2){
     # Set std.temps equal to the unique temperatures in this column
     std.temps <- unique(data[StdIndex, "CollectionTemp"])
-    # Check if there are more than two standard temperatures
-    if (length(std.temps) > 2){
-      stop("ERROR: More than two unique temperature values in standards")
-    }
   }
-
-  # Single-Point calibration (one temperature standard)
-  if (length(unique(data[StdIndex, "CollectionTemp"])) == 1){
-    # Set std.temps equal to the unique temperatures in this column
-    std.temps <- unique(data[StdIndex, "CollectionTemp"])
+  # Check if there are more than two standard temperatures
+  if (length(std.temps) > 2){
+    stop("Detecting more than two unique temperature values in the first block of standards. \nPlease check that standard temperatures have been entered correctly.")
   }
 
 
@@ -105,7 +98,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   }
   if (bg.correct != FALSE) {
     # UPDATEFLAG
-    message("ERROR: Background correction is not yet supported")
+    message("Background correction is not yet supported. Please send an email to mckelly1@mtu.edu if you would like this update to take priority!")
   }
 
   # Barometric pressure conversion -------------------------------------------
@@ -137,11 +130,11 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
   # 3. Calculate solubilites of dissolved gas --------------------------------
 
-  # initialize vector to store concentration values
+  # initialize vector to store concentration values NOTE will need to adapt this for single temp vs dual temp
 
-  solubility.conc <- data.frame(O2.conc_uMol.kg = numeric(length = 2),
-                                N2.conc_uMol.kg = numeric(length = 2),
-                                Ar.conc_uMol.kg = numeric(length = 2),
+  solubility.conc <- data.frame(O2.conc_uMol.kg = numeric(length = length(std.temps)),
+                                N2.conc_uMol.kg = numeric(length = length(std.temps)),
+                                Ar.conc_uMol.kg = numeric(length = length(std.temps)),
                                 row.names = paste(std.temps, "deg C"))
 
   # O2 saturation calculation ------------------------------------------------
@@ -279,25 +272,222 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     solubility.conc$Ar.conc_uMol.kg[i] <- arSat(t)
   }
 
-  # 4. Calculate calibration factors -----------------------------------------
-
   # Group data by Type (`Standard` or `Sample`) and Group (numeric, 1:n)
   data <- dplyr::group_by(data, data$Type, data$Group)
 
   # Calculate Ar saturation at temperature and pressure for all samples
   data$arSat.conc_uMol.kg <- arSat(data$CollectionTemp)
 
-  # Single-point calibration
+  ######### Single-point calibration #########
   if (nrow(unique(data[StdIndex, "CollectionTemp"])) == 1) {
-    message('ERROR: Single-point temperature calibration is not yet supported')
-  }
 
-  # Two-point calibration
+    message("Calculated dissolved concentrations based on a single-point temperature standard.")
+    message(paste0("Standard: ", std.temps, " C"))
+
+    # 4. Calculate calibration factors -----------------------------------------
+
+    # assemble empty data frame for calibration factors
+    calfactor <-
+      data.frame(calfactor_28 = numeric(length = max(data$Group)),
+                 calfactor_32 = numeric(length = max(data$Group)),
+                 calfactor_40 = numeric(length = max(data$Group)),
+                 calfactor_N2Ar = numeric(length = max(data$Group)),
+                 calfactor_O2Ar = numeric(length = max(data$Group)),
+                 row.names = paste0(std.temps, "degC_", "Group_",
+                                    rep(1:max(data$Group))))
+
+    for (groupNo in 1:max(data$Group)) {
+      # individually extract each group of standards
+      cal.block <- data %>% filter(Type == "Standard" & Group == groupNo)
+
+      # calculate calibration factor calfactor = solubility concentration
+      # at std temp / avg(MIMS readings at std temp)
+
+      # Mass28 (N2)
+      calfactor$calfactor_28[groupNo] <-
+        solubility.conc$N2.conc_uMol.kg/mean(cal.block$X28)
+
+      # Mass32 (O2)
+      calfactor$calfactor_32[groupNo] <-
+        solubility.conc$O2.conc_uMol.kg/mean(cal.block$X32)
+
+      # Mass40 (Ar)
+      calfactor$calfactor_40[groupNo] <-
+        solubility.conc$Ar.conc_uMol.kg/mean(cal.block$X40)
+
+      # Calculate N2:Ar calibration factor
+      #     = ([N2]saturation / [Ar]saturation) / Raw N2:Ar signal data
+      calfactor$calfactor_N2Ar[groupNo] <-
+        (solubility.conc$N2.conc_uMol.kg/
+           solubility.conc$Ar.conc_uMol.kg)/
+        mean(cal.block$N2.Ar)
+
+      # Calculate O2:Ar calibration factors
+      #     = ([O2]saturation / [Ar]saturation) / Raw O2:Ar signal data
+      calfactor$calfactor_O2Ar[groupNo] <-
+        (solubility.conc$O2.conc_uMol.kg/
+           solubility.conc$Ar.conc_uMol.kg)/
+        mean(cal.block$O2.Ar)
+
+    }
+
+    # 5. Calculate slope and intercepts of calibration curve -----------------
+    # Use a linear model to calculate the slope and intercept of the calibration factor and time
+
+    calslope <-
+      data.frame(calslope_28 = numeric(length = max(data$Group)),
+                 calslope_32 = numeric(length = max(data$Group)),
+                 calslope_40 = numeric(length = max(data$Group)),
+                 calslope_N2Ar = numeric(length = max(data$Group)),
+                 calslope_O2Ar = numeric(length = max(data$Group)),
+                 row.names = paste0("Group", 1:max(data$Group)))
+
+    for (groupNo in 1:max(data$Group)) {
+      # using a linear model to find slope and intercept of calibration
+      # line linear model: y ~ x
+
+      # for the last group, use calibration slope from previous group
+      if (is.na(calfactor$calfactor_28[groupNo+1])) {
+        # Mass28
+        calslope$calslope_28[groupNo] <-
+          calslope$calslope_28[groupNo - 1]
+        calslope$calintercept_28[groupNo] <-
+          calslope$calintercept_28[groupNo - 1]
+        calslope$calslope_32[groupNo] <-
+          calslope$calslope_32[groupNo - 1]
+        calslope$calintercept_32[groupNo] <-
+          calslope$calintercept_32[groupNo - 1]
+        calslope$calslope_40[groupNo] <-
+          calslope$calslope_40[groupNo - 1]
+        calslope$calintercept_40[groupNo] <-
+          calslope$calintercept_40[groupNo - 1]
+        calslope$calslope_N2Ar[groupNo] <-
+          calslope$calslope_N2Ar[groupNo - 1]
+        calslope$calintercept_N2Ar[groupNo] <-
+          calslope$calintercept_N2Ar[groupNo - 1]
+        calslope$calslope_O2Ar[groupNo] <-
+          calslope$calslope_O2Ar[groupNo - 1]
+        calslope$calintercept_O2Ar[groupNo] <-
+          calslope$calintercept_O2Ar[groupNo - 1]
+      }
+      else {
+        # Mass28
+        lm <- lm(c(calfactor$calfactor_28[groupNo],
+                   calfactor$calfactor_28[groupNo+1]) ~
+                   c(as.numeric(data$Time[data$Group == groupNo+1][1]),
+                     as.numeric(data$Time[data$Group == groupNo][1])))
+        calslope$calslope_28[groupNo] <- lm$coefficients[2]  # slope
+        calslope$calintercept_28[groupNo] <- lm$coefficients[1]  #intercept
+
+        # Mass32
+        lm <- lm(c(calfactor$calfactor_32[groupNo],
+                   calfactor$calfactor_32[groupNo+1]) ~
+                   c(as.numeric(data$Time[data$Group == (groupNo + 1)][1]),
+                     as.numeric(data$Time[data$Group == groupNo][1])))
+        calslope$calslope_32[groupNo] <- lm$coefficients[2]  # slope
+        calslope$calintercept_32[groupNo] <- lm$coefficients[1]  #intercept
+
+        # Mass40
+        lm <- lm(c(calfactor$calfactor_40[groupNo],
+                   calfactor$calfactor_40[groupNo+1]) ~
+                   c(as.numeric(data$Time[data$Group == (groupNo + 1)][1]),
+                     as.numeric(data$Time[data$Group == groupNo][1])))
+        calslope$calslope_40[groupNo] <- lm$coefficients[2]  # slope
+        calslope$calintercept_40[groupNo] <- lm$coefficients[1]  #intercept
+
+        # N2:Ar
+        lm <- lm(c(calfactor$calfactor_N2Ar[groupNo],
+                   calfactor$calfactor_N2Ar[groupNo+1]) ~
+                   c(as.numeric(data$Time[data$Group == (groupNo + 1)][1]),
+                     as.numeric(data$Time[data$Group == groupNo][1])))
+        calslope$calslope_N2Ar[groupNo] <- lm$coefficients[2]  # slope
+        calslope$calintercept_N2Ar[groupNo] <- lm$coefficients[1]  #intercept
+
+        # O2:Ar
+        lm <- lm(c(calfactor$calfactor_O2Ar[groupNo],
+                   calfactor$calfactor_O2Ar[groupNo+1]) ~
+                   c(as.numeric(data$Time[data$Group == (groupNo + 1)][1]),
+                     as.numeric(data$Time[data$Group == groupNo][1])))
+        calslope$calslope_O2Ar[groupNo] <- lm$coefficients[2]  # slope
+        calslope$calintercept_O2Ar[groupNo] <- lm$coefficients[1]  #intercept
+      }
+    }
+
+    # 6. Interpolate calibration slopes -------------------------------------
+
+    # add columns to data
+    data$INTERPOLATED.calfactor_28 <- NA
+    data$INTERPOLATED.calfactor_32 <- NA
+    data$INTERPOLATED.calfactor_40 <- NA
+    data$INTERPOLATED.calfactor_N2Ar <- NA
+    data$INTERPOLATED.calfactor_O2Ar <- NA
+
+    # create list to fill with interpolated values
+    datalist = list()
+
+    # interpolate values based on calibration slope + (drift calslope *
+    # (start sample group time - sample time))
+
+    for (groupNo in 1:max(data$Group)) {
+      # cut data into groups of samples
+      group.block <- data %>% filter(Group == groupNo)
+
+      # take the slope between successive calibration (slope or intercept)
+      # values
+      for (i in 1:nrow(group.block)) {
+        # Mass28
+        group.block$INTERPOLATED.calfactor_28[i] <-
+          calfactor$calfactor_28[groupNo] +
+          (calslope$calslope_28[groupNo] *
+             as.numeric(difftime(group.block$Time[i],
+                                 group.block$Time[1], units = "days")))
+
+        # Mass32
+        group.block$INTERPOLATED.calfactor_32[i] <-
+          calfactor$calfactor_32[groupNo] +
+          (calslope$calslope_32[groupNo] *
+             as.numeric(difftime(group.block$Time[i],
+                                 group.block$Time[1], units = "days")))
+
+        # Mass40
+        group.block$INTERPOLATED.calfactor_40[i] <-
+          calfactor$calfactor_40[groupNo] +
+          (calslope$calslope_40[groupNo] *
+             as.numeric(difftime(group.block$Time[i],
+                                 group.block$Time[1], units = "days")))
+
+        # N2:Ar
+        group.block$INTERPOLATED.calfactor_N2Ar[i] <-
+          calfactor$calfactor_N2Ar[groupNo] +
+          (calslope$calslope_N2Ar[groupNo] *
+             as.numeric(difftime(group.block$Time[i],
+                                 group.block$Time[1], units = "days")))
+
+        # O2:Ar
+        group.block$INTERPOLATED.calfactor_O2Ar[i] <-
+          calfactor$calfactor_O2Ar[groupNo] +
+          (calslope$calslope_O2Ar[groupNo] *
+             as.numeric(difftime(group.block$Time[i],
+                                 group.block$Time[1], units = "days")))
+      }
+
+      # create list of sample blocks
+      datalist[[groupNo]] <- group.block
+
+      # convert datalist from list to dataframe this dataframe
+      # will become the 'detailed' data output to the user
+      data <- dplyr::bind_rows(datalist)
+    }
+  } #close single temp
+
   if (nrow(unique(data[StdIndex, "CollectionTemp"])) == 2) {
+    ######### Two-point calibration #########
 
-    message("Calculated concentrations based on a two-point temperature standard.")
+    message("Calculated dissolved concentrations based on a two-point temperature standard.")
     message(paste0("Standard 1: ", std.temps[1], " C, Standard 2: ",
                    std.temps[2], " C"))
+
+    # 4. Calculate calibration factors -----------------------------------------
 
     # assemble empty data frame for calibration factors
     calfactor <-
@@ -317,22 +507,28 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
       # Mass28 (N2) Standard temp 1
       calfactor$calfactor_28[2 * groupNo - 1] <-
-        solubility.conc$N2.conc_uMol.kg[1]/mean(cal.block$X28[1:3])
+        solubility.conc$N2.conc_uMol.kg[1] /
+        mean(cal.block$X28[cal.block$CollectionTemp == std.temps[1]])
       # standard temp 2
       calfactor$calfactor_28[2 * groupNo] <-
-        solubility.conc$N2.conc_uMol.kg[2]/mean(cal.block$X28[4:6])
+        solubility.conc$N2.conc_uMol.kg[2] /
+        mean(cal.block$X28[cal.block$CollectionTemp == std.temps[2]])
 
       # Mass32 (O2)
       calfactor$calfactor_32[2 * groupNo - 1] <-
-        solubility.conc$O2.conc_uMol.kg[1]/mean(cal.block$X32[1:3])
+        solubility.conc$O2.conc_uMol.kg[1] /
+        mean(cal.block$X32[cal.block$CollectionTemp == std.temps[1]])
       calfactor$calfactor_32[2 * groupNo] <-
-        solubility.conc$O2.conc_uMol.kg[2]/mean(cal.block$X32[4:6])
+        solubility.conc$O2.conc_uMol.kg[2] /
+        mean(cal.block$X32[cal.block$CollectionTemp == std.temps[2]])
 
       # Mass40 (Ar)
       calfactor$calfactor_40[2 * groupNo - 1] <-
-        solubility.conc$Ar.conc_uMol.kg[1]/mean(cal.block$X40[1:3])
+        solubility.conc$Ar.conc_uMol.kg[1] /
+        mean(cal.block$X40[cal.block$CollectionTemp == std.temps[1]])
       calfactor$calfactor_40[2 * groupNo] <-
-        solubility.conc$Ar.conc_uMol.kg[2]/mean(cal.block$X40[4:6])
+        solubility.conc$Ar.conc_uMol.kg[2] /
+        mean(cal.block$X40[cal.block$CollectionTemp == std.temps[2]])
 
       # Calculate N2:Ar calibration factors
       #     = ([N2]saturation / [Ar]saturation) / Raw N2:Ar signal data
@@ -340,12 +536,12 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
       calfactor$calfactor_N2Ar[2 * groupNo - 1] <-
         (solubility.conc$N2.conc_uMol.kg[1]/
            solubility.conc$Ar.conc_uMol.kg[1])/
-        mean(cal.block$N2.Ar[1:3])
+        mean(cal.block$N2.Ar[cal.block$CollectionTemp == std.temps[1]])
       # Standard temp 2
       calfactor$calfactor_N2Ar[2 * groupNo] <-
         (solubility.conc$N2.conc_uMol.kg[2]/
            solubility.conc$Ar.conc_uMol.kg[2])/
-        mean(cal.block$N2.Ar[4:6])
+        mean(cal.block$N2.Ar[cal.block$CollectionTemp == std.temps[2]])
 
       # Calculate O2:Ar calibration factors
       #     = ([O2]saturation / [Ar]saturation) / Raw O2:Ar signal data
@@ -353,12 +549,12 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
       calfactor$calfactor_O2Ar[2 * groupNo - 1] <-
         (solubility.conc$O2.conc_uMol.kg[1]/
            solubility.conc$Ar.conc_uMol.kg[1])/
-        mean(cal.block$O2.Ar[1:3])
+        mean(cal.block$O2.Ar[cal.block$CollectionTemp == std.temps[1]])
       # Standard temp 2
       calfactor$calfactor_O2Ar[2 * groupNo] <-
         (solubility.conc$O2.conc_uMol.kg[2]/
            solubility.conc$Ar.conc_uMol.kg[2])/
-        mean(cal.block$O2.Ar[4:6])
+        mean(cal.block$O2.Ar[cal.block$CollectionTemp == std.temps[2]])
 
     }
 
@@ -629,109 +825,108 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
       # create list of sample blocks
       datalist[[groupNo]] <- group.block
 
-    }  # close external group for loop
+      # convert datalist from list to dataframe this dataframe will become the
+      # 'detailed' data output to the user
+      data <- dplyr::bind_rows(datalist)
 
-    # convert datalist from list to dataframe this dataframe will become the
-    # 'detailed' data output to the user
-    data <- dplyr::bind_rows(datalist)
+      # 8. Calculate drift and temperature corrected calibration factors -------
 
-    # 8. Calculate drift and temperature corrected calibration factors -------
+      # (interpolated calslope * temperature at collection) + interpolated calintercept Mass 28
+      data$INTERPOLATED.calfactor_28 <-
+        (data$INTERPOLATED.calslope_28 * data$CollectionTemp) +
+        data$INTERPOLATED.calintercept_28
 
-    # (interpolated calslope * temperature at collection) + interpolated
-    # calintercept Mass 28
-    data$INTERPOLATED.calfactor_28 <-
-      (data$INTERPOLATED.calslope_28 * data$CollectionTemp) +
-      data$INTERPOLATED.calintercept_28
+      # Mass 32
+      data$INTERPOLATED.calfactor_32 <-
+        (data$INTERPOLATED.calslope_32 * data$CollectionTemp) +
+        data$INTERPOLATED.calintercept_32
 
-    # Mass 32
-    data$INTERPOLATED.calfactor_32 <-
-      (data$INTERPOLATED.calslope_32 * data$CollectionTemp) +
-      data$INTERPOLATED.calintercept_32
+      # Mass 40
+      data$INTERPOLATED.calfactor_40 <-
+        (data$INTERPOLATED.calslope_40 * data$CollectionTemp) +
+        data$INTERPOLATED.calintercept_40
 
-    # Mass 40
-    data$INTERPOLATED.calfactor_40 <-
-      (data$INTERPOLATED.calslope_40 * data$CollectionTemp) +
-      data$INTERPOLATED.calintercept_40
+      # N2:Ar
+      data$INTERPOLATED.calfactor_N2Ar <-
+        (data$INTERPOLATED.calslope_N2Ar * data$CollectionTemp) +
+        data$INTERPOLATED.calintercept_N2Ar
 
-    # N2:Ar
-    data$INTERPOLATED.calfactor_N2Ar <-
-      (data$INTERPOLATED.calslope_N2Ar * data$CollectionTemp) +
-      data$INTERPOLATED.calintercept_N2Ar
+      # O2:Ar
+      data$INTERPOLATED.calfactor_O2Ar <-
+        (data$INTERPOLATED.calslope_O2Ar * data$CollectionTemp) +
+        data$INTERPOLATED.calintercept_O2Ar
+    }
+  } # Close 2-point temperature calculation
 
-    # O2:Ar
-    data$INTERPOLATED.calfactor_O2Ar <-
-      (data$INTERPOLATED.calslope_O2Ar * data$CollectionTemp) +
-      data$INTERPOLATED.calintercept_O2Ar
 
-    # 9. Calculate final concentrations -------------------------------------
-    # Calculate concentrations by multiplying signal by interpolated calibration factors
-    data$Ar_uMol <- data$X40 * data$INTERPOLATED.calfactor_28
-    data$N2Ar <- data$N2.Ar * data$INTERPOLATED.calfactor_N2Ar
-    data$O2Ar <- data$O2.Ar * data$INTERPOLATED.calfactor_O2Ar
+  # 9. Calculate final concentrations -------------------------------------
 
-    # Transform N2Ar and O2Ar ratios into concentrations of N2 or O2, using
-    # Ar saturation concentration at temperature
-    data$N2_uMol <- data$N2Ar * data$arSat.conc_uMol.kg
-    data$O2_uMol <- data$O2Ar * data$arSat.conc_uMol.kg
+  # Calculate concentrations by multiplying signal by interpolated calibration factors
+  data$Ar_uMol <- data$X40 * data$INTERPOLATED.calfactor_28
+  data$N2Ar <- data$N2.Ar * data$INTERPOLATED.calfactor_N2Ar
+  data$O2Ar <- data$O2.Ar * data$INTERPOLATED.calfactor_O2Ar
 
-    # Apply bubble correction for oxygen
-    # = [O2] + [O2:Ar ratio] * (Ar at saturation - [Ar])
-    # Notes on bubble correction: 1) This correction is most appropriate for O2
-    # samples as O2 and Ar have similar soluability and diffusion rates
-    # 2) This bubble correction assumes any argon below saturation means that
-    # N2 and O2 were lost due to bubbling in in-field sample incubations
-    data$O2.BubbleCorrected_uMol <- data$O2_uMol + data$O2Ar *
-      (data$arSat.conc_uMol.kg - data$Ar_uMol)
+  # Transform N2Ar and O2Ar ratios into concentrations of N2 or O2, using
+  # Ar saturation concentration at temperature
+  data$N2_uMol <- data$N2Ar * data$arSat.conc_uMol.kg
+  data$O2_uMol <- data$O2Ar * data$arSat.conc_uMol.kg
 
-    # Unit conversion: Convert from microM to mg
-    data$N2_mg <- data$N2_uMol * 10^(-6) * 28 * 10^3
-    data$O2_mg <- data$O2_uMol * 10^(-6) * 32 * 10^3
-    data$O2.BubbleCorrected_mg <- data$O2.BubbleCorrected_uMol * 10^(-6) * 32 * 10^3
-    data$Ar_mg <- data$Ar_uMol * 10^(-6) * 40 * 10^3
+  # Apply bubble correction for oxygen
+  # = [O2] + [O2:Ar ratio] * (Ar at saturation - [Ar])
+  # Notes on bubble correction: 1) This correction is most appropriate for O2
+  # samples as O2 and Ar have similar soluability and diffusion rates
+  # 2) This bubble correction assumes any argon below saturation means that
+  # N2 and O2 were lost due to bubbling in in-field sample incubations
+  data$O2.BubbleCorrected_uMol <- data$O2_uMol + data$O2Ar *
+    (data$arSat.conc_uMol.kg - data$Ar_uMol)
 
-    # 10. Output results to user -------------------------------------------
+  # Unit conversion: Convert from microM to mg
+  data$N2_mg <- data$N2_uMol * 10^(-6) * 28 * 10^3
+  data$O2_mg <- data$O2_uMol * 10^(-6) * 32 * 10^3
+  data$O2.BubbleCorrected_mg <- data$O2.BubbleCorrected_uMol * 10^(-6) * 32 * 10^3
+  data$Ar_mg <- data$Ar_uMol * 10^(-6) * 40 * 10^3
 
-    # results A subset of `data` that contains only sample identifiers and
-    # final concentration results.
-    # This is a more user-friendly short-form
+  # 10. Output results to user -------------------------------------------
 
-    # i'm subtracting out names rather than selecting for names, because
-    # I want to preserve any other sample identity columns that the user
-    # may have added to the orignal .csv
-    results <-
-      data[, -which(names(data) %in% c("Index", "Time", "X28", "X32", "X40",
-                                       "X99", "N2.Ar", "O2.Ar",
-                                       "INTERPOLATED.calslope_28",
-                                       "INTERPOLATED.calintercept_28",
-                                       "INTERPOLATED.calslope_32",
-                                       "INTERPOLATED.calintercept_32",
-                                       "INTERPOLATED.calslope_40",
-                                       "INTERPOLATED.calintercept_40",
-                                       "INTERPOLATED.calslope_N2Ar",
-                                       "INTERPOLATED.calintercept_N2Ar",
-                                       "INTERPOLATED.calslope_O2Ar",
-                                       "INTERPOLATED.calintercept_O2Ar",
-                                       "INTERPOLATED.calfactor_28",
-                                       "INTERPOLATED.calfactor_32",
-                                       "INTERPOLATED.calfactor_40",
-                                       "INTERPOLATED.calfactor_N2Ar",
-                                       "INTERPOLATED.calfactor_O2Ar"))]
+  # results A subset of `data` that contains only sample identifiers and
+  # final concentration results.
+  # This is a more user-friendly short-form
 
-    # grab only the sample results
-    results <- results[results$Type == "Sample", ]
-    results$Type <- NULL
-    results$Group <- NULL
-    results$`data$Type` <- NULL
-    results$`data$Group` <- NULL
-    data$`data$Type` <- NULL
-    data$`data$Group` <- NULL
+  # i'm subtracting out names rather than selecting for names, because
+  # I want to preserve any other sample identity columns that the user
+  # may have added to the orignal .csv
+  results <-
+    data[, -which(names(data) %in% c("Index", "Time", "X28", "X32", "X40",
+                                     "X99", "N2.Ar", "O2.Ar",
+                                     "INTERPOLATED.calslope_28",
+                                     "INTERPOLATED.calintercept_28",
+                                     "INTERPOLATED.calslope_32",
+                                     "INTERPOLATED.calintercept_32",
+                                     "INTERPOLATED.calslope_40",
+                                     "INTERPOLATED.calintercept_40",
+                                     "INTERPOLATED.calslope_N2Ar",
+                                     "INTERPOLATED.calintercept_N2Ar",
+                                     "INTERPOLATED.calslope_O2Ar",
+                                     "INTERPOLATED.calintercept_O2Ar",
+                                     "INTERPOLATED.calfactor_28",
+                                     "INTERPOLATED.calfactor_32",
+                                     "INTERPOLATED.calfactor_40",
+                                     "INTERPOLATED.calfactor_N2Ar",
+                                     "INTERPOLATED.calfactor_O2Ar"))]
 
-    outlist <- list(results = results,
-                    solubility.Concentrations = solubility.conc,
-                    calibration.Factors = calfactor,
-                    calibration.DriftCorrection = calslope,
-                    results.full = data)
-    return(outlist)
+  # grab only the sample results
+  results <- results[results$Type == "Sample", ]
+  results$Type <- NULL
+  results$Group <- NULL
+  results$`data$Type` <- NULL
+  results$`data$Group` <- NULL
+  data$`data$Type` <- NULL
+  data$`data$Group` <- NULL
 
-  }
+  outlist <- list(results = results,
+                  solubility.Concentrations = solubility.conc,
+                  calibration.Factors = calfactor,
+                  calibration.DriftCorrection = calslope,
+                  results.full = data)
+  return(outlist)
 }
