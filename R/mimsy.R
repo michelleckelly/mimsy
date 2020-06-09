@@ -76,7 +76,8 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   # Get standard temperatures --------------------------------------------------
   if (length(unique(data[StdIndex, "CollectionTemp"])) == 1 | 2){
     # Set std.temps equal to the unique temperatures in this column
-    std.temps <- unique(data[StdIndex, "CollectionTemp"])
+    #std.temps <- unique(data[StdIndex, "CollectionTemp"])
+    std.temps <- unique(data[StdIndex, ]$CollectionTemp) # Hotfix: Check up on this subsetting issue - perhaps discrepancy between Mac & Windows?
   }
   # Check if there are more than two standard temperatures
   if (length(std.temps) > 2){
