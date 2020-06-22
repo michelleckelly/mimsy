@@ -558,6 +558,9 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
         mean(cal.block$O2.Ar[cal.block$CollectionTemp == std.temps[2]])
 
     }
+  }
+
+
 
     # 5. Calculate slope and intercepts of calibration curve -----------------
     # Use a linear model from the mean low and high temperature calibration
