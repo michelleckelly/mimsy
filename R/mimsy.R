@@ -822,43 +822,42 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
              as.numeric(difftime(group.block$Time[i],
                                  group.block$Time[1], units = "days")))
       }  # close internal row for loop
+    }
 
       # create list of sample blocks
       datalist[[groupNo]] <- group.block
-    }
 
-    # convert datalist from list to dataframe this dataframe will become the
-    # 'detailed' data output to the user
-    data <- dplyr::bind_rows(datalist)
+      # convert datalist from list to dataframe this dataframe will become the
+      # 'detailed' data output to the user
+      data <- dplyr::bind_rows(datalist)
 
-    # 8. Calculate drift and temperature corrected calibration factors -------
+      # 8. Calculate drift and temperature corrected calibration factors -------
 
-    # (interpolated calslope * temperature at collection) + interpolated calintercept Mass 28
-    data$INTERPOLATED.calfactor_28 <-
-      (data$INTERPOLATED.calslope_28 * data$CollectionTemp) +
-      data$INTERPOLATED.calintercept_28
+      # (interpolated calslope * temperature at collection) + interpolated calintercept Mass 28
+      data$INTERPOLATED.calfactor_28 <-
+        (data$INTERPOLATED.calslope_28 * data$CollectionTemp) +
+        data$INTERPOLATED.calintercept_28
 
-    # Mass 32
-    data$INTERPOLATED.calfactor_32 <-
-      (data$INTERPOLATED.calslope_32 * data$CollectionTemp) +
-      data$INTERPOLATED.calintercept_32
+      # Mass 32
+      data$INTERPOLATED.calfactor_32 <-
+        (data$INTERPOLATED.calslope_32 * data$CollectionTemp) +
+        data$INTERPOLATED.calintercept_32
 
-    # Mass 40
-    data$INTERPOLATED.calfactor_40 <-
-      (data$INTERPOLATED.calslope_40 * data$CollectionTemp) +
-      data$INTERPOLATED.calintercept_40
+      # Mass 40
+      data$INTERPOLATED.calfactor_40 <-
+        (data$INTERPOLATED.calslope_40 * data$CollectionTemp) +
+        data$INTERPOLATED.calintercept_40
 
-    # N2:Ar
-    data$INTERPOLATED.calfactor_N2Ar <-
-      (data$INTERPOLATED.calslope_N2Ar * data$CollectionTemp) +
-      data$INTERPOLATED.calintercept_N2Ar
+      # N2:Ar
+      data$INTERPOLATED.calfactor_N2Ar <-
+        (data$INTERPOLATED.calslope_N2Ar * data$CollectionTemp) +
+        data$INTERPOLATED.calintercept_N2Ar
 
-    # O2:Ar
-    data$INTERPOLATED.calfactor_O2Ar <-
-      (data$INTERPOLATED.calslope_O2Ar * data$CollectionTemp) +
-      data$INTERPOLATED.calintercept_O2Ar
-  }
-  # Close 2-point temperature calculation
+      # O2:Ar
+      data$INTERPOLATED.calfactor_O2Ar <-
+        (data$INTERPOLATED.calslope_O2Ar * data$CollectionTemp) +
+        data$INTERPOLATED.calintercept_O2Ar
+  } # Close 2-point temperature calculation
 
 
   # 9. Calculate final concentrations -------------------------------------
