@@ -1,3 +1,8 @@
+# mimsy 0.6.1
+
+## Bug fixes
+* Bracketing issue and subsetting issue now fixed (thanks to Libby Mohr! :) )
+
 # mimsy 0.6.0
 
 ## Major changes

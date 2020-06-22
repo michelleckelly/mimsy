@@ -1,8 +1,8 @@
 Package: mimsy
 Type: Package
 Title: Calculate MIMS Dissolved Gas Concentrations Without Getting a Headache
-Version: 0.6.0
-Date: 2020-05-12
+Version: 0.6.1
+Date: 2020-06-22
 Authors@R: c(
 	person("Michelle Catherine", "Kelly", , "mckelly1@mtu.edu", role = c("aut", "cre")),
 	person("Kevin", "Nevorski", , role = c("ctb")),
