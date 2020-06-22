@@ -822,12 +822,12 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
              as.numeric(difftime(group.block$Time[i],
                                  group.block$Time[1], units = "days")))
 
-        # create list of sample blocks
-        datalist[[groupNo]] <- group.block
         }  # close internal row for loop
 
-
+      # create list of sample blocks
+      datalist[[groupNo]] <- group.block
     }
+
 
 
 
