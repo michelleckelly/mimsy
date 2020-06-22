@@ -558,7 +558,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
         mean(cal.block$O2.Ar[cal.block$CollectionTemp == std.temps[2]])
 
     }
-  }
+
 
 
 
