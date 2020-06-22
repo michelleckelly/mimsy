@@ -825,11 +825,12 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
       # create list of sample blocks
       datalist[[groupNo]] <- group.block
+    }
+
 
       # convert datalist from list to dataframe this dataframe will become the
       # 'detailed' data output to the user
       data <- dplyr::bind_rows(datalist)
-    }
 
   # 8. Calculate drift and temperature corrected calibration factors -------
 
@@ -858,6 +859,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
       (data$INTERPOLATED.calslope_O2Ar * data$CollectionTemp) +
       data$INTERPOLATED.calintercept_O2Ar
     } # Close two point calibration
+
 
 
   # 9. Calculate final concentrations -------------------------------------
