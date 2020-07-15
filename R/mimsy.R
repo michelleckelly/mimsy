@@ -472,14 +472,15 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                                  group.block$Time[1], units = "days")))
       }
 
-      # create list of sample blocks
-      datalist[[groupNo]] <- group.block
 
-      # convert datalist from list to dataframe this dataframe
-      # will become the 'detailed' data output to the user
-      data <- dplyr::bind_rows(datalist)
     }
-  } #close single temp
+    # create list of sample blocks
+    datalist[[groupNo]] <- group.block
+
+    # convert datalist from list to dataframe this dataframe
+    # will become the 'detailed' data output to the user
+    data <- dplyr::bind_rows(datalist)
+  }  #close single temp
 
   if (nrow(unique(data[StdIndex, "CollectionTemp"])) == 2) {
     ######### Two-point calibration #########
