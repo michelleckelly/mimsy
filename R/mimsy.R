@@ -474,9 +474,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
         # Add group block data to datalist
         datalist[[groupNo]] <- group.block
       }
-
     }
-
     # convert datalist from list to dataframe this dataframe
     # will become the 'detailed' data output to the user
     data <- dplyr::bind_rows(datalist)
@@ -828,10 +826,9 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
       datalist[[groupNo]] <- group.block
     }
 
-
-      # convert datalist from list to dataframe this dataframe will become the
-      # 'detailed' data output to the user
-      data <- dplyr::bind_rows(datalist)
+    # convert datalist from list to dataframe this dataframe will become the
+    # 'detailed' data output to the user
+    data <- dplyr::bind_rows(datalist)
 
   # 8. Calculate drift and temperature corrected calibration factors -------
 
