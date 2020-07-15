@@ -472,10 +472,9 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                                  group.block$Time[1], units = "days")))
       }
 
-
+      # create list of sample blocks
+      datalist[[groupNo]] <- group.block
     }
-    # create list of sample blocks
-    datalist[[groupNo]] <- group.block
 
     # convert datalist from list to dataframe this dataframe
     # will become the 'detailed' data output to the user
@@ -559,9 +558,6 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
         mean(cal.block$O2.Ar[cal.block$CollectionTemp == std.temps[2]])
 
     }
-
-
-
 
     # 5. Calculate slope and intercepts of calibration curve -----------------
     # Use a linear model from the mean low and high temperature calibration
