@@ -470,11 +470,9 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
           (calslope$calslope_O2Ar[groupNo] *
              as.numeric(difftime(group.block$Time[i],
                                  group.block$Time[1], units = "days")))
-
-        # Add group block data to datalist
-        datalist[[groupNo]] <- group.block
-
-        }
+      }
+      # Add group block data to datalist
+      datalist[[groupNo]] <- group.block
     }
 
     # convert datalist from list to dataframe this dataframe
