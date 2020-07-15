@@ -1,3 +1,8 @@
+# mimsy 0.6.2
+
+## Bug fixes
+* Bracketing issue, where only results from group 1 are returned, fixed for single-temp and two-temp
+
 # mimsy 0.6.1
 
 ## Bug fixes
