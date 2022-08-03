@@ -1,3 +1,8 @@
+# mimsy 0.6.3
+## Minor changes
+* Added O2 and N2 saturation concentration calculations for all samples
+* Removed "bubble correction" script
+
 # mimsy 0.6.2
 
 ## Bug fixes
