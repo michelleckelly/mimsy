@@ -277,8 +277,8 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
   # Calculate N2, O2, and Ar saturation at temperature and pressure for all samples
   data$arSat.conc_uMol.kg <- arSat(data$CollectionTemp)
-  data$n2Sat.conc_uMol.kg <-
-  data$o2Sat.conc_uMol.kg <-
+  data$n2Sat.conc_uMol.kg <- n2Sat(data$CollectionTemp)
+  data$o2Sat.conc_uMol.kg <- o2Sat(data$CollectionTemp)
 
   ######### Single-point calibration #########
   if (nrow(unique(data[StdIndex, "CollectionTemp"])) == 1) {
