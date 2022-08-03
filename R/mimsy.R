@@ -873,19 +873,9 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   data$N2_uMol <- data$N2Ar * data$arSat.conc_uMol.kg
   data$O2_uMol <- data$O2Ar * data$arSat.conc_uMol.kg
 
-  # Apply bubble correction for oxygen
-  # = [O2] + [O2:Ar ratio] * (Ar at saturation - [Ar])
-  # Notes on bubble correction: 1) This correction is most appropriate for O2
-  # samples as O2 and Ar have similar soluability and diffusion rates
-  # 2) This bubble correction assumes any argon below saturation means that
-  # N2 and O2 were lost due to bubbling in in-field sample incubations
-  data$O2.BubbleCorrected_uMol <- data$O2_uMol + data$O2Ar *
-    (data$arSat.conc_uMol.kg - data$Ar_uMol)
-
   # Unit conversion: Convert from microM to mg
   data$N2_mg <- data$N2_uMol * 10^(-6) * 28 * 10^3
   data$O2_mg <- data$O2_uMol * 10^(-6) * 32 * 10^3
-  data$O2.BubbleCorrected_mg <- data$O2.BubbleCorrected_uMol * 10^(-6) * 32 * 10^3
   data$Ar_mg <- data$Ar_uMol * 10^(-6) * 40 * 10^3
 
   # 10. Output results to user -------------------------------------------
