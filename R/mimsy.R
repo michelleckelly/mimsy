@@ -139,7 +139,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                                 row.names = paste(std.temps, "deg C"))
 
   # O2 saturation calculation ------------------------------------------------
-  for (i in seq_along(std.temps)) {
+  o2Sat <- function(t){
 
     t <- std.temps[i]
 
@@ -176,17 +176,14 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     lnO2.sat <- A0 + A1 * TS + A2 * TS^2 + A3 * TS^2 + A3 * TS^3 + A4 *
       TS^4 + A5 * TS^5 + S * (B0 + B1 * TS + B2 * TS^2 + B3 * TS^3) + C0 * S^2
     O2.sat <- exp(lnO2.sat)
-
     # Correct O2 saturation with pressure correction, solubility.conc units
     # [umol/kg]
-    solubility.conc$O2.conc_uMol.kg[i] <- O2.sat * press.corr
+    result <- O2.sat * press.corr
+    return(result)
   }
 
   # N2 saturation calculation ------------------------------------------------
-  for (i in seq_along(std.temps)) {
-
-    t <- std.temps[i]
-
+  n2Sat <- function(t){
     # Vapor pressure correction use the Antoine equation to calculate vapor
     # pressure of water [bar] See NIST Chemistry WebBook for general tables,
     # these parameters valid for temperatures between -18 to 100C (Stull 1947)
@@ -219,10 +216,10 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     lnN2.sat <-
       A0 + A1 * TS + A2 * TS^2 + A3 * TS^3 + S * (B0 + B1 * TS + B2 * TS^2)
     N2.sat <- exp(lnN2.sat)
-
     # Correct saturation with pressure correction, solubility.conc units are
     # [umol/kg]
-    solubility.conc$N2.conc_uMol.kg[i] <- N2.sat * press.corr
+    result <- N2.sat * press.corr
+    return(result)
   }
 
   # Ar saturation calculation ------------------------------------------------
@@ -266,18 +263,22 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     return(result)
   }
 
-  # Run function for standards
+  # Run functions for standards
   for (i in seq_along(std.temps)) {
     t <- std.temps[i]
-    # Run function
+    # Run functions
+    solubility.conc$N2.conc_uMol.kg[i] <- n2Sat(t)
+    solubility.conc$O2.conc_uMol.kg[i] <- o2Sat(t)
     solubility.conc$Ar.conc_uMol.kg[i] <- arSat(t)
   }
 
   # Group data by Type (`Standard` or `Sample`) and Group (numeric, 1:n)
   data <- dplyr::group_by(data, data$Type, data$Group)
 
-  # Calculate Ar saturation at temperature and pressure for all samples
+  # Calculate N2, O2, and Ar saturation at temperature and pressure for all samples
   data$arSat.conc_uMol.kg <- arSat(data$CollectionTemp)
+  data$n2Sat.conc_uMol.kg <-
+  data$o2Sat.conc_uMol.kg <-
 
   ######### Single-point calibration #########
   if (nrow(unique(data[StdIndex, "CollectionTemp"])) == 1) {
