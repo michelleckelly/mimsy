@@ -1,7 +1,8 @@
 # mimsy 0.6.4
 
 ## Bug fixes
-*Indexing error on L144 that made all o2Sat.conc_uMol.kg calculate based on the first standard temp, not the collection temp of the sample
+* Indexing error on L144 that made all o2Sat.conc_uMol.kg calculate based on the first standard temp, not the collection temp of the sample
+* Updated column names to correct units (updated to mg L-1 from mg)
 
 # mimsy 0.6.3
 ## Minor changes
