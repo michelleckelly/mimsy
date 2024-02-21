@@ -862,19 +862,19 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   # 9. Calculate final concentrations -------------------------------------
 
   # Calculate concentrations by multiplying signal by interpolated calibration factors
-  data$Ar_uMol <- data$X40 * data$INTERPOLATED.calfactor_28
+  data$Ar_uMolL <- data$X40 * data$INTERPOLATED.calfactor_28
   data$N2Ar <- data$N2.Ar * data$INTERPOLATED.calfactor_N2Ar
   data$O2Ar <- data$O2.Ar * data$INTERPOLATED.calfactor_O2Ar
 
   # Transform N2Ar and O2Ar ratios into concentrations of N2 or O2, using
   # Ar saturation concentration at temperature
-  data$N2_uMol <- data$N2Ar * data$arSat.conc_uMol.kg
-  data$O2_uMol <- data$O2Ar * data$arSat.conc_uMol.kg
+  data$N2_uMolL <- data$N2Ar * data$arSat.conc_uMol.kg
+  data$O2_uMolL <- data$O2Ar * data$arSat.conc_uMol.kg
 
   # Unit conversion: Convert from microM to mg
-  data$N2_mg <- data$N2_uMol * 10^(-6) * 28 * 10^3
-  data$O2_mg <- data$O2_uMol * 10^(-6) * 32 * 10^3
-  data$Ar_mg <- data$Ar_uMol * 10^(-6) * 40 * 10^3
+  data$N2_mgL <- data$N2_uMolL * 10^(-6) * 28 * 10^3
+  data$O2_mgL <- data$O2_uMolL * 10^(-6) * 32 * 10^3
+  data$Ar_mgL <- data$Ar_uMolL * 10^(-6) * 40 * 10^3
 
   # 10. Output results to user -------------------------------------------
 

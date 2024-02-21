@@ -1,5 +1,5 @@
 ## Test environments
-* local OS X install, R 3.6.1
+* local OS X install, R 4.2.1
 * ubuntu 16.04.6 LTS (on travis-ci), R 4.0.0
 
 ## R CMD check results
