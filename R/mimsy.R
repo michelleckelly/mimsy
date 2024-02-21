@@ -141,8 +141,6 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   # O2 saturation calculation ------------------------------------------------
   o2Sat <- function(t){
 
-    t <- std.temps[i]
-
     # Vapor pressure correction use the Antoine equation to calculate vapor
     # pressure of water [bar] See NIST Chemistry WebBook for general tables,
     # these parameters valid for temperatures between -18 to 100C (Stull 1947)

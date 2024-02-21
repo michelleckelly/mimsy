@@ -1,3 +1,8 @@
+# mimsy 0.6.4
+
+## Bug fixes
+*Indexing error on L144 that made all o2Sat.conc_uMol.kg calculate based on the first standard temp, not the collection temp of the sample
+
 # mimsy 0.6.3
 ## Minor changes
 * Added O2 and N2 saturation concentration calculations for all samples
