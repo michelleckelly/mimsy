@@ -1,9 +1,10 @@
+## R CMD check results
+
+0 errors | 0 warnings | 0 notes
+
 ## Test environments
 * local OS X install, R 4.2.1
-* ubuntu 16.04.7 LTS (on travis-ci), R 4.0.2
-
-## R CMD check results
-There were no ERRORs, WARNINGs, or NOTEs.
+* Windows server 2022 x64 (on win-builder)
 
 ## Downstream dependencies
 There are currently no downstream dependencies for this package.
