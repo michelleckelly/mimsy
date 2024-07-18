@@ -1,3 +1,8 @@
+# mimsy 0.6.5
+
+## Bug fixes
+* Fixed error on last step of calculating Ar concentrations: Ar signal was multiplied by the calibration factor for mass 28 rather than by the calibration factor for mass 40
+
 # mimsy 0.6.4
 
 ## Bug fixes
@@ -5,6 +10,7 @@
 * Updated column names to correct units (updated to mg L-1 from mg)
 
 # mimsy 0.6.3
+
 ## Minor changes
 * Added O2 and N2 saturation concentration calculations for all samples
 * Removed "bubble correction" script

@@ -862,7 +862,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   # 9. Calculate final concentrations -------------------------------------
 
   # Calculate concentrations by multiplying signal by interpolated calibration factors
-  data$Ar_uMolL <- data$X40 * data$INTERPOLATED.calfactor_28
+  data$Ar_uMolL <- data$X40 * data$INTERPOLATED.calfactor_40
   data$N2Ar <- data$N2.Ar * data$INTERPOLATED.calfactor_N2Ar
   data$O2Ar <- data$O2.Ar * data$INTERPOLATED.calfactor_O2Ar
 
