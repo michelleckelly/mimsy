@@ -112,7 +112,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     baromet.press.atm <- mean(baromet.press) * 0.00098692316931427
   }
   # Torr to atm
-  if (units == "Torr") {
+  if (units == "Torr" | units == "mmHg") {
     baromet.press.atm <- mean(baromet.press) / 760
   }
   # psi to atm
@@ -124,9 +124,9 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     baromet.press.atm <- mean(baromet.press) * 1.01325
   }
   # stop message for non-sanctioned units
-  if (!(units %in% c("atm", "hPa", "Torr", "psi", "bar"))) {
+  if (!(units %in% c("atm", "hPa", "Torr", "psi", "bar", "mmHg"))) {
     stop("Please report barometric pressure in units of `atm`, `hPa`, `psi`,
-            `bar`, or `Torr`.")
+            `bar`, `mmHg`, or `Torr`.")
   }
 
   # 3. Calculate solubilites of dissolved gas --------------------------------
@@ -221,8 +221,6 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   }
 
   # Ar saturation calculation ------------------------------------------------
-
-  # Define custom function, as this calculation will be repeated on all samples
   arSat <- function(t){
     # Vapor pressure correction use the Antoine equation to calculate vapor
     # pressure of water [bar] See NIST Chemistry WebBook for general tables,
@@ -270,13 +268,54 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     solubility.conc$Ar.conc_uMol.kg[i] <- arSat(t)
   }
 
+  # Were N isotopes also run? Test names of columns
+  sampledMasses <- names(data)[startsWith(names(data), "X")]
+  # Test if N isotopes are among the column names
+  if(sum(sampledMasses %in% c("X29", "X30")) == 2){
+    Nisotopes <- TRUE
+  }
+
+  # If N isotopes are present, calculate 29N2, 30N2 saturation at temperature
+  # and pressure for standards
+  if(Nisotopes){
+    # From MIMS operations guide: 15N isotope exists at an abundance of
+    # 0.00365 compared to 14N, & remember that we have dinitrogen
+
+    # Solubility of non-isotopic 28N2 =
+    #   Bulk N2 solubility *
+    #   14N abundance * 14N abundance
+    solubility.conc$N2_28.conc_uMol.kg <-
+      solubility.conc$N2.conc_uMol.kg * (1 - 0.00365) * (1 - 0.00365)
+
+    # Solubility of isotopic 30N2 =
+    #   28N2 solubility *
+    #   15N abundance * 15N abundance
+    solubility.conc$N2_30.conc_uMol.kg <-
+      solubility.conc$N2.conc_uMol.kg * 0.00365 * 0.00365
+
+    # Solubility of isotopic 29N2 =
+    #   Bulk N2 solubility * 2 molecules N * 14N abundance * 15N abundance
+    solubility.conc$N2_29.conc_uMol.kg <-
+      solubility.conc$N2.conc_uMol.kg * 2 * (1 - 0.00365) * 0.00365
+  }
+
+
   # Group data by Type (`Standard` or `Sample`) and Group (numeric, 1:n)
-  data <- dplyr::group_by(data, data$Type, data$Group)
+  data <- dplyr::group_by(data, Type, Group)
 
   # Calculate N2, O2, and Ar saturation at temperature and pressure for all samples
   data$arSat.conc_uMol.kg <- arSat(data$CollectionTemp)
   data$n2Sat.conc_uMol.kg <- n2Sat(data$CollectionTemp)
   data$o2Sat.conc_uMol.kg <- o2Sat(data$CollectionTemp)
+
+  if(Nisotopes){
+    data$n2Sat_28.conc_uMol.kg <-
+      data$n2Sat.conc_uMol.kg * (1 - 0.00365) * (1 - 0.00365)
+    data$n2Sat_30.conc_uMol.kg <-
+      data$n2Sat.conc_uMol.kg * 0.00365 * 0.00365
+    data$n2Sat_29.conc_uMol.kg <-
+      data$n2Sat.conc_uMol.kg * 2 * (1 - 0.00365) * 0.00365
+  }
 
   ######### Single-point calibration #########
   if (nrow(unique(data[StdIndex, "CollectionTemp"])) == 1) {
@@ -479,8 +518,8 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     data <- dplyr::bind_rows(datalist)
   }  #close single temp
 
+  ######### Two-point calibration #########
   if (nrow(unique(data[StdIndex, "CollectionTemp"])) == 2) {
-    ######### Two-point calibration #########
 
     message("Calculated dissolved concentrations based on a two-point temperature standard.")
     message(paste0("Standard 1: ", std.temps[1], " C, Standard 2: ",
@@ -497,9 +536,17 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                  calfactor_O2Ar = numeric(length = max(data$Group) * 2),
                  row.names = paste0(std.temps, "degC_", "Group_",
                                     rep(1:max(data$Group), each = 2)))
+    if(Nisotopes){
+      # If isotopes sampled, initialize calibration factor columns
+      calfactor$calfactor_29 <- NA
+      calfactor$calfactor_30 <- NA
+      calfactor$calfactor_X30.28 <- NA
+      calfactor$calfactor_X29.28 <- NA
+    }
+
     for (groupNo in 1:max(data$Group)) {
       # individually extract each group of standards
-      cal.block <- data %>% filter(Type == "Standard" & Group == groupNo)
+      cal.block <- filter(data, Type == "Standard" & Group == groupNo)
 
       # calculate calibration factor calfactor = solubility concentration
       # at std temp / avg(MIMS readings at std temp)
@@ -555,6 +602,51 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
            solubility.conc$Ar.conc_uMol.kg[2])/
         mean(cal.block$O2.Ar[cal.block$CollectionTemp == std.temps[2]])
 
+      if(Nisotopes){
+        # Replace mass 28
+        calfactor$calfactor_28[2 * groupNo - 1] <-
+          solubility.conc$N2_28.conc_uMol.kg[1] /
+          mean(cal.block$X28[cal.block$CollectionTemp == std.temps[1]])
+        calfactor$calfactor_28[2 * groupNo] <-
+          solubility.conc$N2_28.conc_uMol.kg[2] /
+          mean(cal.block$X28[cal.block$CollectionTemp == std.temps[2]])
+
+        # Mass 29
+        calfactor$calfactor_29[2 * groupNo - 1] <-
+          solubility.conc$N2_29.conc_uMol.kg[1] /
+          mean(cal.block$X29[cal.block$CollectionTemp == std.temps[1]])
+        calfactor$calfactor_29[2 * groupNo] <-
+          solubility.conc$N2_29.conc_uMol.kg[2] /
+          mean(cal.block$X29[cal.block$CollectionTemp == std.temps[2]])
+
+        # Mass 30
+        calfactor$calfactor_30[2 * groupNo - 1] <-
+          solubility.conc$N2_30.conc_uMol.kg[1] /
+          mean(cal.block$X30[cal.block$CollectionTemp == std.temps[1]])
+        calfactor$calfactor_30[2 * groupNo] <-
+          solubility.conc$N2_30.conc_uMol.kg[2] /
+          mean(cal.block$X30[cal.block$CollectionTemp == std.temps[2]])
+
+        # Calculate 29:28 calibration factor
+        calfactor$calfactor_X29.28[2 * groupNo - 1] <-
+          (solubility.conc$N2_29.conc_uMol.kg[1] /
+             solubility.conc$N2_28.conc_uMol.kg[1]) /
+          mean(cal.block$X29.28[cal.block$CollectionTemp == std.temps[1]])
+        calfactor$calfactor_X29.28[2 * groupNo] <-
+          (solubility.conc$N2_29.conc_uMol.kg[2]/
+             solubility.conc$N2_28.conc_uMol.kg[2])/
+          mean(cal.block$X29.28[cal.block$CollectionTemp == std.temps[2]])
+
+        # Calculate 30:28 calibration factor
+        calfactor$calfactor_X30.28[2 * groupNo - 1] <-
+          (solubility.conc$N2_30.conc_uMol.kg[1] /
+             solubility.conc$N2_28.conc_uMol.kg[1]) /
+          mean(cal.block$X30.28[cal.block$CollectionTemp == std.temps[1]])
+        calfactor$calfactor_X30.28[2 * groupNo] <-
+          (solubility.conc$N2_30.conc_uMol.kg[2]/
+             solubility.conc$N2_28.conc_uMol.kg[2])/
+          mean(cal.block$X30.28[cal.block$CollectionTemp == std.temps[2]])
+      }
     }
 
     # 5. Calculate slope and intercepts of calibration curve -----------------
@@ -572,6 +664,17 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                  calslope_O2Ar = numeric(length = max(data$Group)),
                  calintercept_O2Ar = numeric(length = max(data$Group)),
                  row.names = paste0("Group", 1:max(data$Group)))
+
+    if(Nisotopes){
+      calslope$calslope_29 <- NA
+      calslope$calintercept_29 <- NA
+      calslope$calslope_30 <- NA
+      calslope$calintercept_30 <- NA
+      calslope$calslope_X30.28 <- NA
+      calslope$calintercept_X30.28 <- NA
+      calslope$calslope_X29.28 <- NA
+      calslope$calintercept_X29.28 <- NA
+    }
 
     for (groupNo in 1:max(data$Group)) {
       # using a linear model to find slope and intercept of calibration
@@ -606,6 +709,33 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                  calfactor$calfactor_O2Ar[2 * groupNo]) ~ std.temps)
       calslope$calslope_O2Ar[groupNo] <- lm$coefficients[2]  # slope
       calslope$calintercept_O2Ar[groupNo] <- lm$coefficients[1]  #intercept
+
+      if(Nisotopes){
+        # Mass29
+        lm <- lm(c(calfactor$calfactor_29[2 * groupNo - 1],
+                   calfactor$calfactor_29[2 * groupNo]) ~ std.temps)
+        calslope$calslope_29[groupNo] <- lm$coefficients[2]  # slope
+        calslope$calintercept_29[groupNo] <- lm$coefficients[1]  #intercept
+
+        # Mass30
+        lm <- lm(c(calfactor$calfactor_30[2 * groupNo - 1],
+                   calfactor$calfactor_30[2 * groupNo]) ~ std.temps)
+        calslope$calslope_30[groupNo] <- lm$coefficients[2]  # slope
+        calslope$calintercept_30[groupNo] <- lm$coefficients[1]  #intercept
+
+        # 30N2:28N2
+        lm <- lm(c(calfactor$calfactor_X30.28[2 * groupNo - 1],
+                   calfactor$calfactor_X30.28[2 * groupNo]) ~ std.temps)
+        calslope$calslope_X30.28[groupNo] <- lm$coefficients[2]  # slope
+        calslope$calintercept_X30.28[groupNo] <- lm$coefficients[1]  #intercept
+
+        # 29N2.28N2
+        lm <- lm(c(calfactor$calfactor_X29.28[2 * groupNo - 1],
+                   calfactor$calfactor_X29.28[2 * groupNo]) ~ std.temps)
+        calslope$calslope_X29.28[groupNo] <- lm$coefficients[2]  # slope
+        calslope$calintercept_X29.28[groupNo] <- lm$coefficients[1]  #intercept
+      }
+
     }
 
     # 6. Perform drift correction for calibration slope and intercept ------
@@ -621,6 +751,17 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     calslope$DRIFT.calintercept_N2Ar <- NA
     calslope$DRIFT.calslope_O2Ar <- NA
     calslope$DRIFT.calintercept_O2Ar <- NA
+
+    if(Nisotopes){
+      calslope$DRIFT.calslope_29 <- NA
+      calslope$DRIFT.calintercept_29 <- NA
+      calslope$DRIFT.calslope_30 <- NA
+      calslope$DRIFT.calintercept_30 <- NA
+      calslope$DRIFT.calslope_X30.28 <- NA
+      calslope$DRIFT.calintercept_X30.28 <- NA
+      calslope$DRIFT.calslope_X29.28 <- NA
+      calslope$DRIFT.calintercept_X29.28 <- NA
+    }
 
     for (groupNo in 1:max(data$Group)) {
       # take the slope between successive calibration (slope or intercept)
@@ -701,6 +842,72 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                             data$Time[data$Group == groupNo][1],
                             units = "days"))
 
+      if(Nisotopes){
+        # Drift corrected mass29 slope
+        calslope$DRIFT.calslope_29[groupNo] <-
+          (calslope$calslope_29[groupNo + 1] -
+             calslope$calslope_29[groupNo]) /
+          as.numeric(difftime(data$Time[data$Group == (groupNo + 1)][1],
+                              data$Time[data$Group == groupNo][1],
+                              units = "days"))
+
+        # intercept
+        calslope$DRIFT.calintercept_29[groupNo] <-
+          (calslope$calintercept_29[groupNo + 1] -
+             calslope$calintercept_29[groupNo]) /
+          as.numeric(difftime(data$Time[data$Group == (groupNo + 1)][1],
+                              data$Time[data$Group == groupNo][1],
+                              units = "days"))
+
+        # Drift correct mass30 slope
+        calslope$DRIFT.calslope_30[groupNo] <-
+          (calslope$calslope_30[groupNo + 1] -
+             calslope$calslope_30[groupNo]) /
+          as.numeric(difftime(data$Time[data$Group == (groupNo + 1)][1],
+                              data$Time[data$Group == groupNo][1],
+                              units = "days"))
+
+        # intercept
+        calslope$DRIFT.calintercept_30[groupNo] <-
+          (calslope$calintercept_30[groupNo + 1] -
+             calslope$calintercept_30[groupNo]) /
+          as.numeric(difftime(data$Time[data$Group == (groupNo + 1)][1],
+                              data$Time[data$Group == groupNo][1],
+                              units = "days"))
+
+        # Drift corrected 30:28 slope
+        calslope$DRIFT.calslope_X30.28[groupNo] <-
+          (calslope$calslope_X30.28[groupNo + 1] -
+             calslope$calslope_X30.28[groupNo]) /
+          as.numeric(difftime(data$Time[data$Group == (groupNo + 1)][1],
+                              data$Time[data$Group == groupNo][1],
+                              units = "days"))
+
+        # intercept
+        calslope$DRIFT.calintercept_X30.28[groupNo] <-
+          (calslope$calintercept_X30.28[groupNo + 1] -
+             calslope$calintercept_X30.28[groupNo]) /
+          as.numeric(difftime(data$Time[data$Group == (groupNo + 1)][1],
+                              data$Time[data$Group == groupNo][1],
+                              units = "days"))
+
+        # Drift corrected 29:28 slope
+        calslope$DRIFT.calslope_X29.28[groupNo] <-
+          (calslope$calslope_X29.28[groupNo + 1] -
+             calslope$calslope_X29.28[groupNo]) /
+          as.numeric(difftime(data$Time[data$Group == (groupNo + 1)][1],
+                              data$Time[data$Group == groupNo][1],
+                              units = "days"))
+
+        # intercept
+        calslope$DRIFT.calintercept_X29.28[groupNo] <-
+          (calslope$calintercept_X29.28[groupNo + 1] -
+             calslope$calintercept_X29.28[groupNo]) /
+          as.numeric(difftime(data$Time[data$Group == (groupNo + 1)][1],
+                              data$Time[data$Group == groupNo][1],
+                              units = "days"))
+      }
+
       # if there's no standard group at the tail (aka, run ends after a
       # sample) base the drift correction on the preceding block of
       # standards
@@ -727,9 +934,26 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
           calslope$DRIFT.calslope_O2Ar[groupNo - 1]
         calslope$DRIFT.calintercept_O2Ar[groupNo] <-
           calslope$DRIFT.calintercept_O2Ar[groupNo - 1]
+        if(Nisotopes){
+          calslope$DRIFT.calslope_29[groupNo] <-
+            calslope$DRIFT.calslope_29[groupNo - 1]
+          calslope$DRIFT.calintercept_29[groupNo] <-
+            calslope$DRIFT.calintercept_29[groupNo - 1]
+          calslope$DRIFT.calslope_30[groupNo] <-
+            calslope$DRIFT.calslope_30[groupNo - 1]
+          calslope$DRIFT.calintercept_30[groupNo] <-
+            calslope$DRIFT.calintercept_30[groupNo - 1]
+          calslope$DRIFT.calslope_X30.28[groupNo] <-
+            calslope$DRIFT.calslope_X30.28[groupNo - 1]
+          calslope$DRIFT.calintercept_X30.28[groupNo] <-
+            calslope$DRIFT.calintercept_X30.28[groupNo - 1]
+          calslope$DRIFT.calslope_X29.28[groupNo] <-
+            calslope$DRIFT.calslope_X29.28[groupNo - 1]
+          calslope$DRIFT.calintercept_X29.28[groupNo] <-
+            calslope$DRIFT.calintercept_X29.28[groupNo - 1]
+        }
       }
     }
-
 
     # 7. Interpolate calibration slopes ------------------------------------
 
@@ -745,6 +969,16 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     data$INTERPOLATED.calslope_O2Ar <- NA
     data$INTERPOLATED.calintercept_O2Ar <- NA
 
+    if(Nisotopes){
+      data$INTERPOLATED.calslope_29 <- NA
+      data$INTERPOLATED.calintercept_29 <- NA
+      data$INTERPOLATED.calslope_30 <- NA
+      data$INTERPOLATED.calintercept_30 <- NA
+      data$INTERPOLATED.calslope_X30.28 <- NA
+      data$INTERPOLATED.calintercept_X30.28 <- NA
+      data$INTERPOLATED.calslope_X29.28 <- NA
+      data$INTERPOLATED.calintercept_X29.28 <- NA
+    }
     # create list to fill with interpolated values
     datalist = list()
 
@@ -819,6 +1053,61 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
           (calslope$DRIFT.calintercept_O2Ar[groupNo] *
              as.numeric(difftime(group.block$Time[i],
                                  group.block$Time[1], units = "days")))
+
+        if(Nisotopes){
+          # Mass29
+          group.block$INTERPOLATED.calslope_29[i] <-
+            calslope$calslope_29[groupNo] +
+            (calslope$DRIFT.calslope_29[groupNo] *
+               as.numeric(difftime(group.block$Time[i],
+                                   group.block$Time[1], units = "days")))
+
+          group.block$INTERPOLATED.calintercept_29[i] <-
+            calslope$calintercept_29[groupNo] +
+            (calslope$DRIFT.calintercept_29[groupNo] *
+               as.numeric(difftime(group.block$Time[i],
+                                   group.block$Time[1], units = "days")))
+
+          # Mass30
+          group.block$INTERPOLATED.calslope_30[i] <-
+            calslope$calslope_30[groupNo] +
+            (calslope$DRIFT.calslope_30[groupNo] *
+               as.numeric(difftime(group.block$Time[i],
+                                   group.block$Time[1], units = "days")))
+
+          group.block$INTERPOLATED.calintercept_30[i] <-
+            calslope$calintercept_30[groupNo] +
+            (calslope$DRIFT.calintercept_30[groupNo] *
+               as.numeric(difftime(group.block$Time[i],
+                                   group.block$Time[1], units = "days")))
+
+          # Mass 30:28
+          group.block$INTERPOLATED.calslope_X30.28[i] <-
+            calslope$calslope_X30.28[groupNo] +
+            (calslope$DRIFT.calslope_X30.28[groupNo] *
+               as.numeric(difftime(group.block$Time[i],
+                                   group.block$Time[1], units = "days")))
+
+          group.block$INTERPOLATED.calintercept_X30.28[i] <-
+            calslope$calintercept_X30.28[groupNo] +
+            (calslope$DRIFT.calintercept_X30.28[groupNo] *
+               as.numeric(difftime(group.block$Time[i],
+                                   group.block$Time[1], units = "days")))
+
+          # Mass 29:28
+          group.block$INTERPOLATED.calslope_X29.28[i] <-
+            calslope$calslope_X29.28[groupNo] +
+            (calslope$DRIFT.calslope_X29.28[groupNo] *
+               as.numeric(difftime(group.block$Time[i],
+                                   group.block$Time[1], units = "days")))
+
+          group.block$INTERPOLATED.calintercept_X29.28[i] <-
+            calslope$calintercept_X29.28[groupNo] +
+            (calslope$DRIFT.calintercept_X29.28[groupNo] *
+               as.numeric(difftime(group.block$Time[i],
+                                   group.block$Time[1], units = "days")))
+        }
+
       } # close internal row for loop
 
       # create list of sample blocks
@@ -855,9 +1144,26 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     data$INTERPOLATED.calfactor_O2Ar <-
       (data$INTERPOLATED.calslope_O2Ar * data$CollectionTemp) +
       data$INTERPOLATED.calintercept_O2Ar
+
+    if(Nisotopes){
+      data$INTERPOLATED.calfactor_29 <-
+        (data$INTERPOLATED.calslope_29 * data$CollectionTemp) +
+        data$INTERPOLATED.calintercept_29
+
+      data$INTERPOLATED.calfactor_30 <-
+        (data$INTERPOLATED.calslope_30 * data$CollectionTemp) +
+        data$INTERPOLATED.calintercept_30
+
+      data$INTERPOLATED.calfactor_X30.28 <-
+        (data$INTERPOLATED.calslope_X30.28 * data$CollectionTemp) +
+        data$INTERPOLATED.calintercept_X30.28
+
+      data$INTERPOLATED.calfactor_X29.28 <-
+        (data$INTERPOLATED.calslope_X29.28 * data$CollectionTemp) +
+        data$INTERPOLATED.calintercept_X29.28
+    }
+
     } # Close two point calibration
-
-
 
   # 9. Calculate final concentrations -------------------------------------
 
@@ -866,15 +1172,34 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   data$N2Ar <- data$N2.Ar * data$INTERPOLATED.calfactor_N2Ar
   data$O2Ar <- data$O2.Ar * data$INTERPOLATED.calfactor_O2Ar
 
+  if(Nisotopes){
+    data$isotopic_30.28 <- data$X30.28 *
+      data$INTERPOLATED.calfactor_X30.28
+    data$isotopic_29.28 <- data$X29.28 *
+      data$INTERPOLATED.calfactor_X29.28
+  }
+
   # Transform N2Ar and O2Ar ratios into concentrations of N2 or O2, using
   # Ar saturation concentration at temperature
   data$N2_uMolL <- data$N2Ar * data$arSat.conc_uMol.kg
   data$O2_uMolL <- data$O2Ar * data$arSat.conc_uMol.kg
 
+  if(Nisotopes){
+    data$isotopic_30N2_uMolL <- data$isotopic_30.28 *
+      data$n2Sat_28.conc_uMol.kg
+    data$isotopic_29N2_uMolL <- data$isotopic_29.28 *
+      data$n2Sat_28.conc_uMol.kg
+  }
+
   # Unit conversion: Convert from microM to mg
   data$N2_mgL <- data$N2_uMolL * 10^(-6) * 28 * 10^3
   data$O2_mgL <- data$O2_uMolL * 10^(-6) * 32 * 10^3
   data$Ar_mgL <- data$Ar_uMolL * 10^(-6) * 40 * 10^3
+
+  if(Nisotopes){
+    data$isotopic_30N2_mgL <- data$isotopic_30N2_uMolL * 10^(-6) * 30 * 10^3
+    data$isotopic_29N2_mgL <-data$isotopic_29N2_uMolL * 10^(-6) * 29 * 10^3
+  }
 
   # 10. Output results to user -------------------------------------------
 
@@ -903,15 +1228,28 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                                      "INTERPOLATED.calfactor_40",
                                      "INTERPOLATED.calfactor_N2Ar",
                                      "INTERPOLATED.calfactor_O2Ar"))]
+  if(Nisotopes){
+    results <-
+      results[, -which(names(results) %in% c("X30", "X29",
+                                             "X30.28", "X29.28",
+                                             "INTERPOLATED.calslope_30",
+                                             "INTERPOLATED.calintercept_30",
+                                             "INTERPOLATED.calslope_29",
+                                             "INTERPOLATED.calintercept_29",
+                                             "INTERPOLATED.calslope_X30.28",
+                                             "INTERPOLATED.calintercept_X30.28",
+                                             "INTERPOLATED.calslope_X29.28",
+                                             "INTERPOLATED.calintercept_X29.28",
+                                             "INTERPOLATED.calfactor_29",
+                                             "INTERPOLATED.calfactor_30",
+                                             "INTERPOLATED.calfactor_X30.28",
+                                             "INTERPOLATED.calfactor_X29.28"))]
+  }
 
   # grab only the sample results
   results <- results[results$Type == "Sample", ]
   results$Type <- NULL
   results$Group <- NULL
-  results$`data$Type` <- NULL
-  results$`data$Group` <- NULL
-  data$`data$Type` <- NULL
-  data$`data$Group` <- NULL
 
   outlist <- list(results = results,
                   solubility.Concentrations = solubility.conc,
