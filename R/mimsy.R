@@ -50,7 +50,6 @@
 #' @importFrom dplyr "group_by"
 #' @importFrom dplyr "bind_rows"
 #' @importFrom dplyr "filter"
-#' @importFrom magrittr "%>%"
 #' @importFrom utils "read.csv"
 #'
 #' @export
@@ -73,11 +72,16 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   # Returns index of rows in standard
   StdIndex <- which(data$Group == 1 & data$Type == "Standard")
 
-  # Get standard temperatures --------------------------------------------------
+  # Get standard temperatures and salinities -----------------------------------
   if (length(unique(data[StdIndex, "CollectionTemp"])) == 1 | 2){
     # Set std.temps equal to the unique temperatures in this column
-    #std.temps <- unique(data[StdIndex, "CollectionTemp"])
-    std.temps <- unique(data[StdIndex, ]$CollectionTemp) # Hotfix: Check up on this subsetting issue - perhaps discrepancy between Mac & Windows?
+    std.temps <- unique(data[StdIndex,]$CollectionTemp)
+    # Does a salinity column exist? If so, grab salinity data
+    if("CollectionSalinity" %in% names(data)){
+      std.sals <- unique(data[StdIndex,]$CollectionSalinity)
+    } else{
+      std.sals <- rep(0, times = length(std.temps))
+    }
   }
   # Check if there are more than two standard temperatures
   if (length(std.temps) > 2){
@@ -131,15 +135,16 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
   # 3. Calculate solubilites of dissolved gas --------------------------------
 
-  # initialize vector to store concentration values NOTE will need to adapt this for single temp vs dual temp
+  # initialize vector to store concentration values
 
   solubility.conc <- data.frame(O2.conc_uMol.kg = numeric(length = length(std.temps)),
                                 N2.conc_uMol.kg = numeric(length = length(std.temps)),
                                 Ar.conc_uMol.kg = numeric(length = length(std.temps)),
-                                row.names = paste(std.temps, "deg C"))
+                                row.names = paste0("temp_", std.temps, "degC",
+                                                  "salinity_", std.sals))
 
   # O2 saturation calculation ------------------------------------------------
-  o2Sat <- function(t){
+  o2Sat <- function(t, sal){
 
     # Vapor pressure correction use the Antoine equation to calculate vapor
     # pressure of water [bar] See NIST Chemistry WebBook for general tables,
@@ -167,7 +172,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     # Scaled temperature (Garcia and Gordon 1992, eqn. 8)
     TS <- log((298.15 - t)/(273.15 + t))  # log() == natural log (ln)
     # Salinity [per mille]
-    S <- salinity
+    S <- sal
 
     # Calculate O2 saturation concentration at temperature and salinity
     # (Garcia and Gordon 1992, eqn. 8)
@@ -181,7 +186,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   }
 
   # N2 saturation calculation ------------------------------------------------
-  n2Sat <- function(t){
+  n2Sat <- function(t, sal){
     # Vapor pressure correction use the Antoine equation to calculate vapor
     # pressure of water [bar] See NIST Chemistry WebBook for general tables,
     # these parameters valid for temperatures between -18 to 100C (Stull 1947)
@@ -207,7 +212,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     TS <- log((298.15 - t)/(273.15 + t))
 
     # Salinity [per mille]
-    S <- salinity
+    S <- sal
 
     # Calculate saturation concentration at temperature and salinity
     # (Hamme and emerson 2004, eqn. 1)
@@ -221,7 +226,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   }
 
   # Ar saturation calculation ------------------------------------------------
-  arSat <- function(t){
+  arSat <- function(t, sal){
     # Vapor pressure correction use the Antoine equation to calculate vapor
     # pressure of water [bar] See NIST Chemistry WebBook for general tables,
     # these parameters valid for temperatures between -18 to 100C (Stull 1947)
@@ -246,7 +251,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     TS <- log((298.15 - t)/(273.15 + t))
 
     # Salinity [per mille]
-    S <- salinity
+    S <- sal
 
     # Calculate saturation concentration at temperature and salinity
     # (Hamme and emerson 2004, eqn. 1)
@@ -262,10 +267,11 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   # Run functions for standards
   for (i in seq_along(std.temps)) {
     t <- std.temps[i]
+    sal <- std.sals[i]
     # Run functions
-    solubility.conc$N2.conc_uMol.kg[i] <- n2Sat(t)
-    solubility.conc$O2.conc_uMol.kg[i] <- o2Sat(t)
-    solubility.conc$Ar.conc_uMol.kg[i] <- arSat(t)
+    solubility.conc$N2.conc_uMol.kg[i] <- n2Sat(t, sal)
+    solubility.conc$O2.conc_uMol.kg[i] <- o2Sat(t, sal)
+    solubility.conc$Ar.conc_uMol.kg[i] <- arSat(t, sal)
   }
 
   # Were N isotopes also run? Test names of columns
@@ -273,6 +279,8 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   # Test if N isotopes are among the column names
   if(sum(sampledMasses %in% c("X29", "X30")) == 2){
     Nisotopes <- TRUE
+  } else{
+    Nisotopes <- FALSE
   }
 
   # If N isotopes are present, calculate 29N2, 30N2 saturation at temperature
@@ -304,9 +312,9 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   data <- dplyr::group_by(data, Type, Group)
 
   # Calculate N2, O2, and Ar saturation at temperature and pressure for all samples
-  data$arSat.conc_uMol.kg <- arSat(data$CollectionTemp)
-  data$n2Sat.conc_uMol.kg <- n2Sat(data$CollectionTemp)
-  data$o2Sat.conc_uMol.kg <- o2Sat(data$CollectionTemp)
+  data$arSat.conc_uMol.kg <- arSat(data$CollectionTemp, data$CollectionSalinity)
+  data$n2Sat.conc_uMol.kg <- n2Sat(data$CollectionTemp, data$CollectionSalinity)
+  data$o2Sat.conc_uMol.kg <- o2Sat(data$CollectionTemp, data$CollectionSalinity)
 
   if(Nisotopes){
     data$n2Sat_28.conc_uMol.kg <-
@@ -321,7 +329,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   if (nrow(unique(data[StdIndex, "CollectionTemp"])) == 1) {
 
     message("Calculated dissolved concentrations based on a single-point temperature standard.")
-    message(paste0("Standard: ", std.temps, " C"))
+    message(paste0("Standard temperature: ", std.temps, " C\nStandard salinity: ", std.sals))
 
     # 4. Calculate calibration factors -----------------------------------------
 
@@ -332,12 +340,13 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                  calfactor_40 = numeric(length = max(data$Group)),
                  calfactor_N2Ar = numeric(length = max(data$Group)),
                  calfactor_O2Ar = numeric(length = max(data$Group)),
-                 row.names = paste0(std.temps, "degC_", "Group_",
+                 row.names = paste0("temp_", std.temps, "degC_",
+                                    "salinity_", std.sals, "_Group_",
                                     rep(1:max(data$Group))))
 
     for (groupNo in 1:max(data$Group)) {
       # individually extract each group of standards
-      cal.block <- data %>% filter(Type == "Standard" & Group == groupNo)
+      cal.block <- dplyr::filter(data, Type == "Standard" & Group == groupNo)
 
       # calculate calibration factor calfactor = solubility concentration
       # at std temp / avg(MIMS readings at std temp)
@@ -408,8 +417,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
           calslope$calslope_O2Ar[groupNo - 1]
         calslope$calintercept_O2Ar[groupNo] <-
           calslope$calintercept_O2Ar[groupNo - 1]
-      }
-      else {
+      } else {
         # Mass28
         lm <- lm(c(calfactor$calfactor_28[groupNo],
                    calfactor$calfactor_28[groupNo+1]) ~
@@ -469,7 +477,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
     for (groupNo in 1:max(data$Group)) {
       # cut data into groups of samples
-      group.block <- data %>% filter(Group == groupNo)
+      group.block <- dplyr::filter(data, Group == groupNo)
 
       # take the slope between successive calibration (slope or intercept)
       # values
@@ -546,7 +554,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
     for (groupNo in 1:max(data$Group)) {
       # individually extract each group of standards
-      cal.block <- filter(data, Type == "Standard" & Group == groupNo)
+      cal.block <- dplyr::filter(data, Type == "Standard" & Group == groupNo)
 
       # calculate calibration factor calfactor = solubility concentration
       # at std temp / avg(MIMS readings at std temp)
@@ -986,7 +994,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     # (start sample group time - sample time))
     for (groupNo in 1:max(data$Group)) {
       # cut data into groups of samples
-      group.block <- data %>% filter(Group == groupNo)
+      group.block <- dplyr::filter(data, Group == groupNo)
 
       for (i in 1:nrow(group.block)) {
         # Mass28
