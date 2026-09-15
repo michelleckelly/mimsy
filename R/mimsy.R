@@ -78,11 +78,13 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   if(any(names(data) %in% "40")){
     names(data)[names(data) == "40"] <- "X40"
   }
-  if(any(names(data) %in% "N2/Ar")){
+  if(any(names(data) %in% c("N2/Ar", "N2.Ar"))){
     names(data)[names(data) == "N2/Ar"] <- "N2Ar"
+    names(data)[names(data) == "N2.Ar"] <- "N2Ar"
   }
-  if(any(names(data) %in% "O2/Ar")){
+  if(any(names(data) %in% c("O2/Ar", "O2.Ar"))){
     names(data)[names(data) == "O2/Ar"] <- "O2Ar"
+    names(data)[names(data) == "O2.Ar"] <- "O2Ar"
   }
 
 
@@ -261,14 +263,14 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
       calfactor$calfactor_N2Ar[groupNo] <-
         (solubility.conc$N2.conc_umolL/
            solubility.conc$Ar.conc_umolL)/
-        mean(cal.block$N2.Ar)
+        mean(cal.block$N2Ar)
 
       # Calculate O2:Ar calibration factors
       #     = ([O2]saturation / [Ar]saturation) / Raw O2:Ar signal data
       calfactor$calfactor_O2Ar[groupNo] <-
         (solubility.conc$O2.conc_umolL/
            solubility.conc$Ar.conc_umolL)/
-        mean(cal.block$O2.Ar)
+        mean(cal.block$O2Ar)
 
     }
 
@@ -483,12 +485,12 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
       calfactor$calfactor_N2Ar[2 * groupNo - 1] <-
         (solubility.conc$N2.conc_umolL[1]/
            solubility.conc$Ar.conc_umolL[1])/
-        mean(cal.block$N2.Ar[cal.block$CollectionTemp == std.temps[1]])
+        mean(cal.block$N2Ar[cal.block$CollectionTemp == std.temps[1]])
       # Standard temp 2
       calfactor$calfactor_N2Ar[2 * groupNo] <-
         (solubility.conc$N2.conc_umolL[2]/
            solubility.conc$Ar.conc_umolL[2])/
-        mean(cal.block$N2.Ar[cal.block$CollectionTemp == std.temps[2]])
+        mean(cal.block$N2Ar[cal.block$CollectionTemp == std.temps[2]])
 
       # Calculate O2:Ar calibration factors
       #     = ([O2]saturation / [Ar]saturation) / Raw O2:Ar signal data
@@ -496,12 +498,12 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
       calfactor$calfactor_O2Ar[2 * groupNo - 1] <-
         (solubility.conc$O2.conc_umolL[1]/
            solubility.conc$Ar.conc_umolL[1])/
-        mean(cal.block$O2.Ar[cal.block$CollectionTemp == std.temps[1]])
+        mean(cal.block$O2Ar[cal.block$CollectionTemp == std.temps[1]])
       # Standard temp 2
       calfactor$calfactor_O2Ar[2 * groupNo] <-
         (solubility.conc$O2.conc_umolL[2]/
            solubility.conc$Ar.conc_umolL[2])/
-        mean(cal.block$O2.Ar[cal.block$CollectionTemp == std.temps[2]])
+        mean(cal.block$O2Ar[cal.block$CollectionTemp == std.temps[2]])
 
       if(Nisotopes){
         # Replace mass 28
@@ -1070,8 +1072,8 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
   # Calculate concentrations by multiplying signal by interpolated calibration factors
   data$Ar_uMolL <- data$X40 * data$INTERPOLATED.calfactor_40
-  data$N2Ar_molarRatio <- data$N2.Ar * data$INTERPOLATED.calfactor_N2Ar
-  data$O2Ar_molarRatio <- data$O2.Ar * data$INTERPOLATED.calfactor_O2Ar
+  data$N2Ar_molarRatio <- data$N2Ar * data$INTERPOLATED.calfactor_N2Ar
+  data$O2Ar_molarRatio <- data$O2Ar * data$INTERPOLATED.calfactor_O2Ar
 
   if(Nisotopes){
     data$isotopic_30.28_molarRatio <-
@@ -1082,25 +1084,25 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
   # Transform N2Ar and O2Ar ratios into concentrations of N2 or O2, using
   # Ar saturation concentration at temperature
-  data$N2_uMolL <- data$N2Ar * data$arSat.conc_umolL
-  data$O2_uMolL <- data$O2Ar * data$arSat.conc_umolL
+  #data$N2_uMolL <- data$N2Ar * data$arSat.conc_umolL
+  #data$O2_uMolL <- data$O2Ar * data$arSat.conc_umolL
 
-  if(Nisotopes){
-    data$isotopic_30N2_uMolL <- data$isotopic_30.28 *
-      data$n2Sat_28.conc_umolL
-    data$isotopic_29N2_uMolL <- data$isotopic_29.28 *
-      data$n2Sat_28.conc_umolL
-  }
+  #if(Nisotopes){
+  #  data$isotopic_30N2_uMolL <- data$isotopic_30.28 *
+  #    data$n2Sat_28.conc_umolL
+  #  data$isotopic_29N2_uMolL <- data$isotopic_29.28 *
+  #    data$n2Sat_28.conc_umolL
+  #}
 
   # Unit conversion: Convert from microM to mg
-  data$N2_mgL <- data$N2_uMolL * 10^(-6) * 28 * 10^3
-  data$O2_mgL <- data$O2_uMolL * 10^(-6) * 32 * 10^3
-  data$Ar_mgL <- data$Ar_uMolL * 10^(-6) * 40 * 10^3
+  #data$N2_mgL <- data$N2_uMolL * 10^(-6) * 28 * 10^3
+  #data$O2_mgL <- data$O2_uMolL * 10^(-6) * 32 * 10^3
+  #data$Ar_mgL <- data$Ar_uMolL * 10^(-6) * 40 * 10^3
 
-  if(Nisotopes){
-    data$isotopic_30N2_mgL <- data$isotopic_30N2_uMolL * 10^(-6) * 30 * 10^3
-    data$isotopic_29N2_mgL <-data$isotopic_29N2_uMolL * 10^(-6) * 29 * 10^3
-  }
+  #if(Nisotopes){
+  #  data$isotopic_30N2_mgL <- data$isotopic_30N2_uMolL * 10^(-6) * 30 * 10^3
+  #  data$isotopic_29N2_mgL <-data$isotopic_29N2_uMolL * 10^(-6) * 29 * 10^3
+  #}
 
   # 10. Output results to user -------------------------------------------
 
@@ -1113,7 +1115,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   # may have added to the orignal .csv
   results <-
     data[, -which(names(data) %in% c("Index", "Time", "X28", "X32", "X40",
-                                     "X99", "N2.Ar", "O2.Ar",
+                                     "X99", "N2Ar", "O2Ar",
                                      "INTERPOLATED.calslope_28",
                                      "INTERPOLATED.calintercept_28",
                                      "INTERPOLATED.calslope_32",
