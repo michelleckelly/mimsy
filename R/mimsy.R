@@ -66,8 +66,25 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     data <- dplyr::select(data, Type, dplyr::everything())
   }
 
-  # UPDATEFLAG: check csv has correct column names, check baromet.press has
-  # acceptable units
+  # Check column names ---------------------------------------------------------
+  # If user has loaded data with readr::read_csv, column names will be imported
+  # as numbers without a leading X. If this is the case, homogenize names here
+  if(any(names(data) %in% "28")){
+    names(data)[names(data) == "28"] <- "X28"
+  }
+  if(any(names(data) %in% "32")){
+    names(data)[names(data) == "32"] <- "X32"
+  }
+  if(any(names(data) %in% "40")){
+    names(data)[names(data) == "40"] <- "X40"
+  }
+  if(any(names(data) %in% "N2/Ar")){
+    names(data)[names(data) == "N2/Ar"] <- "N2Ar"
+  }
+  if(any(names(data) %in% "O2/Ar")){
+    names(data)[names(data) == "O2/Ar"] <- "O2Ar"
+  }
+
 
   # Returns index of rows in standard
   StdIndex <- which(data$Group == 1 & data$Type == "Standard")
@@ -110,7 +127,10 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   baromet.press.atm <- convertPressure(baromet.press, unit)
 
   # 3. Calculate solubilites of dissolved gas --------------------------------
-
+  # Solubility is relative to indoor barometric pressure while user was running
+  # MIMS instrument and water temperature of standard bath(s)
+  # This is not solubility of dissolved gas in the field
+  #
   # initialize vector to store concentration values
 
   solubility.conc <- data.frame(O2.conc_uMol.kg = numeric(length = length(std.temps)),
@@ -119,135 +139,23 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                                 row.names = paste0("temp_", std.temps, "degC",
                                                   "salinity_", std.sals))
 
-  # O2 saturation calculation ------------------------------------------------
-  o2Sat <- function(t, sal){
-
-    # Vapor pressure correction use the Antoine equation to calculate vapor
-    # pressure of water [bar] See NIST Chemistry WebBook for general tables,
-    # these parameters valid for temperatures between -18 to 100C (Stull 1947)
-    vapor.press <- exp(4.6543 - (1435.264/((t + 273.15) + -64.848)))
-    vapor.press <- vapor.press * 0.98692  # conversion from [bar] to [atm]
-
-    # pressure correction [atm] = (current pressure - vapor pressure) /
-    # (standard pressure [atm] - vapor pressure)
-    press.corr <- (baromet.press.atm - vapor.press)/(1 - vapor.press)
-
-    # O2 saturation calculation Combined fit coefficients [umol/kg]
-    # (Garcia and Gordon 1992, Table 1)
-    A0 <- 5.80818
-    A1 <- 3.20684
-    A2 <- 4.1189
-    A3 <- 4.93845
-    A4 <- 1.01567
-    A5 <- 1.41575
-    B0 <- -7.01211 * 10^-3
-    B1 <- -7.25958 * 10^-3
-    B2 <- -7.93334 * 10^-3
-    B3 <- -5.54491 * 10^-3
-    C0 <- -1.32412 * 10^-7
-    # Scaled temperature (Garcia and Gordon 1992, eqn. 8)
-    TS <- log((298.15 - t)/(273.15 + t))  # log() == natural log (ln)
-    # Salinity [per mille]
-    S <- sal
-
-    # Calculate O2 saturation concentration at temperature and salinity
-    # (Garcia and Gordon 1992, eqn. 8)
-    lnO2.sat <- A0 + A1 * TS + A2 * TS^2 + A3 * TS^2 + A3 * TS^3 + A4 *
-      TS^4 + A5 * TS^5 + S * (B0 + B1 * TS + B2 * TS^2 + B3 * TS^3) + C0 * S^2
-    O2.sat <- exp(lnO2.sat)
-    # Correct O2 saturation with pressure correction, solubility.conc units
-    # [umol/kg]
-    result <- O2.sat * press.corr
-    return(result)
-  }
-
-  # N2 saturation calculation ------------------------------------------------
-  n2Sat <- function(t, sal){
-    # Vapor pressure correction use the Antoine equation to calculate vapor
-    # pressure of water [bar] See NIST Chemistry WebBook for general tables,
-    # these parameters valid for temperatures between -18 to 100C (Stull 1947)
-
-    vapor.press <- exp(4.6543 - (1435.264/((t + 273.15) + -64.848)))
-    vapor.press <- vapor.press * 0.98692  # conversion from [bar] to [atm]
-
-    # pressure correction [atm] = (current pressure - vapor pressure) /
-    # (standard pressure [atm] - vapor pressure)
-    press.corr <- (baromet.press.atm - vapor.press)/(1 - vapor.press)
-
-    # N2 saturation calculation Coefficients [umol/kg]
-    # (Hamme and Emerson 2004, Table 4)
-    A0 <- 6.42931
-    A1 <- 2.92704
-    A2 <- 4.32531
-    A3 <- 4.69149
-    B0 <- -7.44129 * 10^-3
-    B1 <- -8.02566 * 10^-3
-    B2 <- -1.46775 * 10^-2
-    # Scaled temperature (Hamme and Emerson 2004, eqn. 2, but identical to
-    # Garcia and Gordon 1992, eqn. 8)
-    TS <- log((298.15 - t)/(273.15 + t))
-
-    # Salinity [per mille]
-    S <- sal
-
-    # Calculate saturation concentration at temperature and salinity
-    # (Hamme and emerson 2004, eqn. 1)
-    lnN2.sat <-
-      A0 + A1 * TS + A2 * TS^2 + A3 * TS^3 + S * (B0 + B1 * TS + B2 * TS^2)
-    N2.sat <- exp(lnN2.sat)
-    # Correct saturation with pressure correction, solubility.conc units are
-    # [umol/kg]
-    result <- N2.sat * press.corr
-    return(result)
-  }
-
-  # Ar saturation calculation ------------------------------------------------
-  arSat <- function(t, sal){
-    # Vapor pressure correction use the Antoine equation to calculate vapor
-    # pressure of water [bar] See NIST Chemistry WebBook for general tables,
-    # these parameters valid for temperatures between -18 to 100C (Stull 1947)
-    vapor.press <- exp(4.6543 - (1435.264/((t + 273.15) + -64.848)))
-    vapor.press <- vapor.press * 0.98692  # conversion from [bar] to [atm]
-
-    # pressure correction [atm] = (current pressure - vapor pressure) /
-    # (standard pressure [atm] - vapor pressure)
-    press.corr <- (baromet.press.atm - vapor.press)/(1 - vapor.press)
-
-    # Ar saturation calculation Coefficients [umol/kg]
-    # (Hamme and Emerson 2004, Table 4)
-    A0 <- 2.7915
-    A1 <- 3.17609
-    A2 <- 4.13116
-    A3 <- 4.90379
-    B0 <- -6.96233 * 10^-3
-    B1 <- -7.9997 * 10^-3
-    B2 <- -1.16888 * 10^-2
-    # Scaled temperature (Hamme and Emerson 2004, eqn. 2,
-    # but identical to Garcia and Gordon 1992, eqn. 8)
-    TS <- log((298.15 - t)/(273.15 + t))
-
-    # Salinity [per mille]
-    S <- sal
-
-    # Calculate saturation concentration at temperature and salinity
-    # (Hamme and emerson 2004, eqn. 1)
-    lnAr.sat <-
-      A0 + A1 * TS + A2 * TS^2 + A3 * TS^3 + S * (B0 + B1 * TS + B2 * TS^2)
-    Ar.sat <- exp(lnAr.sat)
-    # Correct saturation with pressure correction, solubility.conc units
-    # are [umol/kg]
-    result <- Ar.sat * press.corr
-    return(result)
-  }
-
   # Run functions for standards
   for (i in seq_along(std.temps)) {
     t <- std.temps[i]
     sal <- std.sals[i]
     # Run functions
-    solubility.conc$N2.conc_uMol.kg[i] <- n2Sat(t, sal)
-    solubility.conc$O2.conc_uMol.kg[i] <- o2Sat(t, sal)
-    solubility.conc$Ar.conc_uMol.kg[i] <- arSat(t, sal)
+    solubility.conc$N2.conc_umolL[i] <-
+      n2sat(temp = t, salinity = sal,
+            pressure = baromet.press.atm, pressUnits = "atm",
+            outUnits = "umol/L")
+    solubility.conc$O2.conc_umolL[i] <-
+      o2sat(temp = t, salinity = sal,
+            pressure = baromet.press.atm, pressUnits = "atm",
+            outUnits = "umol/L")
+    solubility.conc$Ar.conc_umolL[i] <-
+      arsat(temp = t, salinity = sal,
+            pressure = baromet.press.atm, pressUnits = "atm",
+            outUnits = "umol/L")
   }
 
   # Were N isotopes also run? Test names of columns
@@ -268,19 +176,19 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     # Solubility of non-isotopic 28N2 =
     #   Bulk N2 solubility *
     #   14N abundance * 14N abundance
-    solubility.conc$N2_28.conc_uMol.kg <-
-      solubility.conc$N2.conc_uMol.kg * (1 - 0.00365) * (1 - 0.00365)
+    solubility.conc$N2_28.conc_umolL <-
+      solubility.conc$N2.conc_umolL * (1 - 0.00365) * (1 - 0.00365)
 
     # Solubility of isotopic 30N2 =
     #   28N2 solubility *
     #   15N abundance * 15N abundance
-    solubility.conc$N2_30.conc_uMol.kg <-
-      solubility.conc$N2.conc_uMol.kg * 0.00365 * 0.00365
+    solubility.conc$N2_30.conc_umolL <-
+      solubility.conc$N2.conc_umolL * 0.00365 * 0.00365
 
     # Solubility of isotopic 29N2 =
     #   Bulk N2 solubility * 2 molecules N * 14N abundance * 15N abundance
-    solubility.conc$N2_29.conc_uMol.kg <-
-      solubility.conc$N2.conc_uMol.kg * 2 * (1 - 0.00365) * 0.00365
+    solubility.conc$N2_29.conc_umolL <-
+      solubility.conc$N2.conc_umolL * 2 * (1 - 0.00365) * 0.00365
   }
 
 
@@ -288,9 +196,16 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   data <- dplyr::group_by(data, Type, Group)
 
   # Calculate N2, O2, and Ar saturation at temperature and pressure for all samples
-  data$arSat.conc_uMol.kg <- arSat(data$CollectionTemp, data$CollectionSalinity)
-  data$n2Sat.conc_uMol.kg <- n2Sat(data$CollectionTemp, data$CollectionSalinity)
-  data$o2Sat.conc_uMol.kg <- o2Sat(data$CollectionTemp, data$CollectionSalinity)
+  data$arSat.conc_umolL <-
+    arsat(temp = data$CollectionTemp, salinity = data$CollectionSalinity,
+          pressure = baromet.press.atm, pressUnits = "atm", outUnits = "umol/L")
+  data$n2Sat.conc_umolL <- n2Sat(data$CollectionTemp, data$CollectionSalinity)
+  data$o2Sat.conc_umolL <- o2Sat(data$CollectionTemp, data$CollectionSalinity)
+
+  temp = t, salinity = sal,
+  pressure = baromet.press.atm, pressUnits = "atm",
+  outUnits = "umol/L"
+
 
   if(Nisotopes){
     data$n2Sat_28.conc_uMol.kg <-
