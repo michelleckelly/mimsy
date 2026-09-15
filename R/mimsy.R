@@ -55,7 +55,7 @@
 #' @export
 
 mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
-                  tz = Sys.timezone(), salinity = 0) {
+                  tz = Sys.timezone()) {
   Type <- data$Type
   Group <- data$Group
 
@@ -97,7 +97,10 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     if("CollectionSalinity" %in% names(data)){
       std.sals <- unique(data[StdIndex,]$CollectionSalinity)
     } else{
+      # If no CollectionSalinity column, assume salinity = 0
       std.sals <- rep(0, times = length(std.temps))
+      # Append a 0 column to sample data
+      data$CollectionSalinity <- 0
     }
   }
   # Check if there are more than two standard temperatures
@@ -124,7 +127,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   }
 
   # Barometric pressure conversion -------------------------------------------
-  baromet.press.atm <- convertPressure(baromet.press, unit)
+  baromet.press.atm <- convertPressure(baromet.press, unit = units)
 
   # 3. Calculate solubilites of dissolved gas --------------------------------
   # Solubility is relative to indoor barometric pressure while user was running
@@ -133,9 +136,9 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   #
   # initialize vector to store concentration values
 
-  solubility.conc <- data.frame(O2.conc_uMol.kg = numeric(length = length(std.temps)),
-                                N2.conc_uMol.kg = numeric(length = length(std.temps)),
-                                Ar.conc_uMol.kg = numeric(length = length(std.temps)),
+  solubility.conc <- data.frame(O2.conc_umolL = numeric(length = length(std.temps)),
+                                N2.conc_umolL = numeric(length = length(std.temps)),
+                                Ar.conc_umolL = numeric(length = length(std.temps)),
                                 row.names = paste0("temp_", std.temps, "degC",
                                                   "salinity_", std.sals))
 
@@ -199,21 +202,20 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   data$arSat.conc_umolL <-
     arsat(temp = data$CollectionTemp, salinity = data$CollectionSalinity,
           pressure = baromet.press.atm, pressUnits = "atm", outUnits = "umol/L")
-  data$n2Sat.conc_umolL <- n2Sat(data$CollectionTemp, data$CollectionSalinity)
-  data$o2Sat.conc_umolL <- o2Sat(data$CollectionTemp, data$CollectionSalinity)
-
-  temp = t, salinity = sal,
-  pressure = baromet.press.atm, pressUnits = "atm",
-  outUnits = "umol/L"
-
+  data$n2Sat.conc_umolL <-
+    n2sat(temp = data$CollectionTemp, salinity = data$CollectionSalinity,
+          pressure = baromet.press.atm, pressUnits = "atm", outUnits = "umol/L")
+  data$o2Sat.conc_umolL <-
+    o2sat(temp = data$CollectionTemp, salinity = data$CollectionSalinity,
+          pressure = baromet.press.atm, pressUnits = "atm", outUnits = "umol/L")
 
   if(Nisotopes){
-    data$n2Sat_28.conc_uMol.kg <-
-      data$n2Sat.conc_uMol.kg * (1 - 0.00365) * (1 - 0.00365)
-    data$n2Sat_30.conc_uMol.kg <-
-      data$n2Sat.conc_uMol.kg * 0.00365 * 0.00365
-    data$n2Sat_29.conc_uMol.kg <-
-      data$n2Sat.conc_uMol.kg * 2 * (1 - 0.00365) * 0.00365
+    data$n2Sat_28.conc_umolL <-
+      data$n2Sat.conc_umolL * (1 - 0.00365) * (1 - 0.00365)
+    data$n2Sat_30.conc_umolL <-
+      data$n2Sat.conc_umolL * 0.00365 * 0.00365
+    data$n2Sat_29.conc_umolL <-
+      data$n2Sat.conc_umolL * 2 * (1 - 0.00365) * 0.00365
   }
 
   ######### Single-point calibration #########
@@ -244,28 +246,28 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
       # Mass28 (N2)
       calfactor$calfactor_28[groupNo] <-
-        solubility.conc$N2.conc_uMol.kg/mean(cal.block$X28)
+        solubility.conc$N2.conc_umolL/mean(cal.block$X28)
 
       # Mass32 (O2)
       calfactor$calfactor_32[groupNo] <-
-        solubility.conc$O2.conc_uMol.kg/mean(cal.block$X32)
+        solubility.conc$O2.conc_umolL/mean(cal.block$X32)
 
       # Mass40 (Ar)
       calfactor$calfactor_40[groupNo] <-
-        solubility.conc$Ar.conc_uMol.kg/mean(cal.block$X40)
+        solubility.conc$Ar.conc_umolL/mean(cal.block$X40)
 
       # Calculate N2:Ar calibration factor
       #     = ([N2]saturation / [Ar]saturation) / Raw N2:Ar signal data
       calfactor$calfactor_N2Ar[groupNo] <-
-        (solubility.conc$N2.conc_uMol.kg/
-           solubility.conc$Ar.conc_uMol.kg)/
+        (solubility.conc$N2.conc_umolL/
+           solubility.conc$Ar.conc_umolL)/
         mean(cal.block$N2.Ar)
 
       # Calculate O2:Ar calibration factors
       #     = ([O2]saturation / [Ar]saturation) / Raw O2:Ar signal data
       calfactor$calfactor_O2Ar[groupNo] <-
-        (solubility.conc$O2.conc_uMol.kg/
-           solubility.conc$Ar.conc_uMol.kg)/
+        (solubility.conc$O2.conc_umolL/
+           solubility.conc$Ar.conc_umolL)/
         mean(cal.block$O2.Ar)
 
     }
@@ -452,98 +454,98 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
       # Mass28 (N2) Standard temp 1
       calfactor$calfactor_28[2 * groupNo - 1] <-
-        solubility.conc$N2.conc_uMol.kg[1] /
+        solubility.conc$N2.conc_umolL[1] /
         mean(cal.block$X28[cal.block$CollectionTemp == std.temps[1]])
       # standard temp 2
       calfactor$calfactor_28[2 * groupNo] <-
-        solubility.conc$N2.conc_uMol.kg[2] /
+        solubility.conc$N2.conc_umolL[2] /
         mean(cal.block$X28[cal.block$CollectionTemp == std.temps[2]])
 
       # Mass32 (O2)
       calfactor$calfactor_32[2 * groupNo - 1] <-
-        solubility.conc$O2.conc_uMol.kg[1] /
+        solubility.conc$O2.conc_umolL[1] /
         mean(cal.block$X32[cal.block$CollectionTemp == std.temps[1]])
       calfactor$calfactor_32[2 * groupNo] <-
-        solubility.conc$O2.conc_uMol.kg[2] /
+        solubility.conc$O2.conc_umolL[2] /
         mean(cal.block$X32[cal.block$CollectionTemp == std.temps[2]])
 
       # Mass40 (Ar)
       calfactor$calfactor_40[2 * groupNo - 1] <-
-        solubility.conc$Ar.conc_uMol.kg[1] /
+        solubility.conc$Ar.conc_umolL[1] /
         mean(cal.block$X40[cal.block$CollectionTemp == std.temps[1]])
       calfactor$calfactor_40[2 * groupNo] <-
-        solubility.conc$Ar.conc_uMol.kg[2] /
+        solubility.conc$Ar.conc_umolL[2] /
         mean(cal.block$X40[cal.block$CollectionTemp == std.temps[2]])
 
       # Calculate N2:Ar calibration factors
       #     = ([N2]saturation / [Ar]saturation) / Raw N2:Ar signal data
       # Standard temp 1
       calfactor$calfactor_N2Ar[2 * groupNo - 1] <-
-        (solubility.conc$N2.conc_uMol.kg[1]/
-           solubility.conc$Ar.conc_uMol.kg[1])/
+        (solubility.conc$N2.conc_umolL[1]/
+           solubility.conc$Ar.conc_umolL[1])/
         mean(cal.block$N2.Ar[cal.block$CollectionTemp == std.temps[1]])
       # Standard temp 2
       calfactor$calfactor_N2Ar[2 * groupNo] <-
-        (solubility.conc$N2.conc_uMol.kg[2]/
-           solubility.conc$Ar.conc_uMol.kg[2])/
+        (solubility.conc$N2.conc_umolL[2]/
+           solubility.conc$Ar.conc_umolL[2])/
         mean(cal.block$N2.Ar[cal.block$CollectionTemp == std.temps[2]])
 
       # Calculate O2:Ar calibration factors
       #     = ([O2]saturation / [Ar]saturation) / Raw O2:Ar signal data
       # Standard temp 1
       calfactor$calfactor_O2Ar[2 * groupNo - 1] <-
-        (solubility.conc$O2.conc_uMol.kg[1]/
-           solubility.conc$Ar.conc_uMol.kg[1])/
+        (solubility.conc$O2.conc_umolL[1]/
+           solubility.conc$Ar.conc_umolL[1])/
         mean(cal.block$O2.Ar[cal.block$CollectionTemp == std.temps[1]])
       # Standard temp 2
       calfactor$calfactor_O2Ar[2 * groupNo] <-
-        (solubility.conc$O2.conc_uMol.kg[2]/
-           solubility.conc$Ar.conc_uMol.kg[2])/
+        (solubility.conc$O2.conc_umolL[2]/
+           solubility.conc$Ar.conc_umolL[2])/
         mean(cal.block$O2.Ar[cal.block$CollectionTemp == std.temps[2]])
 
       if(Nisotopes){
         # Replace mass 28
         calfactor$calfactor_28[2 * groupNo - 1] <-
-          solubility.conc$N2_28.conc_uMol.kg[1] /
+          solubility.conc$N2_28.conc_umolL[1] /
           mean(cal.block$X28[cal.block$CollectionTemp == std.temps[1]])
         calfactor$calfactor_28[2 * groupNo] <-
-          solubility.conc$N2_28.conc_uMol.kg[2] /
+          solubility.conc$N2_28.conc_umolL[2] /
           mean(cal.block$X28[cal.block$CollectionTemp == std.temps[2]])
 
         # Mass 29
         calfactor$calfactor_29[2 * groupNo - 1] <-
-          solubility.conc$N2_29.conc_uMol.kg[1] /
+          solubility.conc$N2_29.conc_umolL[1] /
           mean(cal.block$X29[cal.block$CollectionTemp == std.temps[1]])
         calfactor$calfactor_29[2 * groupNo] <-
-          solubility.conc$N2_29.conc_uMol.kg[2] /
+          solubility.conc$N2_29.conc_umolL[2] /
           mean(cal.block$X29[cal.block$CollectionTemp == std.temps[2]])
 
         # Mass 30
         calfactor$calfactor_30[2 * groupNo - 1] <-
-          solubility.conc$N2_30.conc_uMol.kg[1] /
+          solubility.conc$N2_30.conc_umolL[1] /
           mean(cal.block$X30[cal.block$CollectionTemp == std.temps[1]])
         calfactor$calfactor_30[2 * groupNo] <-
-          solubility.conc$N2_30.conc_uMol.kg[2] /
+          solubility.conc$N2_30.conc_umolL[2] /
           mean(cal.block$X30[cal.block$CollectionTemp == std.temps[2]])
 
         # Calculate 29:28 calibration factor
         calfactor$calfactor_X29.28[2 * groupNo - 1] <-
-          (solubility.conc$N2_29.conc_uMol.kg[1] /
-             solubility.conc$N2_28.conc_uMol.kg[1]) /
+          (solubility.conc$N2_29.conc_umolL[1] /
+             solubility.conc$N2_28.conc_umolL[1]) /
           mean(cal.block$X29.28[cal.block$CollectionTemp == std.temps[1]])
         calfactor$calfactor_X29.28[2 * groupNo] <-
-          (solubility.conc$N2_29.conc_uMol.kg[2]/
-             solubility.conc$N2_28.conc_uMol.kg[2])/
+          (solubility.conc$N2_29.conc_umolL[2]/
+             solubility.conc$N2_28.conc_umolL[2])/
           mean(cal.block$X29.28[cal.block$CollectionTemp == std.temps[2]])
 
         # Calculate 30:28 calibration factor
         calfactor$calfactor_X30.28[2 * groupNo - 1] <-
-          (solubility.conc$N2_30.conc_uMol.kg[1] /
-             solubility.conc$N2_28.conc_uMol.kg[1]) /
+          (solubility.conc$N2_30.conc_umolL[1] /
+             solubility.conc$N2_28.conc_umolL[1]) /
           mean(cal.block$X30.28[cal.block$CollectionTemp == std.temps[1]])
         calfactor$calfactor_X30.28[2 * groupNo] <-
-          (solubility.conc$N2_30.conc_uMol.kg[2]/
-             solubility.conc$N2_28.conc_uMol.kg[2])/
+          (solubility.conc$N2_30.conc_umolL[2]/
+             solubility.conc$N2_28.conc_umolL[2])/
           mean(cal.block$X30.28[cal.block$CollectionTemp == std.temps[2]])
       }
     }
@@ -1068,26 +1070,26 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
   # Calculate concentrations by multiplying signal by interpolated calibration factors
   data$Ar_uMolL <- data$X40 * data$INTERPOLATED.calfactor_40
-  data$N2Ar <- data$N2.Ar * data$INTERPOLATED.calfactor_N2Ar
-  data$O2Ar <- data$O2.Ar * data$INTERPOLATED.calfactor_O2Ar
+  data$N2Ar_molarRatio <- data$N2.Ar * data$INTERPOLATED.calfactor_N2Ar
+  data$O2Ar_molarRatio <- data$O2.Ar * data$INTERPOLATED.calfactor_O2Ar
 
   if(Nisotopes){
-    data$isotopic_30.28 <- data$X30.28 *
-      data$INTERPOLATED.calfactor_X30.28
-    data$isotopic_29.28 <- data$X29.28 *
-      data$INTERPOLATED.calfactor_X29.28
+    data$isotopic_30.28_molarRatio <-
+      data$X30.28 * data$INTERPOLATED.calfactor_X30.28
+    data$isotopic_29.28molarRatio <-
+      data$X29.28 * data$INTERPOLATED.calfactor_X29.28
   }
 
   # Transform N2Ar and O2Ar ratios into concentrations of N2 or O2, using
   # Ar saturation concentration at temperature
-  data$N2_uMolL <- data$N2Ar * data$arSat.conc_uMol.kg
-  data$O2_uMolL <- data$O2Ar * data$arSat.conc_uMol.kg
+  data$N2_uMolL <- data$N2Ar * data$arSat.conc_umolL
+  data$O2_uMolL <- data$O2Ar * data$arSat.conc_umolL
 
   if(Nisotopes){
     data$isotopic_30N2_uMolL <- data$isotopic_30.28 *
-      data$n2Sat_28.conc_uMol.kg
+      data$n2Sat_28.conc_umolL
     data$isotopic_29N2_uMolL <- data$isotopic_29.28 *
-      data$n2Sat_28.conc_uMol.kg
+      data$n2Sat_28.conc_umolL
   }
 
   # Unit conversion: Convert from microM to mg
