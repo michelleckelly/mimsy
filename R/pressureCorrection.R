@@ -1,3 +1,10 @@
+#' Correct barometric pressure for vapor pressure of water
+#'
+#' @param temp Water temperature in degrees C
+#' @param barpress_atm Barometric pressure in atm
+#'
+#' @return Barometric pressure corrected for water vapor pressure
+#'
 pressureCorrection <- function(temp, barpress_atm){
   # Use the Antoine equation to calculate vapor pressure of water [bar] See
   # NIST Chemistry WebBook for general tables, these parameters valid for
