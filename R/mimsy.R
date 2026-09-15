@@ -107,31 +107,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   }
 
   # Barometric pressure conversion -------------------------------------------
-
-  if (units == "atm") {
-    baromet.press.atm <- mean(baromet.press)
-  }
-  # hPa to atm
-  if (units == "hPa") {
-    baromet.press.atm <- mean(baromet.press) * 0.00098692316931427
-  }
-  # Torr to atm
-  if (units == "Torr" | units == "mmHg") {
-    baromet.press.atm <- mean(baromet.press) / 760
-  }
-  # psi to atm
-  if (units == "psi") {
-    baromet.press.atm <- mean(baromet.press) * 14.6959487755142
-  }
-  # bar to atm
-  if (units == "bar") {
-    baromet.press.atm <- mean(baromet.press) * 1.01325
-  }
-  # stop message for non-sanctioned units
-  if (!(units %in% c("atm", "hPa", "Torr", "psi", "bar", "mmHg"))) {
-    stop("Please report barometric pressure in units of `atm`, `hPa`, `psi`,
-            `bar`, `mmHg`, or `Torr`.")
-  }
+  baromet.press.atm <- convertPressure(baromet.press, unit)
 
   # 3. Calculate solubilites of dissolved gas --------------------------------
 
