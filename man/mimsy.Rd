@@ -16,8 +16,6 @@ mimsy(data, baromet.press, units, bg.correct = FALSE, tz = Sys.timezone())
 \item{bg.correct}{If `FALSE` (default), no background correction is applied. If `TRUE`, background correction is applied.}
 
 \item{tz}{a character string that specifies which time zone to parse the date with. Defaults to the user's current time zone setting. The string must be a time zone that is recognized by the user's OS.}
-
-\item{salinity}{the salinity of standards, in units of per mille. Defaults to 0.}
 }
 \value{
 a list, containing 5 dataframes:

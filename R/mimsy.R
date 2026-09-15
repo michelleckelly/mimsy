@@ -6,7 +6,6 @@
 #' @param baromet.press the ambient barometric pressure while samples processed on the MIMS. Can be a vector, if more than one reading was taken.
 #' @param units the units of barometric pressure. Must be one of "atm", "hPa", "psi", "bar", or "Torr".
 #' @param bg.correct If `FALSE` (default), no background correction is applied. If `TRUE`, background correction is applied.
-#' @param salinity the salinity of standards, in units of per mille. Defaults to 0.
 #' @param tz a character string that specifies which time zone to parse the date with. Defaults to the user's current time zone setting. The string must be a time zone that is recognized by the user's OS.
 #'
 #' @return a list, containing 5 dataframes:
