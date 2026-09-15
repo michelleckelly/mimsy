@@ -4,14 +4,7 @@
 \alias{mimsy}
 \title{\code{mimsy} Calculate MIMS dissolved gas concentrations}
 \usage{
-mimsy(
-  data,
-  baromet.press,
-  units,
-  bg.correct = FALSE,
-  tz = Sys.timezone(),
-  salinity = 0
-)
+mimsy(data, baromet.press, units, bg.correct = FALSE, tz = Sys.timezone())
 }
 \arguments{
 \item{data}{the dataframe of MIMS data}
