@@ -55,7 +55,7 @@
 #' @export
 
 mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
-                  tz = Sys.timezone(), salinity = 0) {
+                  tz = Sys.timezone()) {
   Type <- data$Type
   Group <- data$Group
 
@@ -66,8 +66,27 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     data <- dplyr::select(data, Type, dplyr::everything())
   }
 
-  # UPDATEFLAG: check csv has correct column names, check baromet.press has
-  # acceptable units
+  # Check column names ---------------------------------------------------------
+  # If user has loaded data with readr::read_csv, column names will be imported
+  # as numbers without a leading X. If this is the case, homogenize names here
+  if(any(names(data) %in% "28")){
+    names(data)[names(data) == "28"] <- "X28"
+  }
+  if(any(names(data) %in% "32")){
+    names(data)[names(data) == "32"] <- "X32"
+  }
+  if(any(names(data) %in% "40")){
+    names(data)[names(data) == "40"] <- "X40"
+  }
+  if(any(names(data) %in% c("N2/Ar", "N2.Ar"))){
+    names(data)[names(data) == "N2/Ar"] <- "N2Ar"
+    names(data)[names(data) == "N2.Ar"] <- "N2Ar"
+  }
+  if(any(names(data) %in% c("O2/Ar", "O2.Ar"))){
+    names(data)[names(data) == "O2/Ar"] <- "O2Ar"
+    names(data)[names(data) == "O2.Ar"] <- "O2Ar"
+  }
+
 
   # Returns index of rows in standard
   StdIndex <- which(data$Group == 1 & data$Type == "Standard")
@@ -80,7 +99,10 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     if("CollectionSalinity" %in% names(data)){
       std.sals <- unique(data[StdIndex,]$CollectionSalinity)
     } else{
+      # If no CollectionSalinity column, assume salinity = 0
       std.sals <- rep(0, times = length(std.temps))
+      # Append a 0 column to sample data
+      data$CollectionSalinity <- 0
     }
   }
   # Check if there are more than two standard temperatures
@@ -107,171 +129,38 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   }
 
   # Barometric pressure conversion -------------------------------------------
-
-  if (units == "atm") {
-    baromet.press.atm <- mean(baromet.press)
-  }
-  # hPa to atm
-  if (units == "hPa") {
-    baromet.press.atm <- mean(baromet.press) * 0.00098692316931427
-  }
-  # Torr to atm
-  if (units == "Torr" | units == "mmHg") {
-    baromet.press.atm <- mean(baromet.press) / 760
-  }
-  # psi to atm
-  if (units == "psi") {
-    baromet.press.atm <- mean(baromet.press) * 14.6959487755142
-  }
-  # bar to atm
-  if (units == "bar") {
-    baromet.press.atm <- mean(baromet.press) * 1.01325
-  }
-  # stop message for non-sanctioned units
-  if (!(units %in% c("atm", "hPa", "Torr", "psi", "bar", "mmHg"))) {
-    stop("Please report barometric pressure in units of `atm`, `hPa`, `psi`,
-            `bar`, `mmHg`, or `Torr`.")
-  }
+  baromet.press.atm <- convertPressure(baromet.press, unit = units)
 
   # 3. Calculate solubilites of dissolved gas --------------------------------
-
+  # Solubility is relative to indoor barometric pressure while user was running
+  # MIMS instrument and water temperature of standard bath(s)
+  # This is not solubility of dissolved gas in the field
+  #
   # initialize vector to store concentration values
 
-  solubility.conc <- data.frame(O2.conc_uMol.kg = numeric(length = length(std.temps)),
-                                N2.conc_uMol.kg = numeric(length = length(std.temps)),
-                                Ar.conc_uMol.kg = numeric(length = length(std.temps)),
+  solubility.conc <- data.frame(O2.conc_umolL = numeric(length = length(std.temps)),
+                                N2.conc_umolL = numeric(length = length(std.temps)),
+                                Ar.conc_umolL = numeric(length = length(std.temps)),
                                 row.names = paste0("temp_", std.temps, "degC",
                                                   "salinity_", std.sals))
-
-  # O2 saturation calculation ------------------------------------------------
-  o2Sat <- function(t, sal){
-
-    # Vapor pressure correction use the Antoine equation to calculate vapor
-    # pressure of water [bar] See NIST Chemistry WebBook for general tables,
-    # these parameters valid for temperatures between -18 to 100C (Stull 1947)
-    vapor.press <- exp(4.6543 - (1435.264/((t + 273.15) + -64.848)))
-    vapor.press <- vapor.press * 0.98692  # conversion from [bar] to [atm]
-
-    # pressure correction [atm] = (current pressure - vapor pressure) /
-    # (standard pressure [atm] - vapor pressure)
-    press.corr <- (baromet.press.atm - vapor.press)/(1 - vapor.press)
-
-    # O2 saturation calculation Combined fit coefficients [umol/kg]
-    # (Garcia and Gordon 1992, Table 1)
-    A0 <- 5.80818
-    A1 <- 3.20684
-    A2 <- 4.1189
-    A3 <- 4.93845
-    A4 <- 1.01567
-    A5 <- 1.41575
-    B0 <- -7.01211 * 10^-3
-    B1 <- -7.25958 * 10^-3
-    B2 <- -7.93334 * 10^-3
-    B3 <- -5.54491 * 10^-3
-    C0 <- -1.32412 * 10^-7
-    # Scaled temperature (Garcia and Gordon 1992, eqn. 8)
-    TS <- log((298.15 - t)/(273.15 + t))  # log() == natural log (ln)
-    # Salinity [per mille]
-    S <- sal
-
-    # Calculate O2 saturation concentration at temperature and salinity
-    # (Garcia and Gordon 1992, eqn. 8)
-    lnO2.sat <- A0 + A1 * TS + A2 * TS^2 + A3 * TS^2 + A3 * TS^3 + A4 *
-      TS^4 + A5 * TS^5 + S * (B0 + B1 * TS + B2 * TS^2 + B3 * TS^3) + C0 * S^2
-    O2.sat <- exp(lnO2.sat)
-    # Correct O2 saturation with pressure correction, solubility.conc units
-    # [umol/kg]
-    result <- O2.sat * press.corr
-    return(result)
-  }
-
-  # N2 saturation calculation ------------------------------------------------
-  n2Sat <- function(t, sal){
-    # Vapor pressure correction use the Antoine equation to calculate vapor
-    # pressure of water [bar] See NIST Chemistry WebBook for general tables,
-    # these parameters valid for temperatures between -18 to 100C (Stull 1947)
-
-    vapor.press <- exp(4.6543 - (1435.264/((t + 273.15) + -64.848)))
-    vapor.press <- vapor.press * 0.98692  # conversion from [bar] to [atm]
-
-    # pressure correction [atm] = (current pressure - vapor pressure) /
-    # (standard pressure [atm] - vapor pressure)
-    press.corr <- (baromet.press.atm - vapor.press)/(1 - vapor.press)
-
-    # N2 saturation calculation Coefficients [umol/kg]
-    # (Hamme and Emerson 2004, Table 4)
-    A0 <- 6.42931
-    A1 <- 2.92704
-    A2 <- 4.32531
-    A3 <- 4.69149
-    B0 <- -7.44129 * 10^-3
-    B1 <- -8.02566 * 10^-3
-    B2 <- -1.46775 * 10^-2
-    # Scaled temperature (Hamme and Emerson 2004, eqn. 2, but identical to
-    # Garcia and Gordon 1992, eqn. 8)
-    TS <- log((298.15 - t)/(273.15 + t))
-
-    # Salinity [per mille]
-    S <- sal
-
-    # Calculate saturation concentration at temperature and salinity
-    # (Hamme and emerson 2004, eqn. 1)
-    lnN2.sat <-
-      A0 + A1 * TS + A2 * TS^2 + A3 * TS^3 + S * (B0 + B1 * TS + B2 * TS^2)
-    N2.sat <- exp(lnN2.sat)
-    # Correct saturation with pressure correction, solubility.conc units are
-    # [umol/kg]
-    result <- N2.sat * press.corr
-    return(result)
-  }
-
-  # Ar saturation calculation ------------------------------------------------
-  arSat <- function(t, sal){
-    # Vapor pressure correction use the Antoine equation to calculate vapor
-    # pressure of water [bar] See NIST Chemistry WebBook for general tables,
-    # these parameters valid for temperatures between -18 to 100C (Stull 1947)
-    vapor.press <- exp(4.6543 - (1435.264/((t + 273.15) + -64.848)))
-    vapor.press <- vapor.press * 0.98692  # conversion from [bar] to [atm]
-
-    # pressure correction [atm] = (current pressure - vapor pressure) /
-    # (standard pressure [atm] - vapor pressure)
-    press.corr <- (baromet.press.atm - vapor.press)/(1 - vapor.press)
-
-    # Ar saturation calculation Coefficients [umol/kg]
-    # (Hamme and Emerson 2004, Table 4)
-    A0 <- 2.7915
-    A1 <- 3.17609
-    A2 <- 4.13116
-    A3 <- 4.90379
-    B0 <- -6.96233 * 10^-3
-    B1 <- -7.9997 * 10^-3
-    B2 <- -1.16888 * 10^-2
-    # Scaled temperature (Hamme and Emerson 2004, eqn. 2,
-    # but identical to Garcia and Gordon 1992, eqn. 8)
-    TS <- log((298.15 - t)/(273.15 + t))
-
-    # Salinity [per mille]
-    S <- sal
-
-    # Calculate saturation concentration at temperature and salinity
-    # (Hamme and emerson 2004, eqn. 1)
-    lnAr.sat <-
-      A0 + A1 * TS + A2 * TS^2 + A3 * TS^3 + S * (B0 + B1 * TS + B2 * TS^2)
-    Ar.sat <- exp(lnAr.sat)
-    # Correct saturation with pressure correction, solubility.conc units
-    # are [umol/kg]
-    result <- Ar.sat * press.corr
-    return(result)
-  }
 
   # Run functions for standards
   for (i in seq_along(std.temps)) {
     t <- std.temps[i]
     sal <- std.sals[i]
     # Run functions
-    solubility.conc$N2.conc_uMol.kg[i] <- n2Sat(t, sal)
-    solubility.conc$O2.conc_uMol.kg[i] <- o2Sat(t, sal)
-    solubility.conc$Ar.conc_uMol.kg[i] <- arSat(t, sal)
+    solubility.conc$N2.conc_umolL[i] <-
+      n2sat(temp = t, salinity = sal,
+            pressure = baromet.press.atm, pressUnits = "atm",
+            outUnits = "umol/L")
+    solubility.conc$O2.conc_umolL[i] <-
+      o2sat(temp = t, salinity = sal,
+            pressure = baromet.press.atm, pressUnits = "atm",
+            outUnits = "umol/L")
+    solubility.conc$Ar.conc_umolL[i] <-
+      arsat(temp = t, salinity = sal,
+            pressure = baromet.press.atm, pressUnits = "atm",
+            outUnits = "umol/L")
   }
 
   # Were N isotopes also run? Test names of columns
@@ -292,19 +181,19 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
     # Solubility of non-isotopic 28N2 =
     #   Bulk N2 solubility *
     #   14N abundance * 14N abundance
-    solubility.conc$N2_28.conc_uMol.kg <-
-      solubility.conc$N2.conc_uMol.kg * (1 - 0.00365) * (1 - 0.00365)
+    solubility.conc$N2_28.conc_umolL <-
+      solubility.conc$N2.conc_umolL * (1 - 0.00365) * (1 - 0.00365)
 
     # Solubility of isotopic 30N2 =
     #   28N2 solubility *
     #   15N abundance * 15N abundance
-    solubility.conc$N2_30.conc_uMol.kg <-
-      solubility.conc$N2.conc_uMol.kg * 0.00365 * 0.00365
+    solubility.conc$N2_30.conc_umolL <-
+      solubility.conc$N2.conc_umolL * 0.00365 * 0.00365
 
     # Solubility of isotopic 29N2 =
     #   Bulk N2 solubility * 2 molecules N * 14N abundance * 15N abundance
-    solubility.conc$N2_29.conc_uMol.kg <-
-      solubility.conc$N2.conc_uMol.kg * 2 * (1 - 0.00365) * 0.00365
+    solubility.conc$N2_29.conc_umolL <-
+      solubility.conc$N2.conc_umolL * 2 * (1 - 0.00365) * 0.00365
   }
 
 
@@ -312,17 +201,23 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   data <- dplyr::group_by(data, Type, Group)
 
   # Calculate N2, O2, and Ar saturation at temperature and pressure for all samples
-  data$arSat.conc_uMol.kg <- arSat(data$CollectionTemp, data$CollectionSalinity)
-  data$n2Sat.conc_uMol.kg <- n2Sat(data$CollectionTemp, data$CollectionSalinity)
-  data$o2Sat.conc_uMol.kg <- o2Sat(data$CollectionTemp, data$CollectionSalinity)
+  data$arSat.conc_umolL <-
+    arsat(temp = data$CollectionTemp, salinity = data$CollectionSalinity,
+          pressure = baromet.press.atm, pressUnits = "atm", outUnits = "umol/L")
+  data$n2Sat.conc_umolL <-
+    n2sat(temp = data$CollectionTemp, salinity = data$CollectionSalinity,
+          pressure = baromet.press.atm, pressUnits = "atm", outUnits = "umol/L")
+  data$o2Sat.conc_umolL <-
+    o2sat(temp = data$CollectionTemp, salinity = data$CollectionSalinity,
+          pressure = baromet.press.atm, pressUnits = "atm", outUnits = "umol/L")
 
   if(Nisotopes){
-    data$n2Sat_28.conc_uMol.kg <-
-      data$n2Sat.conc_uMol.kg * (1 - 0.00365) * (1 - 0.00365)
-    data$n2Sat_30.conc_uMol.kg <-
-      data$n2Sat.conc_uMol.kg * 0.00365 * 0.00365
-    data$n2Sat_29.conc_uMol.kg <-
-      data$n2Sat.conc_uMol.kg * 2 * (1 - 0.00365) * 0.00365
+    data$n2Sat_28.conc_umolL <-
+      data$n2Sat.conc_umolL * (1 - 0.00365) * (1 - 0.00365)
+    data$n2Sat_30.conc_umolL <-
+      data$n2Sat.conc_umolL * 0.00365 * 0.00365
+    data$n2Sat_29.conc_umolL <-
+      data$n2Sat.conc_umolL * 2 * (1 - 0.00365) * 0.00365
   }
 
   ######### Single-point calibration #########
@@ -353,29 +248,29 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
       # Mass28 (N2)
       calfactor$calfactor_28[groupNo] <-
-        solubility.conc$N2.conc_uMol.kg/mean(cal.block$X28)
+        solubility.conc$N2.conc_umolL/mean(cal.block$X28)
 
       # Mass32 (O2)
       calfactor$calfactor_32[groupNo] <-
-        solubility.conc$O2.conc_uMol.kg/mean(cal.block$X32)
+        solubility.conc$O2.conc_umolL/mean(cal.block$X32)
 
       # Mass40 (Ar)
       calfactor$calfactor_40[groupNo] <-
-        solubility.conc$Ar.conc_uMol.kg/mean(cal.block$X40)
+        solubility.conc$Ar.conc_umolL/mean(cal.block$X40)
 
       # Calculate N2:Ar calibration factor
       #     = ([N2]saturation / [Ar]saturation) / Raw N2:Ar signal data
       calfactor$calfactor_N2Ar[groupNo] <-
-        (solubility.conc$N2.conc_uMol.kg/
-           solubility.conc$Ar.conc_uMol.kg)/
-        mean(cal.block$N2.Ar)
+        (solubility.conc$N2.conc_umolL/
+           solubility.conc$Ar.conc_umolL)/
+        mean(cal.block$N2Ar)
 
       # Calculate O2:Ar calibration factors
       #     = ([O2]saturation / [Ar]saturation) / Raw O2:Ar signal data
       calfactor$calfactor_O2Ar[groupNo] <-
-        (solubility.conc$O2.conc_uMol.kg/
-           solubility.conc$Ar.conc_uMol.kg)/
-        mean(cal.block$O2.Ar)
+        (solubility.conc$O2.conc_umolL/
+           solubility.conc$Ar.conc_umolL)/
+        mean(cal.block$O2Ar)
 
     }
 
@@ -561,98 +456,98 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
       # Mass28 (N2) Standard temp 1
       calfactor$calfactor_28[2 * groupNo - 1] <-
-        solubility.conc$N2.conc_uMol.kg[1] /
+        solubility.conc$N2.conc_umolL[1] /
         mean(cal.block$X28[cal.block$CollectionTemp == std.temps[1]])
       # standard temp 2
       calfactor$calfactor_28[2 * groupNo] <-
-        solubility.conc$N2.conc_uMol.kg[2] /
+        solubility.conc$N2.conc_umolL[2] /
         mean(cal.block$X28[cal.block$CollectionTemp == std.temps[2]])
 
       # Mass32 (O2)
       calfactor$calfactor_32[2 * groupNo - 1] <-
-        solubility.conc$O2.conc_uMol.kg[1] /
+        solubility.conc$O2.conc_umolL[1] /
         mean(cal.block$X32[cal.block$CollectionTemp == std.temps[1]])
       calfactor$calfactor_32[2 * groupNo] <-
-        solubility.conc$O2.conc_uMol.kg[2] /
+        solubility.conc$O2.conc_umolL[2] /
         mean(cal.block$X32[cal.block$CollectionTemp == std.temps[2]])
 
       # Mass40 (Ar)
       calfactor$calfactor_40[2 * groupNo - 1] <-
-        solubility.conc$Ar.conc_uMol.kg[1] /
+        solubility.conc$Ar.conc_umolL[1] /
         mean(cal.block$X40[cal.block$CollectionTemp == std.temps[1]])
       calfactor$calfactor_40[2 * groupNo] <-
-        solubility.conc$Ar.conc_uMol.kg[2] /
+        solubility.conc$Ar.conc_umolL[2] /
         mean(cal.block$X40[cal.block$CollectionTemp == std.temps[2]])
 
       # Calculate N2:Ar calibration factors
       #     = ([N2]saturation / [Ar]saturation) / Raw N2:Ar signal data
       # Standard temp 1
       calfactor$calfactor_N2Ar[2 * groupNo - 1] <-
-        (solubility.conc$N2.conc_uMol.kg[1]/
-           solubility.conc$Ar.conc_uMol.kg[1])/
-        mean(cal.block$N2.Ar[cal.block$CollectionTemp == std.temps[1]])
+        (solubility.conc$N2.conc_umolL[1]/
+           solubility.conc$Ar.conc_umolL[1])/
+        mean(cal.block$N2Ar[cal.block$CollectionTemp == std.temps[1]])
       # Standard temp 2
       calfactor$calfactor_N2Ar[2 * groupNo] <-
-        (solubility.conc$N2.conc_uMol.kg[2]/
-           solubility.conc$Ar.conc_uMol.kg[2])/
-        mean(cal.block$N2.Ar[cal.block$CollectionTemp == std.temps[2]])
+        (solubility.conc$N2.conc_umolL[2]/
+           solubility.conc$Ar.conc_umolL[2])/
+        mean(cal.block$N2Ar[cal.block$CollectionTemp == std.temps[2]])
 
       # Calculate O2:Ar calibration factors
       #     = ([O2]saturation / [Ar]saturation) / Raw O2:Ar signal data
       # Standard temp 1
       calfactor$calfactor_O2Ar[2 * groupNo - 1] <-
-        (solubility.conc$O2.conc_uMol.kg[1]/
-           solubility.conc$Ar.conc_uMol.kg[1])/
-        mean(cal.block$O2.Ar[cal.block$CollectionTemp == std.temps[1]])
+        (solubility.conc$O2.conc_umolL[1]/
+           solubility.conc$Ar.conc_umolL[1])/
+        mean(cal.block$O2Ar[cal.block$CollectionTemp == std.temps[1]])
       # Standard temp 2
       calfactor$calfactor_O2Ar[2 * groupNo] <-
-        (solubility.conc$O2.conc_uMol.kg[2]/
-           solubility.conc$Ar.conc_uMol.kg[2])/
-        mean(cal.block$O2.Ar[cal.block$CollectionTemp == std.temps[2]])
+        (solubility.conc$O2.conc_umolL[2]/
+           solubility.conc$Ar.conc_umolL[2])/
+        mean(cal.block$O2Ar[cal.block$CollectionTemp == std.temps[2]])
 
       if(Nisotopes){
         # Replace mass 28
         calfactor$calfactor_28[2 * groupNo - 1] <-
-          solubility.conc$N2_28.conc_uMol.kg[1] /
+          solubility.conc$N2_28.conc_umolL[1] /
           mean(cal.block$X28[cal.block$CollectionTemp == std.temps[1]])
         calfactor$calfactor_28[2 * groupNo] <-
-          solubility.conc$N2_28.conc_uMol.kg[2] /
+          solubility.conc$N2_28.conc_umolL[2] /
           mean(cal.block$X28[cal.block$CollectionTemp == std.temps[2]])
 
         # Mass 29
         calfactor$calfactor_29[2 * groupNo - 1] <-
-          solubility.conc$N2_29.conc_uMol.kg[1] /
+          solubility.conc$N2_29.conc_umolL[1] /
           mean(cal.block$X29[cal.block$CollectionTemp == std.temps[1]])
         calfactor$calfactor_29[2 * groupNo] <-
-          solubility.conc$N2_29.conc_uMol.kg[2] /
+          solubility.conc$N2_29.conc_umolL[2] /
           mean(cal.block$X29[cal.block$CollectionTemp == std.temps[2]])
 
         # Mass 30
         calfactor$calfactor_30[2 * groupNo - 1] <-
-          solubility.conc$N2_30.conc_uMol.kg[1] /
+          solubility.conc$N2_30.conc_umolL[1] /
           mean(cal.block$X30[cal.block$CollectionTemp == std.temps[1]])
         calfactor$calfactor_30[2 * groupNo] <-
-          solubility.conc$N2_30.conc_uMol.kg[2] /
+          solubility.conc$N2_30.conc_umolL[2] /
           mean(cal.block$X30[cal.block$CollectionTemp == std.temps[2]])
 
         # Calculate 29:28 calibration factor
         calfactor$calfactor_X29.28[2 * groupNo - 1] <-
-          (solubility.conc$N2_29.conc_uMol.kg[1] /
-             solubility.conc$N2_28.conc_uMol.kg[1]) /
+          (solubility.conc$N2_29.conc_umolL[1] /
+             solubility.conc$N2_28.conc_umolL[1]) /
           mean(cal.block$X29.28[cal.block$CollectionTemp == std.temps[1]])
         calfactor$calfactor_X29.28[2 * groupNo] <-
-          (solubility.conc$N2_29.conc_uMol.kg[2]/
-             solubility.conc$N2_28.conc_uMol.kg[2])/
+          (solubility.conc$N2_29.conc_umolL[2]/
+             solubility.conc$N2_28.conc_umolL[2])/
           mean(cal.block$X29.28[cal.block$CollectionTemp == std.temps[2]])
 
         # Calculate 30:28 calibration factor
         calfactor$calfactor_X30.28[2 * groupNo - 1] <-
-          (solubility.conc$N2_30.conc_uMol.kg[1] /
-             solubility.conc$N2_28.conc_uMol.kg[1]) /
+          (solubility.conc$N2_30.conc_umolL[1] /
+             solubility.conc$N2_28.conc_umolL[1]) /
           mean(cal.block$X30.28[cal.block$CollectionTemp == std.temps[1]])
         calfactor$calfactor_X30.28[2 * groupNo] <-
-          (solubility.conc$N2_30.conc_uMol.kg[2]/
-             solubility.conc$N2_28.conc_uMol.kg[2])/
+          (solubility.conc$N2_30.conc_umolL[2]/
+             solubility.conc$N2_28.conc_umolL[2])/
           mean(cal.block$X30.28[cal.block$CollectionTemp == std.temps[2]])
       }
     }
@@ -1177,37 +1072,37 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
   # Calculate concentrations by multiplying signal by interpolated calibration factors
   data$Ar_uMolL <- data$X40 * data$INTERPOLATED.calfactor_40
-  data$N2Ar <- data$N2.Ar * data$INTERPOLATED.calfactor_N2Ar
-  data$O2Ar <- data$O2.Ar * data$INTERPOLATED.calfactor_O2Ar
+  data$N2Ar_molarRatio <- data$N2Ar * data$INTERPOLATED.calfactor_N2Ar
+  data$O2Ar_molarRatio <- data$O2Ar * data$INTERPOLATED.calfactor_O2Ar
 
   if(Nisotopes){
-    data$isotopic_30.28 <- data$X30.28 *
-      data$INTERPOLATED.calfactor_X30.28
-    data$isotopic_29.28 <- data$X29.28 *
-      data$INTERPOLATED.calfactor_X29.28
+    data$isotopic_30.28_molarRatio <-
+      data$X30.28 * data$INTERPOLATED.calfactor_X30.28
+    data$isotopic_29.28molarRatio <-
+      data$X29.28 * data$INTERPOLATED.calfactor_X29.28
   }
 
   # Transform N2Ar and O2Ar ratios into concentrations of N2 or O2, using
   # Ar saturation concentration at temperature
-  data$N2_uMolL <- data$N2Ar * data$arSat.conc_uMol.kg
-  data$O2_uMolL <- data$O2Ar * data$arSat.conc_uMol.kg
+  #data$N2_uMolL <- data$N2Ar * data$arSat.conc_umolL
+  #data$O2_uMolL <- data$O2Ar * data$arSat.conc_umolL
 
-  if(Nisotopes){
-    data$isotopic_30N2_uMolL <- data$isotopic_30.28 *
-      data$n2Sat_28.conc_uMol.kg
-    data$isotopic_29N2_uMolL <- data$isotopic_29.28 *
-      data$n2Sat_28.conc_uMol.kg
-  }
+  #if(Nisotopes){
+  #  data$isotopic_30N2_uMolL <- data$isotopic_30.28 *
+  #    data$n2Sat_28.conc_umolL
+  #  data$isotopic_29N2_uMolL <- data$isotopic_29.28 *
+  #    data$n2Sat_28.conc_umolL
+  #}
 
   # Unit conversion: Convert from microM to mg
-  data$N2_mgL <- data$N2_uMolL * 10^(-6) * 28 * 10^3
-  data$O2_mgL <- data$O2_uMolL * 10^(-6) * 32 * 10^3
-  data$Ar_mgL <- data$Ar_uMolL * 10^(-6) * 40 * 10^3
+  #data$N2_mgL <- data$N2_uMolL * 10^(-6) * 28 * 10^3
+  #data$O2_mgL <- data$O2_uMolL * 10^(-6) * 32 * 10^3
+  #data$Ar_mgL <- data$Ar_uMolL * 10^(-6) * 40 * 10^3
 
-  if(Nisotopes){
-    data$isotopic_30N2_mgL <- data$isotopic_30N2_uMolL * 10^(-6) * 30 * 10^3
-    data$isotopic_29N2_mgL <-data$isotopic_29N2_uMolL * 10^(-6) * 29 * 10^3
-  }
+  #if(Nisotopes){
+  #  data$isotopic_30N2_mgL <- data$isotopic_30N2_uMolL * 10^(-6) * 30 * 10^3
+  #  data$isotopic_29N2_mgL <-data$isotopic_29N2_uMolL * 10^(-6) * 29 * 10^3
+  #}
 
   # 10. Output results to user -------------------------------------------
 
@@ -1220,7 +1115,7 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
   # may have added to the orignal .csv
   results <-
     data[, -which(names(data) %in% c("Index", "Time", "X28", "X32", "X40",
-                                     "X99", "N2.Ar", "O2.Ar",
+                                     "X99", "N2Ar", "O2Ar",
                                      "INTERPOLATED.calslope_28",
                                      "INTERPOLATED.calintercept_28",
                                      "INTERPOLATED.calslope_32",
