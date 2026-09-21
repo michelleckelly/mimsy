@@ -52,7 +52,7 @@ arsat <- function(temp, pressure, pressUnits, salinity = 0, outUnits){
   result_umolL <- result_umolkg * dens_kgL
 
   # Convert from umol/L to mg/L
-  result_mgL <- result_umolL * 40 / 1000
+  result_mgL <- result_umolL * 39.948 / 1000
 
   # Return desired output to user
   if(outUnits == "umol/L"){

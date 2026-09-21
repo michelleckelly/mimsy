@@ -111,10 +111,16 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
 
   # Format time column -------------------------------------------------------
+  if("RunDate" %in% colnames(data)){
+    data$Time <- lubridate::mdy_hms(paste(data$RunDate, data$Time),
+                                    tz = tz)
+    data$RunDate <- NULL
+  } else{
+    data$Time <- lubridate::ymd_hms(paste0(Sys.Date(), data$Time),
+                                    tz = tz)
+  }
 
-  data$Time <- lubridate::mdy_hms(paste(data$RunDate, data$Time),
-                                  tz = tz)
-  data$RunDate <- NULL
+
 
   # 2. Background corrections ------------------------------------------------
 
@@ -1129,7 +1135,13 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                                      "INTERPOLATED.calfactor_32",
                                      "INTERPOLATED.calfactor_40",
                                      "INTERPOLATED.calfactor_N2Ar",
-                                     "INTERPOLATED.calfactor_O2Ar"))]
+                                     "INTERPOLATED.calfactor_O2Ar",
+                                     # Force the user to calculate gas saturation
+                                     # to reduce confusion re: saturation at
+                                     # environmental conditions or saturation at
+                                     # lab conditions
+                                     "arSat.conc_umolL", "n2Sat.conc_umolL",
+                                     "o2Sat.conc_umolL"))]
   if(Nisotopes){
     results <-
       results[, -which(names(results) %in% c("X30", "X29",
@@ -1145,7 +1157,9 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
                                              "INTERPOLATED.calfactor_29",
                                              "INTERPOLATED.calfactor_30",
                                              "INTERPOLATED.calfactor_X30.28",
-                                             "INTERPOLATED.calfactor_X29.28"))]
+                                             "INTERPOLATED.calfactor_X29.28",
+                                             "arSat.conc_umolL", "n2Sat.conc_umolL",
+                                             "o2Sat.conc_umolL"))]
   }
 
   # grab only the sample results
