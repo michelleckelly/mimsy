@@ -16,18 +16,18 @@ molar_to_mass <- function(species, value, inUnits = "umol/L", outUnits = "mg/L")
   if(inUnits == "umol/L"){
     value_molL <- value * 10^-6
   }
-  
+
   # Convert from molar mass
   if(species == "N2"){
-    value_gL <- value_molL * 28
+    value_gL <- value_molL * 28.014
   }
   if(species == "O2"){
-    value_gL <- value_molL * 32
+    value_gL <- value_molL * 31.9988
   }
   if(species == "Ar"){
-    value_gL <- value_molL * 40
+    value_gL <- value_molL * 39.948
   }
-  
+
   # Convert to outgoing units
   if(outUnits == "mg/L"){
     outVal <- value_gL * 10^3
@@ -38,7 +38,7 @@ molar_to_mass <- function(species, value, inUnits = "umol/L", outUnits = "mg/L")
   if(outUnits == "ug/L"){
     outVal <- value_gL * 10^6
   }
-  
+
   # Output
   return(outVal)
 }

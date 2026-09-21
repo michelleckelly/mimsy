@@ -111,10 +111,16 @@ mimsy <- function(data, baromet.press, units, bg.correct = FALSE,
 
 
   # Format time column -------------------------------------------------------
+  if("RunDate" %in% colnames(data)){
+    data$Time <- lubridate::mdy_hms(paste(data$RunDate, data$Time),
+                                    tz = tz)
+    data$RunDate <- NULL
+  } else{
+    data$Time <- lubridate::ymd_hms(paste0(Sys.Date(), data$Time),
+                                    tz = tz)
+  }
 
-  data$Time <- lubridate::mdy_hms(paste(data$RunDate, data$Time),
-                                  tz = tz)
-  data$RunDate <- NULL
+
 
   # 2. Background corrections ------------------------------------------------
 

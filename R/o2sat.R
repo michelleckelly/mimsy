@@ -54,7 +54,7 @@ o2sat <- function(temp, pressure, pressUnits, salinity = 0, outUnits){
   result_umolL <- result_umolkg * dens_kgL
 
   # Convert from umol/L to mg/L
-  result_mgL <- result_umolL * 32 / 1000
+  result_mgL <- result_umolL * 31.9988 / 1000
 
   # Return desired output to user
   if(outUnits == "umol/L"){

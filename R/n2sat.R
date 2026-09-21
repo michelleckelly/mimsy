@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' n2sat(temp = 25, pressure = 29.8, pressUnits = "inHg", outUnits = "mg/L")
-n2sat <- function(temp, pressure, pressUnits, salinity = 0, 
+n2sat <- function(temp, pressure, pressUnits, salinity = 0,
                   outUnits = "mg/L"){
   # Convert barometric pressure into units of atm
   barpress_atm <- convertPressure(barpress = pressure, unit = pressUnits)
@@ -53,7 +53,7 @@ n2sat <- function(temp, pressure, pressUnits, salinity = 0,
   result_umolL <- result_umolkg * dens_kgL
 
   # Convert from umol/L to mg/L
-  result_mgL <- result_umolL * 28 / 1000
+  result_mgL <- result_umolL * 28.014 / 1000
 
   # Return desired output to user
   if(outUnits == "umol/L"){
